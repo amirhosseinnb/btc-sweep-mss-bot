@@ -708,7 +708,8 @@ def main() -> None:
           <b id="nextCountdown">—</b>
         </div>
         <p class="refresh-note">
-          دکمه «به‌روزرسانی قیمت الان» قیمت لحظه‌ای را مستقیم از بایننس می‌گیرد.
+          دکمه «به‌روزرسانی قیمت الان» قیمت لحظه‌ای را از منابع عمومی می‌گیرد
+          (اگر بایننس در دسترس نباشد، از CoinGecko / Coinbase / Kraken استفاده می‌شود).
           آپدیت کامل سیگنال‌ها همچنان حدوداً هر ۲ ساعت از سرور می‌آید.
         </p>
       </div>
@@ -933,9 +934,28 @@ def main() -> None:
   </div>
 
   <script>
-    const PRICE_URLS = [
-      'https://data-api.binance.vision/api/v3/ticker/price?symbol=BTCUSDT',
-      'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT',
+    // Binance is often 451 from Iran browsers; use public fallbacks first.
+    const PRICE_SOURCES = [
+      {{
+        name: 'CoinGecko',
+        url: 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd',
+        parse: (data) => Number(data && data.bitcoin && data.bitcoin.usd),
+      }},
+      {{
+        name: 'Coinbase',
+        url: 'https://api.coinbase.com/v2/prices/BTC-USD/spot',
+        parse: (data) => Number(data && data.data && data.data.amount),
+      }},
+      {{
+        name: 'Kraken',
+        url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD',
+        parse: (data) => Number(data && data.result && (data.result.XXBTZUSD || data.result.XBTUSD) && (data.result.XXBTZUSD || data.result.XBTUSD).c[0]),
+      }},
+      {{
+        name: 'Binance Vision',
+        url: 'https://data-api.binance.vision/api/v3/ticker/price?symbol=BTCUSDT',
+        parse: (data) => Number(data && data.price),
+      }},
     ];
     let priceState = {{ value: null, at: 0, source: '—' }};
 
@@ -1022,25 +1042,28 @@ def main() -> None:
       btn.textContent = 'در حال دریافت...';
       try {{
         let price = null;
+        let sourceName = null;
         let lastErr = null;
-        for (const url of PRICE_URLS) {{
+        for (const src of PRICE_SOURCES) {{
           try {{
-            const res = await fetch(url, {{ cache: 'no-store' }});
-            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const res = await fetch(src.url, {{ cache: 'no-store' }});
+            if (!res.ok) throw new Error(src.name + ' HTTP ' + res.status);
             const data = await res.json();
-            price = Number(data.price);
-            if (!Number.isFinite(price)) throw new Error('bad price');
+            const value = src.parse(data);
+            if (!Number.isFinite(value) || value <= 0) throw new Error(src.name + ' bad price');
+            price = value;
+            sourceName = src.name;
             break;
           }} catch (err) {{
             lastErr = err;
           }}
         }}
         if (price == null) throw lastErr || new Error('price fetch failed');
-        setPrice(price, Date.now(), 'بایننس · دستی');
+        setPrice(price, Date.now(), sourceName + ' · دستی');
         document.getElementById('statusChip').innerHTML = '<i></i> آنلاین · قیمت دستی تازه‌شد';
       }} catch (err) {{
         document.getElementById('priceSource').textContent = 'خطا در رفرش';
-        alert('نتوانستیم قیمت لحظه‌ای را بگیریم. اینترنت یا دسترسی به بایننس را چک کن.');
+        alert('نتوانستیم قیمت لحظه‌ای را بگیریم. چند منبع عمومی را هم امتحان کردیم.');
       }} finally {{
         btn.disabled = false;
         btn.textContent = 'به‌روزرسانی قیمت الان';
