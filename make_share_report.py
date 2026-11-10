@@ -1,5 +1,5 @@
 """
-Build a beginner-friendly, self-contained HTML report for sharing Phase 1.
+Build a professional product demo page for Phase 1 (GitHub Pages + share/).
 """
 
 from __future__ import annotations
@@ -87,61 +87,50 @@ def main() -> None:
             )
 
     btc = next((a for a in assets if a["name"] == "BTC"), None)
-    asset_cards = ""
-    name_fa = {"BTC": "بیت‌کوین", "ETH": "اتریوم", "SOL": "سولانا"}
-    for i, a in enumerate(assets):
+    asset_rows = ""
+    for a in assets:
         featured = " featured" if a["name"] == "BTC" else ""
-        delay = 0.08 + i * 0.06
-        fa = name_fa.get(a["name"], a["name"])
-        asset_cards += f"""
-        <article class="asset-card{featured}" style="animation-delay:{delay:.2f}s">
-          <div class="asset-top">
-            <div>
-              <div class="asset-name">{a['name']}<span>/USDT</span></div>
-              <div class="asset-range">{fa} · {a['start']} تا {a['end']}</div>
-            </div>
-            <div class="asset-badge">۴ ساعته</div>
-          </div>
-          <div class="asset-pnl {_pnl_class(a['pnl'])}">{a['pnl']:+,.2f} USDT</div>
-          <div class="asset-grid">
-            <div><span>درصد برد</span><b>{a['win_rate']:.1f}%</b></div>
-            <div><span>تعداد معامله</span><b>{a['trades']}</b></div>
-            <div><span>قدرت سود</span><b>{_pf(a['pf'])}</b></div>
-            <div><span>بیشترین افت</span><b>{a['mdd']:.2f}%</b></div>
-          </div>
-          <div class="asset-foot">اگر با ۱۰٬۰۰۰ شروع می‌کردیم → {a['equity']:,.2f}</div>
-        </article>
+        asset_rows += f"""
+        <tr class="{featured.strip()}">
+          <td><strong>{a['name']}</strong><span class="muted"> /USDT · 4H</span></td>
+          <td class="mono {_pnl_class(a['pnl'])}">{a['pnl']:+,.2f}</td>
+          <td class="mono">{a['win_rate']:.1f}%</td>
+          <td class="mono">{a['trades']}</td>
+          <td class="mono">{_pf(a['pf'])}</td>
+          <td class="mono">{a['mdd']:.2f}%</td>
+          <td class="mono">{a['equity']:,.0f}</td>
+        </tr>
         """
 
     headline_pnl = f"{btc['pnl']:+,.0f}" if btc else "—"
     headline_wr = f"{btc['win_rate']:.0f}%" if btc else "—"
     headline_pf = _pf(btc["pf"]) if btc else "—"
     btc_equity = f"{btc['equity']:,.0f}" if btc else "—"
+    btc_range = f"{btc['start']} → {btc['end']}" if btc else "—"
 
     html = f"""<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TR Bot — معرفی پروژه فاز ۱</title>
+  <meta name="description" content="TR Bot — سیستم معاملاتی قانون‌محور ICT/SMC با بک‌تست، مدیریت ریسک و مانیتور زنده فقط‌خواندنی." />
+  <title>TR Bot — Rule-Based Crypto Execution Research</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Sora:wght@500;600;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {{
-      --bg0: #07110d;
-      --bg1: #0c1a14;
-      --panel: rgba(14, 28, 22, 0.72);
-      --panel-solid: #102019;
-      --text: #e9f6ef;
-      --muted: #8eaa9a;
-      --line: rgba(120, 180, 140, 0.18);
-      --lime: #b6f26d;
-      --mint: #5fe0a8;
-      --up: #7dffb3;
-      --down: #ff8d7a;
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-      --radius: 22px;
+      --ink: #07090d;
+      --ink-2: #0d121a;
+      --panel: rgba(16, 22, 32, 0.78);
+      --line: rgba(160, 190, 220, 0.12);
+      --text: #eef3f8;
+      --muted: #8b9bb0;
+      --accent: #3fd0c9;
+      --accent-2: #f0b429;
+      --up: #3dd68c;
+      --down: #ff6b6b;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
     }}
     * {{ box-sizing: border-box; }}
     html {{ scroll-behavior: smooth; }}
@@ -149,419 +138,458 @@ def main() -> None:
       margin: 0;
       color: var(--text);
       font-family: "Vazirmatn", sans-serif;
-      background:
-        radial-gradient(900px 520px at 85% -10%, rgba(182, 242, 109, 0.16), transparent 55%),
-        radial-gradient(700px 480px at 0% 20%, rgba(95, 224, 168, 0.10), transparent 50%),
-        linear-gradient(180deg, var(--bg1), var(--bg0) 40%, #050c09);
-      min-height: 100vh;
-      line-height: 1.85;
+      background: var(--ink);
+      line-height: 1.75;
+      overflow-x: hidden;
     }}
-    body::before {{
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0.07;
-      background-image:
-        linear-gradient(rgba(182, 242, 109, 0.35) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(182, 242, 109, 0.35) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(circle at 50% 15%, black, transparent 75%);
-    }}
-    .wrap {{ position: relative; max-width: 980px; margin: 0 auto; padding: 28px 18px 80px; }}
     .mono {{ font-family: "IBM Plex Mono", monospace; direction: ltr; unicode-bidi: plaintext; }}
-    .brand-row {{
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
-      margin-bottom: 22px; animation: rise 0.7s ease both;
+    .muted {{ color: var(--muted); }}
+    .brand-en {{ font-family: "Sora", sans-serif; letter-spacing: 0.04em; }}
+
+    /* —— Hero: one composition —— */
+    .hero {{
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      align-items: end;
+      padding: 28px 22px 40px;
+      isolation: isolate;
     }}
-    .logo {{ display: flex; align-items: center; gap: 12px; }}
+    .hero-bg {{
+      position: absolute; inset: 0; z-index: -2;
+      background:
+        linear-gradient(180deg, rgba(7,9,13,0.15) 0%, rgba(7,9,13,0.55) 45%, rgba(7,9,13,0.96) 100%),
+        radial-gradient(900px 500px at 70% 20%, rgba(63,208,201,0.18), transparent 55%),
+        radial-gradient(700px 420px at 10% 80%, rgba(240,180,41,0.08), transparent 50%),
+        linear-gradient(135deg, #0a1018, #07090d);
+    }}
+    .hero-chart {{
+      position: absolute; inset: 0; z-index: -1; opacity: 0.55;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop stop-color='%233fd0c9' stop-opacity='0.35'/%3E%3Cstop offset='1' stop-color='%233fd0c9' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 520 L80 500 L160 530 L240 410 L320 430 L400 300 L480 340 L560 220 L640 260 L720 180 L800 210 L880 140 L960 190 L1040 120 L1120 160 L1200 90 L1200 700 L0 700 Z' fill='url(%23g)'/%3E%3Cpath d='M0 520 L80 500 L160 530 L240 410 L320 430 L400 300 L480 340 L560 220 L640 260 L720 180 L800 210 L880 140 L960 190 L1040 120 L1120 160 L1200 90' fill='none' stroke='%233fd0c9' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center 30%;
+      animation: chartRise 1.4s ease both;
+    }}
+    .hero-grid {{
+      position: absolute; inset: 0; z-index: -1; opacity: 0.12;
+      background-image:
+        linear-gradient(rgba(63,208,201,0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(63,208,201,0.5) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(180deg, black, transparent 80%);
+    }}
+    .topbar {{
+      position: absolute; top: 0; right: 0; left: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 22px clamp(18px, 4vw, 40px);
+      animation: fadeUp 0.7s ease both;
+    }}
+    .logo {{
+      display: flex; align-items: center; gap: 12px;
+    }}
     .mark {{
-      width: 42px; height: 42px; border-radius: 12px;
-      background: linear-gradient(145deg, var(--lime), #5cb86a);
-      box-shadow: 0 0 0 1px rgba(182, 242, 109, 0.35), 0 10px 30px rgba(182, 242, 109, 0.25);
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(145deg, var(--accent), #1a8f8a);
       position: relative;
     }}
     .mark::after {{
-      content: ""; position: absolute; inset: 11px 9px;
-      border-right: 3px solid #0a160f; border-bottom: 3px solid #0a160f; transform: skewX(-18deg);
+      content: ""; position: absolute; inset: 9px 8px;
+      border-right: 2.5px solid #061014; border-bottom: 2.5px solid #061014;
+      transform: skewX(-16deg);
     }}
-    .logo strong {{ display: block; font-size: 1.05rem; }}
-    .logo span {{ color: var(--muted); font-size: 0.82rem; }}
-    .live-chip {{
-      display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px;
-      border-radius: 999px; border: 1px solid var(--line); background: rgba(8, 20, 14, 0.7);
-      color: var(--mint); font-size: 0.82rem;
+    .logo strong {{
+      font-family: "Sora", sans-serif; font-size: 1.05rem; font-weight: 700;
+      letter-spacing: 0.08em;
     }}
-    .live-chip i {{
-      width: 8px; height: 8px; border-radius: 50%; background: var(--mint);
-      box-shadow: 0 0 0 0 rgba(95, 224, 168, 0.7); animation: pulse 1.8s infinite;
+    .status-pill {{
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px; border: 1px solid var(--line);
+      background: rgba(7,9,13,0.55); backdrop-filter: blur(8px);
+      font-size: 0.78rem; color: var(--accent);
     }}
-    .live-panel {{
-      border: 1px solid rgba(95, 224, 168, 0.28);
+    .status-pill i {{
+      width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+      animation: pulse 1.8s infinite;
+    }}
+    .hero-content {{
+      max-width: 1100px; margin: 0 auto; width: 100%;
+      padding-bottom: 8vh;
+      animation: fadeUp 0.9s ease both 0.1s;
+    }}
+    .hero-brand {{
+      font-family: "Sora", sans-serif;
+      font-size: clamp(3.2rem, 11vw, 7.5rem);
+      font-weight: 700; line-height: 0.92;
+      letter-spacing: -0.04em; margin: 0 0 18px;
+    }}
+    .hero-brand span {{
+      display: block; font-size: 0.28em; letter-spacing: 0.28em;
+      color: var(--accent); font-weight: 600; margin-bottom: 10px;
+    }}
+    .hero-line {{
+      margin: 0; max-width: 34rem; color: var(--muted); font-size: 1.08rem;
+    }}
+    .cta-row {{
+      display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px;
+    }}
+    .btn {{
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 20px; text-decoration: none; font-weight: 600; font-size: 0.92rem;
+      border: 1px solid transparent; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }}
+    .btn:hover {{ transform: translateY(-2px); }}
+    .btn-primary {{
+      background: var(--accent); color: #041214;
+    }}
+    .btn-ghost {{
+      background: transparent; color: var(--text); border-color: var(--line);
+    }}
+    .btn-ghost:hover {{ border-color: rgba(63,208,201,0.45); }}
+
+    .wrap {{
+      max-width: 1100px; margin: 0 auto; padding: 0 22px 90px;
+    }}
+
+    /* —— Live terminal —— */
+    .terminal {{
+      margin-top: -28px;
+      border: 1px solid var(--line);
       background:
-        linear-gradient(135deg, rgba(14, 40, 30, 0.95), rgba(8, 20, 14, 0.92)),
-        radial-gradient(500px 220px at 0% 0%, rgba(95, 224, 168, 0.14), transparent 60%);
-      border-radius: 24px;
-      padding: 18px;
-      margin-bottom: 18px;
+        linear-gradient(180deg, rgba(18,26,38,0.95), rgba(10,14,22,0.98));
       box-shadow: var(--shadow);
-      animation: rise 0.75s ease both;
+      overflow: hidden;
+      animation: fadeUp 0.8s ease both;
     }}
-    .live-head {{
-      display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap;
-      margin-bottom: 12px;
+    .term-bar {{
+      display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 14px 18px; border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
     }}
-    .live-head h2 {{ margin: 0; font-size: 1.15rem; }}
-    .live-grid {{
-      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;
+    .term-bar h2 {{
+      margin: 0; font-size: 0.95rem; font-weight: 700;
+      font-family: "Sora", sans-serif; letter-spacing: 0.04em;
     }}
-    .live-metric {{
-      background: rgba(0,0,0,0.22); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+    .term-meta {{ font-size: 0.78rem; color: var(--muted); }}
+    .term-grid {{
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 0;
     }}
-    .live-metric span {{ display: block; color: var(--muted); font-size: 0.78rem; margin-bottom: 4px; }}
-    .live-metric b {{
-      font-family: "IBM Plex Mono", monospace; font-size: 1.05rem; direction: ltr; unicode-bidi: plaintext;
+    .term-metrics {{
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--line);
+      border-left: 1px solid var(--line);
     }}
-    .signal-box {{
-      margin-top: 12px; border-radius: 16px; padding: 14px; border: 1px dashed var(--line);
-      background: rgba(0,0,0,0.18); color: var(--muted);
+    .metric {{
+      background: rgba(7,9,13,0.55); padding: 18px 16px;
     }}
-    .signal-box.active {{
-      border-style: solid; border-color: rgba(182, 242, 109, 0.35);
-      background: rgba(182, 242, 109, 0.08); color: var(--text);
+    .metric span {{
+      display: block; color: var(--muted); font-size: 0.75rem;
+      margin-bottom: 6px; letter-spacing: 0.02em;
     }}
-    .signal-box strong {{ color: var(--lime); }}
-    .hero {{
-      position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 28px;
-      padding: clamp(24px, 4vw, 40px);
-      background:
-        linear-gradient(135deg, rgba(16, 36, 28, 0.92), rgba(8, 18, 14, 0.88)),
-        radial-gradient(600px 280px at 100% 0%, rgba(182, 242, 109, 0.18), transparent 60%);
-      box-shadow: var(--shadow); animation: rise 0.8s ease both; margin-bottom: 18px;
+    .metric b {{
+      font-family: "IBM Plex Mono", monospace; font-size: 1.25rem;
+      direction: ltr; unicode-bidi: plaintext; font-weight: 600;
     }}
-    .hero::after {{
-      content: ""; position: absolute; width: 280px; height: 280px; right: -60px; bottom: -90px;
-      border-radius: 50%; background: radial-gradient(circle, rgba(182, 242, 109, 0.22), transparent 70%);
-      filter: blur(8px); animation: drift 8s ease-in-out infinite alternate;
+    .signal-pane {{
+      padding: 22px 20px; display: flex; flex-direction: column; justify-content: center;
+      min-height: 180px;
     }}
-    .kicker {{ color: var(--lime); font-size: 0.92rem; font-weight: 600; margin-bottom: 10px; }}
-    h1 {{
-      margin: 0; font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.2; font-weight: 800;
-      letter-spacing: -0.02em; max-width: 16ch;
+    .signal-pane .label {{
+      font-size: 0.75rem; color: var(--muted); margin-bottom: 8px;
+      font-family: "Sora", sans-serif; letter-spacing: 0.12em; text-transform: uppercase;
     }}
-    .hero-copy {{ margin: 14px 0 0; color: var(--muted); max-width: 40rem; font-size: 1.05rem; position: relative; z-index: 1; }}
-    .hero-stats {{
-      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
-      margin-top: 28px; position: relative; z-index: 1;
+    .signal-pane .state {{
+      font-size: 1.35rem; font-weight: 700; margin-bottom: 8px;
     }}
-    .stat {{
-      padding: 16px; border-radius: 18px; background: rgba(4, 12, 9, 0.55);
-      border: 1px solid var(--line); backdrop-filter: blur(8px);
+    .signal-pane .state.wait {{ color: var(--muted); }}
+    .signal-pane .state.hot {{ color: var(--accent-2); }}
+    .signal-pane .detail {{
+      color: var(--muted); font-size: 0.9rem;
+      font-family: "IBM Plex Mono", monospace; direction: ltr; unicode-bidi: plaintext;
     }}
-    .stat span {{ display: block; color: var(--muted); font-size: 0.82rem; margin-bottom: 6px; }}
-    .stat b {{
-      font-family: "IBM Plex Mono", monospace; font-size: clamp(1.25rem, 3vw, 1.7rem);
-      font-weight: 600; direction: ltr; unicode-bidi: plaintext;
+    .term-foot {{
+      padding: 12px 18px; border-top: 1px solid var(--line);
+      font-size: 0.8rem; color: var(--muted);
+      display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;
     }}
-    .toc {{
-      display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; animation: rise 0.8s ease both;
+    .badge {{
+      display: inline-block; padding: 2px 8px; border: 1px solid var(--line);
+      font-size: 0.72rem; color: var(--accent);
     }}
-    .toc a {{
-      text-decoration: none; color: var(--text); font-size: 0.86rem; padding: 8px 12px;
-      border-radius: 999px; border: 1px solid var(--line); background: rgba(8, 18, 14, 0.65);
+
+    section {{ margin-top: 72px; }}
+    .sec-kicker {{
+      font-family: "Sora", sans-serif; font-size: 0.75rem; letter-spacing: 0.18em;
+      color: var(--accent); margin-bottom: 10px; font-weight: 600;
     }}
-    .section {{ margin-top: 26px; animation: rise 0.8s ease both; }}
-    .section h2 {{ margin: 0 0 10px; font-size: 1.35rem; font-weight: 750; }}
-    .section-note {{ color: var(--muted); margin: 0 0 14px; font-size: 0.95rem; }}
-    .panel {{
-      background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-      padding: 20px 18px; backdrop-filter: blur(10px);
+    h3.sec-title {{
+      margin: 0 0 10px; font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 800;
+      letter-spacing: -0.02em; max-width: 18ch;
     }}
-    .panel p {{ margin: 0 0 12px; color: var(--muted); }}
-    .panel p:last-child {{ margin-bottom: 0; }}
-    .panel strong {{ color: var(--text); font-weight: 700; }}
-    .steps {{
-      display: grid; gap: 12px;
+    .sec-lead {{
+      margin: 0 0 28px; color: var(--muted); max-width: 40rem; font-size: 1.02rem;
     }}
-    .step {{
-      display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: start;
-      background: rgba(0,0,0,0.18); border: 1px solid var(--line); border-radius: 16px; padding: 14px;
+
+    .pillars {{
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      background: var(--line); border: 1px solid var(--line);
     }}
-    .step-no {{
-      width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
-      background: rgba(182, 242, 109, 0.12); color: var(--lime); font-weight: 800;
+    .pillar {{
+      background: var(--ink-2); padding: 24px 20px;
     }}
-    .step h3 {{ margin: 0 0 4px; font-size: 1.02rem; }}
-    .step p {{ margin: 0; color: var(--muted); font-size: 0.95rem; }}
-    .assets {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }}
-    .asset-card {{
-      background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-      padding: 18px; backdrop-filter: blur(10px); animation: rise 0.8s ease both;
-      transition: transform 0.25s ease, border-color 0.25s ease;
+    .pillar strong {{
+      display: block; font-size: 1.05rem; margin-bottom: 8px;
     }}
-    .asset-card:hover {{ transform: translateY(-3px); border-color: rgba(182, 242, 109, 0.35); }}
-    .asset-card.featured {{
-      background: linear-gradient(180deg, rgba(182, 242, 109, 0.10), transparent 40%), var(--panel-solid);
-      border-color: rgba(182, 242, 109, 0.35);
+    .pillar p {{ margin: 0; color: var(--muted); font-size: 0.92rem; }}
+
+    .pipeline {{
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
     }}
-    .asset-top {{ display: flex; justify-content: space-between; gap: 10px; }}
-    .asset-name {{ font-size: 1.2rem; font-weight: 700; }}
-    .asset-name span {{ color: var(--muted); font-weight: 500; font-size: 0.9rem; }}
-    .asset-range {{ color: var(--muted); font-size: 0.8rem; margin-top: 2px; }}
-    .asset-badge {{
-      height: fit-content; padding: 4px 10px; border-radius: 999px;
-      background: rgba(182, 242, 109, 0.12); color: var(--lime); font-size: 0.78rem; font-weight: 600;
+    .pipe {{
+      border-top: 2px solid var(--accent); padding-top: 16px;
     }}
-    .asset-pnl {{
-      margin: 16px 0 12px; font-family: "IBM Plex Mono", monospace; font-size: 1.55rem;
-      font-weight: 600; direction: ltr; unicode-bidi: plaintext;
+    .pipe .n {{
+      font-family: "Sora", sans-serif; font-size: 0.75rem; color: var(--accent);
+      letter-spacing: 0.12em; margin-bottom: 8px;
     }}
+    .pipe h4 {{ margin: 0 0 8px; font-size: 1.02rem; }}
+    .pipe p {{ margin: 0; color: var(--muted); font-size: 0.9rem; }}
+
+    .kpi-strip {{
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+      background: var(--line); border: 1px solid var(--line); margin-bottom: 22px;
+    }}
+    .kpi {{
+      background: var(--ink-2); padding: 20px 16px;
+    }}
+    .kpi span {{ display: block; color: var(--muted); font-size: 0.78rem; margin-bottom: 6px; }}
+    .kpi b {{
+      font-family: "IBM Plex Mono", monospace; font-size: 1.4rem;
+      direction: ltr; unicode-bidi: plaintext;
+    }}
+
+    .table-shell {{
+      border: 1px solid var(--line); overflow: auto;
+      background: rgba(13,18,26,0.8);
+    }}
+    table {{ width: 100%; border-collapse: collapse; min-width: 720px; }}
+    th, td {{
+      padding: 14px 12px; border-bottom: 1px solid var(--line);
+      text-align: right; font-size: 0.9rem;
+    }}
+    th {{
+      color: var(--muted); font-weight: 600; font-size: 0.75rem;
+      letter-spacing: 0.04em; background: rgba(255,255,255,0.02);
+    }}
+    tr:last-child td {{ border-bottom: 0; }}
+    tr.featured td {{ background: rgba(63,208,201,0.05); }}
     .up {{ color: var(--up); }}
     .down {{ color: var(--down); }}
-    .asset-grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }}
-    .asset-grid div {{ background: rgba(0,0,0,0.22); border-radius: 12px; padding: 10px 8px; text-align: center; }}
-    .asset-grid span {{ display: block; color: var(--muted); font-size: 0.72rem; }}
-    .asset-grid b {{ font-size: 0.95rem; }}
-    .asset-foot {{ margin-top: 12px; color: var(--muted); font-size: 0.82rem; }}
-    .glossary {{
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;
+
+    .split {{
+      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
     }}
-    .term {{
-      background: rgba(0,0,0,0.18); border: 1px solid var(--line); border-radius: 16px; padding: 14px;
+    .block {{
+      border: 1px solid var(--line); padding: 22px 20px; background: rgba(13,18,26,0.65);
     }}
-    .term h3 {{ margin: 0 0 6px; font-size: 0.98rem; color: var(--lime); }}
-    .term p {{ margin: 0; color: var(--muted); font-size: 0.9rem; }}
+    .block h4 {{ margin: 0 0 12px; font-size: 1.05rem; }}
+    .block ul {{ margin: 0; padding: 0 18px 0 0; color: var(--muted); }}
+    .block li {{ margin-bottom: 8px; }}
+    .block li:last-child {{ margin-bottom: 0; }}
+
     .roadmap {{
-      display: grid; gap: 10px;
+      display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line);
     }}
     .road {{
-      display: grid; grid-template-columns: 110px 1fr; gap: 12px; align-items: center;
-      background: rgba(0,0,0,0.18); border: 1px solid var(--line); border-radius: 16px; padding: 14px;
+      display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: center;
+      background: var(--ink-2); padding: 18px 20px;
     }}
-    .road .tag {{
-      text-align: center; border-radius: 999px; padding: 6px 10px; font-size: 0.8rem; font-weight: 700;
+    .tag {{
+      font-family: "Sora", sans-serif; font-size: 0.72rem; letter-spacing: 0.08em;
+      text-align: center; padding: 8px 10px; border: 1px solid var(--line);
     }}
-    .done {{ background: rgba(125, 255, 179, 0.12); color: var(--up); }}
-    .now {{ background: rgba(182, 242, 109, 0.14); color: var(--lime); }}
-    .next {{ background: rgba(142, 170, 154, 0.14); color: var(--muted); }}
+    .tag.done {{ color: var(--up); border-color: rgba(61,214,140,0.35); }}
+    .tag.now {{ color: var(--accent); border-color: rgba(63,208,201,0.4); }}
+    .tag.next {{ color: var(--muted); }}
     .road p {{ margin: 0; color: var(--muted); }}
     .road strong {{ color: var(--text); }}
-    table {{ width: 100%; border-collapse: collapse; min-width: 560px; }}
-    th, td {{ padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: right; font-size: 0.92rem; }}
-    th {{ color: var(--muted); font-weight: 600; font-size: 0.8rem; }}
-    tr:last-child td {{ border-bottom: 0; }}
-    .scroll {{ overflow: auto; }}
-    .callout {{
-      margin-top: 12px; padding: 14px 16px; border-radius: 16px;
-      background: rgba(182, 242, 109, 0.08); border: 1px solid rgba(182, 242, 109, 0.22);
-      color: var(--text);
+
+    .disclaimer {{
+      margin-top: 28px; padding: 16px 18px; border: 1px solid rgba(240,180,41,0.25);
+      background: rgba(240,180,41,0.06); color: var(--muted); font-size: 0.88rem;
     }}
-    .footer {{ margin-top: 30px; color: var(--muted); font-size: 0.85rem; text-align: center; }}
-    @keyframes rise {{
-      from {{ opacity: 0; transform: translateY(14px); }}
+
+    footer {{
+      margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line);
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      color: var(--muted); font-size: 0.82rem;
+    }}
+    footer .brand-en {{ color: var(--text); font-weight: 600; }}
+
+    @keyframes fadeUp {{
+      from {{ opacity: 0; transform: translateY(18px); }}
       to {{ opacity: 1; transform: translateY(0); }}
     }}
+    @keyframes chartRise {{
+      from {{ opacity: 0; transform: translateY(24px) scale(1.02); }}
+      to {{ opacity: 0.55; transform: translateY(0) scale(1); }}
+    }}
     @keyframes pulse {{
-      0% {{ box-shadow: 0 0 0 0 rgba(95, 224, 168, 0.55); }}
-      70% {{ box-shadow: 0 0 0 10px rgba(95, 224, 168, 0); }}
-      100% {{ box-shadow: 0 0 0 0 rgba(95, 224, 168, 0); }}
+      0% {{ box-shadow: 0 0 0 0 rgba(63,208,201,0.5); }}
+      70% {{ box-shadow: 0 0 0 8px rgba(63,208,201,0); }}
+      100% {{ box-shadow: 0 0 0 0 rgba(63,208,201,0); }}
     }}
-    @keyframes drift {{
-      from {{ transform: translateY(0); }}
-      to {{ transform: translateY(-18px); }}
-    }}
-    @media (max-width: 800px) {{
-      .hero-stats {{ grid-template-columns: 1fr; }}
-      .road {{ grid-template-columns: 1fr; }}
-      .live-grid {{ grid-template-columns: 1fr 1fr; }}
-      h1 {{ max-width: none; }}
+
+    @media (max-width: 900px) {{
+      .term-grid, .pillars, .pipeline, .kpi-strip, .split, .road {{
+        grid-template-columns: 1fr;
+      }}
+      .term-metrics {{ border-left: 0; border-top: 1px solid var(--line); }}
+      .hero-brand {{ font-size: clamp(2.8rem, 16vw, 4.5rem); }}
+      .hero {{ min-height: 92vh; }}
     }}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="brand-row">
+  <header class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-chart" aria-hidden="true"></div>
+    <div class="hero-grid" aria-hidden="true"></div>
+
+    <div class="topbar">
       <div class="logo">
         <div class="mark" aria-hidden="true"></div>
-        <div>
-          <strong>TR BOT</strong>
-          <span>معرفی ساده پروژه · فاز ۱ · آنلاین فقط‌خواندنی</span>
-        </div>
+        <strong>TR BOT</strong>
       </div>
-      <div class="live-chip" id="statusChip"><i></i> در حال اتصال...</div>
+      <div class="status-pill" id="statusChip"><i></i> CONNECTING</div>
     </div>
 
-    <section class="live-panel" id="livePanel" aria-live="polite">
-      <div class="live-head">
-        <h2>وضعیت آنلاین بازار</h2>
-        <div class="live-chip"><i></i> آپدیت خودکار حدود هر ۲ ساعت</div>
-      </div>
-      <div class="live-grid">
-        <div class="live-metric"><span>قیمت زنده BTC</span><b id="markPrice">—</b></div>
-        <div class="live-metric"><span>آخرین کندل بسته‌شده</span><b id="lastClose">—</b></div>
-        <div class="live-metric"><span>آخرین به‌روزرسانی</span><b id="updatedAt">—</b></div>
-        <div class="live-metric"><span>حالت سیستم</span><b id="systemMode">Paper / Read-only</b></div>
-      </div>
-      <div class="signal-box" id="signalBox">
-        در حال خواندن آخرین وضعیت از بازار...
-      </div>
-      <p class="section-note" style="margin:12px 0 0">
-        این بخش به بایننس وصل است ولی فقط قیمت و سیگنال آزمایشی را می‌خواند.
-        سفارش واقعی ارسال نمی‌شود.
+    <div class="hero-content">
+      <h1 class="hero-brand"><span>PHASE 01</span>TR BOT</h1>
+      <p class="hero-line">
+        سیستم معاملاتی قانون‌محور برای کریپتو — با منطق ICT/SMC، مدیریت ریسک سخت‌گیرانه،
+        و مانیتور زنده فقط‌خواندنی.
       </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#live">ورود به ترمینال زنده</a>
+        <a class="btn btn-ghost" href="#method">مشاهده متدولوژی</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="terminal" id="live" aria-live="polite">
+      <div class="term-bar">
+        <h2>LIVE MARKET TERMINAL</h2>
+        <div class="term-meta">BTCUSDT · 4H · America/New_York · refresh ≈ 2h</div>
+      </div>
+      <div class="term-grid">
+        <div class="signal-pane">
+          <div class="label">Active Signal</div>
+          <div class="state wait" id="signalState">SCANNING</div>
+          <div class="detail" id="signalDetail">در حال همگام‌سازی با بازار…</div>
+        </div>
+        <div class="term-metrics">
+          <div class="metric"><span>Mark Price</span><b id="markPrice">—</b></div>
+          <div class="metric"><span>Last Close</span><b id="lastClose">—</b></div>
+          <div class="metric"><span>Updated (UTC)</span><b id="updatedAt">—</b></div>
+          <div class="metric"><span>Execution</span><b id="systemMode">READ-ONLY</b></div>
+        </div>
+      </div>
+      <div class="term-foot">
+        <span>اتصال به بایننس فقط برای خواندن قیمت و سیگنال آزمایشی است.</span>
+        <span class="badge" id="ordersBadge">ORDERS OFF</span>
+      </div>
     </section>
 
-    <header class="hero">
-      <div class="kicker">برای کسی که ترید یا برنامه‌نویسی بلد نیست</div>
-      <h1>TR BOT چیست؟</h1>
-      <p class="hero-copy">
-        این پروژه، نسخهٔ اول یک <strong style="color:var(--text)">دستیار معاملاتی قانون‌محور</strong> است.
-        یعنی به‌جای تصمیم احساسی، مجموعه‌ای از قانون‌های مشخص را روی داده‌های گذشته بازار کریپتو تست می‌کند
-        تا ببینیم آیا این منطق اصلاً ارزش ادامه دارد یا نه.
+    <section id="system">
+      <div class="sec-kicker">SYSTEM</div>
+      <h3 class="sec-title">معماری فاز ۱</h3>
+      <p class="sec-lead">
+        هستهٔ تحقیقاتی برای تست منطق ورود/خروج روی داده تاریخی، قبل از هرگونه اجرای واقعی.
       </p>
-      <div class="hero-stats">
-        <div class="stat"><span>نتیجه آزمایش روی بیت‌کوین</span><b class="{_pnl_class(btc['pnl']) if btc else ''}">{headline_pnl} USDT</b></div>
-        <div class="stat"><span>چند درصد معامله‌ها سود شد</span><b>{headline_wr}</b></div>
-        <div class="stat"><span>قدرت سود نسبت به ضرر</span><b>{headline_pf}</b></div>
-      </div>
-    </header>
-
-    <nav class="toc" aria-label="فهرست">
-      <a href="#summary">خلاصه ۳۰ ثانیه‌ای</a>
-      <a href="#why">هدف</a>
-      <a href="#scope">شامل چیست؟</a>
-      <a href="#how">چطور کار می‌کند؟</a>
-      <a href="#done">چی پیاده شده؟</a>
-      <a href="#results">نتایج</a>
-      <a href="#not">چه چیزی نیست؟</a>
-      <a href="#words">واژه‌نامه</a>
-      <a href="#next">مسیر بعدی</a>
-    </nav>
-
-    <section class="section" id="summary">
-      <h2>خلاصه ۳۰ ثانیه‌ای برای دوستت</h2>
-      <div class="panel">
-        <p>
-          ما داریم یک <strong>ربات معامله‌گر آزمایشی</strong> می‌سازیم که با قانون مشخص کار می‌کند، نه با حدس.
-          فعلاً فقط روی داده‌های گذشته بازار کریپتو (مخصوصاً بیت‌کوین) تست شده است.
-        </p>
-        <p>
-          نتیجه اولیه روی بیت‌کوین نسبتاً خوب بوده، ولی هنوز وارد معامله واقعی نشده‌ایم.
-          الان مرحلهٔ «بفهمیم ایده درست است یا نه» است؛ نه مرحلهٔ «پول درآوردن قطعی».
-        </p>
-        <div class="callout">
-          اگر فقط یک جمله بگویی: <strong>«این فاز اول یک سیستم معاملاتی قانون‌محور است که هنوز در حال آزمایش است؛ صفحه آنلاین است و هر ۲ ساعت از بازار آپدیت می‌شود، ولی سفارش واقعی نمی‌فرستد.»</strong>
+      <div class="pillars">
+        <div class="pillar">
+          <strong>Rule Engine</strong>
+          <p>تشخیص Sweep، MSS، فیلتر HTF و سشن لندن/نیویورک با قوانین ثابت و قابل‌بازتولید.</p>
+        </div>
+        <div class="pillar">
+          <strong>Risk Layer</strong>
+          <p>ریسک ۱٪ در هر معامله، R:R حداقل ۲، سقف ضرر روزانه و توقف پس از ضررهای متوالی.</p>
+        </div>
+        <div class="pillar">
+          <strong>Paper Monitor</strong>
+          <p>خواندن قیمت زنده، ثبت سیگنال آزمایشی، بدون ارسال سفارش به صرافی.</p>
         </div>
       </div>
     </section>
 
-    <section class="section" id="why">
-      <h2>۱) هدف این پروژه چیست؟</h2>
-      <div class="panel">
-        <p>
-          هدف نهایی این است که یک سیستم معاملاتی بسازیم که <strong>با قانون مشخص</strong> کار کند؛
-          نه با حس و حال لحظه‌ای. اول روی داده‌های گذشته امتحان می‌شود، بعد اگر نتیجه پایدار بود،
-          کم‌کم به حالت نیمه‌خودکار و در آینده شاید معامله واقعی می‌رسد.
-        </p>
-        <p>
-          چرا این کار را می‌کنیم؟ چون خیلی از تریدرها تصمیم‌های لحظه‌ای می‌گیرند، زود هیجان‌زده می‌شوند،
-          یا بعد از چند ضرر انتقام می‌گیرند. ما می‌خواهیم تصمیم را به یک <strong>چک‌لیست قابل‌اندازه‌گیری</strong> تبدیل کنیم.
-        </p>
-        <p>
-          الان در <strong>فاز ۱</strong> هستیم: فقط تحقیق و آزمایش. هنوز پول واقعی وارد بازار نشده و
-          ربات سفارش واقعی به صرافی نمی‌فرستد.
-        </p>
-        <div class="callout">
-          فکر کن مثل ساختن یک ماشین است: اول موتور را روی میز تست می‌کنیم، بعد جاده آزمایشی،
-          و آخر سر اگر ایمن بود می‌رود خیابان. ما الان مرحلهٔ تست روی میز هستیم.
+    <section id="method">
+      <div class="sec-kicker">METHODOLOGY</div>
+      <h3 class="sec-title">منطق ورود</h3>
+      <p class="sec-lead">چهار مرحلهٔ متوالی؛ اگر هر کدام برقرار نباشد، سیگنال صادر نمی‌شود.</p>
+      <div class="pipeline">
+        <div class="pipe">
+          <div class="n">01</div>
+          <h4>Liquidity Sweep</h4>
+          <p>نفوذ کوتاه به سقف/کف نقدینگی و برگشت سریع.</p>
+        </div>
+        <div class="pipe">
+          <div class="n">02</div>
+          <h4>Market Structure Shift</h4>
+          <p>شکست ساختار قبلی به‌عنوان تأیید تغییر جهت.</p>
+        </div>
+        <div class="pipe">
+          <div class="n">03</div>
+          <h4>Risk-Defined Entry</h4>
+          <p>ورود با حد ضرر پشت sweep و هدف حدود ۲× ریسک.</p>
+        </div>
+        <div class="pipe">
+          <div class="n">04</div>
+          <h4>Quality Filters</h4>
+          <p>هم‌سویی با بایاس روزانه و پنجرهٔ سشن فعال.</p>
         </div>
       </div>
     </section>
 
-    <section class="section" id="scope">
-      <h2>۲) این نسخهٔ اولیه شامل چه چیزهایی می‌شود؟</h2>
-      <div class="panel">
-        <p><strong>بازار هدف:</strong> کریپتو (فعلاً تمرکز اصلی روی بیت‌کوین).</p>
-        <p><strong>بازه زمانی چارت:</strong> کندل‌های ۴ ساعته (یعنی هر ۴ ساعت یک شمع قیمت).</p>
-        <p><strong>نوع سیستم:</strong> قانون‌محور (Rule-based)، نه هوش مصنوعی پیش‌بینی‌کنندهٔ جادویی.</p>
-        <p><strong>خروجی فعلی:</strong> سیگنال آزمایشی + گزارش سود/زیان روی گذشته.</p>
-        <p><strong>وضعیت اتصال صرافی:</strong> فقط خواندن قیمت برای Paper؛ بدون خرید/فروش واقعی.</p>
-        <p><strong>زبان ساخت:</strong> پایتون (Python) با تمرکز روی بک‌تست آفلاین.</p>
-      </div>
-    </section>
-
-    <section class="section" id="how">
-      <h2>۳) ایدهٔ معاملاتی به زبان خیلی ساده</h2>
-      <p class="section-note">ربات دنبال یک سناریوی تکراری در چارت می‌گردد. لازم نیست خودت تریدر باشی تا کلیتش را بفهمی:</p>
-      <div class="steps">
-        <div class="step">
-          <div class="step-no">۱</div>
-          <div>
-            <h3>شکار نقدینگی (Liquidity Sweep)</h3>
-            <p>قیمت برای لحظه‌ای از یک سقف یا کف مهم رد می‌شود تا سفارش‌های پشت آن را فعال کند، بعد برمی‌گردد. مثل این می‌ماند که بازار اول یک تله بزند و بعد مسیر اصلی را نشان بدهد.</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-no">۲</div>
-          <div>
-            <h3>تغییر ساختار (MSS)</h3>
-            <p>بعد از آن برگشت، اگر قیمت ساختار قبلی بازار را بشکند، سیستم می‌گوید «احتمالاً جهت عوض شده» و تازه اینجا به فکر ورود می‌افتد.</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-no">۳</div>
-          <div>
-            <h3>ورود با ریسک کنترل‌شده</h3>
-            <p>اگر وارد شود، حد ضرر پشت همان نقطهٔ شکار نقدینگی است و هدف سود حدود ۲ برابر ریسک است. در هر معامله فقط ۱٪ کل سرمایه ریسک می‌شود؛ یعنی اگر اشتباه باشد، کل حساب را خراب نکند.</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-no">۴</div>
-          <div>
-            <h3>فیلتر کیفیت</h3>
-            <p>فقط وقتی وارد می‌شود که جهت کلی روزانه هم‌سو باشد و ساعت بازار در بازهٔ لندن/نیویورک باشد. اگر روز بدی باشد یا چند ضرر پشت‌سرهم بخورد، موقتاً دست نگه می‌دارد تا معاملهٔ انتقام‌جویانه نکند.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="done">
-      <h2>۴) تا اینجا چه چیزهایی ساخته شده؟</h2>
-      <div class="panel">
-        <p><strong>۱. موتور استراتژی:</strong> تشخیص سقف و کف‌های مهم، شکار نقدینگی، تغییر ساختار، و صدور سیگنال ورود/خروج.</p>
-        <p><strong>۲. موتور بک‌تست:</strong> روی تاریخچهٔ قیمت، مثل یک شبیه‌ساز، معامله‌ها را یکی‌یکی اجرا می‌کند و حساب می‌کند چقدر سود یا ضرر می‌شد.</p>
-        <p><strong>۳. مدیریت ریسک:</strong> سقف ضرر روزانه، توقف بعد از چند ضرر متوالی، و کم‌کردن اثر خوش‌بینی با احتساب کارمزد و لغزش قیمت.</p>
-        <p><strong>۴. اعتبارسنجی:</strong> تست روی بیت‌کوین، اتریوم، سولانا + خردکردن تاریخ به بازه‌های جداگانه تا ببینیم نتیجه فقط شانس یک دوره نبوده.</p>
-        <p><strong>۵. حالت Paper:</strong> می‌تواند قیمت زنده را بخواند و فقط بگوید «الان سیگنال هست»؛ بدون اینکه واقعاً چیزی بخرد یا بفروشد.</p>
-        <p><strong>۶. این صفحهٔ معرفی:</strong> برای اینکه حتی بدون دانش فنی هم بشود فهمید پروژه چیست، کجا ایستاده، و قرار است به کجا برود.</p>
-      </div>
-    </section>
-
-    <section class="section" id="results">
-      <h2>۵) نتایج آزمایش یعنی چه؟</h2>
-      <p class="section-note">
-        فرض آزمایش: شروع با ۱۰٬۰۰۰ تتر، تایم‌فریم ۴ ساعته، با احتساب هزینه معامله.
-        عدد سبز یعنی در آن آزمایش سودآور بوده؛ قرمز یعنی زیان.
+    <section id="results">
+      <div class="sec-kicker">BACKTEST</div>
+      <h3 class="sec-title">نتایج آزمایشی</h3>
+      <p class="sec-lead">
+        فرض: ۱۰٬۰۰۰ USDT شروع · کارمزد ۴bps · لغزش ۲bps · اسپرد ۲bps · تایم‌فریم ۴H.
+        بازه BTC: {btc_range}
       </p>
-      <div class="assets">{asset_cards}</div>
-
-      <div class="panel" style="margin-top:16px">
-        <p>
-          روی <strong>بیت‌کوین</strong> نتیجه فعلاً امیدوارکننده‌تر است
-          (حدود {headline_pnl} سود آزمایشی و سرمایه نهایی حدود {btc_equity}).
-          روی اتریوم هنوز ضعیف است. یعنی این منطق فعلاً «برای همه ارزها عالی» نیست و باید محتاط باشیم.
-        </p>
+      <div class="kpi-strip">
+        <div class="kpi"><span>BTC Net PnL</span><b class="{_pnl_class(btc['pnl']) if btc else ''}">{headline_pnl}</b></div>
+        <div class="kpi"><span>Win Rate</span><b>{headline_wr}</b></div>
+        <div class="kpi"><span>Profit Factor</span><b>{headline_pf}</b></div>
+        <div class="kpi"><span>Final Equity</span><b>{btc_equity}</b></div>
       </div>
-
-      <h2 style="margin-top:22px">تست تکه‌تکه روی بیت‌کوین (Walk-Forward)</h2>
-      <p class="section-note">
-        یعنی داده‌ها را تکه‌تکه کرده‌ایم (هر تکه حدود ۹۰ روز) تا ببینیم نتیجه فقط شانس یک بازه خاص نبوده.
-        فعلاً {positive_folds} از {total_folds} تکه مثبت شده؛ خوب است ولی هنوز یکنواخت کامل نیست.
-      </p>
-      <div class="panel scroll">
+      <div class="table-shell">
         <table>
           <thead>
-            <tr><th>بازه زمانی</th><th>تعداد معامله</th><th>درصد برد</th><th>سود/زیان</th><th>قدرت سود</th></tr>
+            <tr>
+              <th>Asset</th><th>PnL</th><th>Win%</th><th>Trades</th><th>PF</th><th>Max DD</th><th>Equity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {asset_rows if asset_rows else "<tr><td colspan='7'>داده بک‌تست محلی موجود نیست</td></tr>"}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="validation">
+      <div class="sec-kicker">VALIDATION</div>
+      <h3 class="sec-title">Walk-Forward</h3>
+      <p class="sec-lead">
+        خرد کردن تاریخ به بازه‌های جداگانه برای سنجش پایداری.
+        فعلاً {positive_folds} از {total_folds} تکه مثبت است.
+      </p>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr><th>OOS Window</th><th>Trades</th><th>Win%</th><th>PnL</th><th>PF</th></tr>
           </thead>
           <tbody>
             {wf_rows if wf_rows else "<tr><td colspan='5'>داده walk-forward موجود نیست</td></tr>"}
@@ -570,92 +598,98 @@ def main() -> None:
       </div>
     </section>
 
-    <section class="section" id="not">
-      <h2>۶) این پروژه فعلاً چه چیزی نیست؟</h2>
-      <div class="panel">
-        <p><strong>سیگنال فروش تضمینی نیست.</strong> هیچ‌کس نمی‌تواند آینده بازار را قطعی بداند.</p>
-        <p><strong>ربات زندهٔ پول‌ساز نیست.</strong> هنوز سفارش واقعی نمی‌فرستد.</p>
-        <p><strong>محصول نهایی نیست.</strong> فاز اول تحقیق و ساخت هسته است.</p>
-        <p><strong>برای همه ارزها اثبات‌شده نیست.</strong> فعلاً بیت‌کوین بهتر از بقیه جواب داده.</p>
+    <section id="scope">
+      <div class="sec-kicker">SCOPE</div>
+      <h3 class="sec-title">مرزهای فاز ۱</h3>
+      <div class="split">
+        <div class="block">
+          <h4>فعال</h4>
+          <ul>
+            <li>موتور استراتژی + بک‌تست آفلاین</li>
+            <li>فیلتر سشن و HTF</li>
+            <li>لایه ریسک و هزینه معامله</li>
+            <li>مانیتور Paper فقط‌خواندنی</li>
+            <li>آپدیت خودکار وضعیت زنده (≈ هر ۲ ساعت)</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>خارج از محدوده</h4>
+          <ul>
+            <li>ارسال سفارش واقعی به صرافی</li>
+            <li>تضمین سود یا سیگنال فروش</li>
+            <li>بهینه‌سازی بیش‌ازحد روی همهٔ آلت‌کوین‌ها</li>
+            <li>داشبورد عملیاتی کامل / هشدار موبایل</li>
+          </ul>
+        </div>
       </div>
     </section>
 
-    <section class="section" id="words">
-      <h2>۷) واژه‌هایی که ممکن است سخت به نظر برسند</h2>
-      <div class="glossary">
-        <div class="term"><h3>بک‌تست</h3><p>امتحان استراتژی روی قیمت‌های گذشته، مثل بازپخش فیلم بازی‌های قبلی.</p></div>
-        <div class="term"><h3>سیگنال</h3><p>پیامی که می‌گوید الان شرایط ورود به معامله از نظر قوانین سیستم برقرار است.</p></div>
-        <div class="term"><h3>حد ضرر (SL)</h3><p>خط قرمز خروج؛ اگر قیمت به آنجا برسد معامله بسته می‌شود تا ضرر بزرگ نشود.</p></div>
-        <div class="term"><h3>حد سود (TP)</h3><p>هدف قیمتی برای بستن معامله با سود.</p></div>
-        <div class="term"><h3>Win Rate</h3><p>از هر ۱۰۰ معامله، چندتایش سود بوده.</p></div>
-        <div class="term"><h3>Max Drawdown</h3><p>بیشترین افت سرمایه از قله تا دره در طول آزمایش.</p></div>
-        <div class="term"><h3>Profit Factor</h3><p>جمع سودها تقسیم بر جمع ضررها. بالاتر از ۱ یعنی سود کل بیشتر از ضرر کل بوده.</p></div>
-        <div class="term"><h3>Paper Trading</h3><p>تمرین با سیگنال واقعی بازار، بدون گذاشتن پول واقعی.</p></div>
-        <div class="term"><h3>Rule-based</h3><p>یعنی سیستم فقط وقتی عمل می‌کند که قانون از قبل نوشته‌شده برقرار باشد؛ نه با حس شخصی.</p></div>
-        <div class="term"><h3>Walk-Forward</h3><p>تست تکه‌تکه روی بازه‌های زمانی مختلف، برای اینکه ببینیم نتیجه اتفاقی یک دوره نبوده.</p></div>
-      </div>
-    </section>
-
-    <section class="section" id="next">
-      <h2>۸) قرار است به کدام سمت برود؟</h2>
+    <section id="roadmap">
+      <div class="sec-kicker">ROADMAP</div>
+      <h3 class="sec-title">مسیر محصول</h3>
       <div class="roadmap">
         <div class="road">
-          <div class="tag done">انجام شده</div>
-          <p><strong>فاز ۱:</strong> ساخت هسته قوانین + بک‌تست + ریسک + گزارش اشتراک + معرفی برای افراد غیرتخصصی</p>
+          <div class="tag done">DONE</div>
+          <p><strong>Phase 1:</strong> هسته قوانین، بک‌تست، ریسک، اعتبارسنجی، ترمینال Paper</p>
         </div>
         <div class="road">
-          <div class="tag now">الان اینجا هستیم</div>
-          <p><strong>مانیتور Paper:</strong> چند روز سیگنال‌ها را بدون پول واقعی نگاه می‌کنیم و با چشم انسان چک می‌کنیم که منطقی باشند</p>
+          <div class="tag now">NOW</div>
+          <p><strong>Paper Observation:</strong> رصد سیگنال‌های زنده بدون سرمایه واقعی</p>
         </div>
         <div class="road">
-          <div class="tag next">بعدی</div>
-          <p><strong>Demo/Testnet:</strong> اگر سیگنال‌ها تمیز بودند، سفارش آزمایشی روی حساب تست (هنوز بدون پول واقعی)</p>
+          <div class="tag next">NEXT</div>
+          <p><strong>Testnet Execution:</strong> سفارش آزمایشی روی حساب دمو در صورت پایداری سیگنال</p>
         </div>
         <div class="road">
-          <div class="tag next">آینده</div>
-          <p><strong>نسخه جدی‌تر:</strong> داشبورد، هشدار، اتصال امن به صرافی، و فقط در صورت پایداری آمار</p>
+          <div class="tag next">LATER</div>
+          <p><strong>Controlled Live:</strong> اتصال امن، هشدار، و اجرای محدود فقط پس از اثبات آمار</p>
         </div>
       </div>
-      <div class="callout" style="margin-top:14px">
-        مهم: این صفحه تضمین سود نیست. فقط نشان می‌دهد تیم چه چیزی ساخته، چرا ساخته،
-        الان کجای مسیر است، و در آزمایش اولیه به چه نتیجه‌ای رسیده است.
+      <div class="disclaimer">
+        این صفحه یک دمو تحقیقاتی است، نه توصیه سرمایه‌گذاری. عملکرد گذشته تضمین آینده نیست.
+        حالت فعلی سیستم: Paper / Read-only — سفارش واقعی ارسال نمی‌شود.
       </div>
     </section>
 
-    <div class="footer">
-      TR BOT · Phase 1 Report · آنلاین فقط‌خواندنی · بدون معامله واقعی · آپدیت حدوداً هر ۲ ساعت
-    </div>
+    <footer>
+      <div><span class="brand-en">TR BOT</span> · Phase 1 Research Demo</div>
+      <div>Read-only market sync · No live orders</div>
+    </footer>
   </div>
+
   <script>
+    function fmtPrice(v) {{
+      return Number(v).toLocaleString('en-US', {{ maximumFractionDigits: 2 }}) + ' USDT';
+    }}
     async function loadLive() {{
       const chip = document.getElementById('statusChip');
-      const box = document.getElementById('signalBox');
+      const state = document.getElementById('signalState');
+      const detail = document.getElementById('signalDetail');
       try {{
         const res = await fetch('./live.json?ts=' + Date.now(), {{ cache: 'no-store' }});
-        if (!res.ok) throw new Error('live.json missing');
+        if (!res.ok) throw new Error('missing');
         const data = await res.json();
-        chip.innerHTML = '<i></i> آنلاین · وصل به بازار';
-        document.getElementById('markPrice').textContent = Number(data.mark_price).toLocaleString('en-US') + ' USDT';
-        document.getElementById('lastClose').textContent = Number(data.last_close).toLocaleString('en-US') + ' USDT';
-        const updated = new Date(data.updated_at_utc);
-        document.getElementById('updatedAt').textContent = updated.toLocaleString('fa-IR');
-        document.getElementById('systemMode').textContent = data.orders_enabled ? 'Live Trading' : 'Paper / Read-only';
+        chip.innerHTML = '<i></i> ONLINE · MARKET LINKED';
+        document.getElementById('markPrice').textContent = fmtPrice(data.mark_price);
+        document.getElementById('lastClose').textContent = fmtPrice(data.last_close);
+        document.getElementById('updatedAt').textContent = new Date(data.updated_at_utc).toISOString().replace('T',' ').slice(0,19);
+        document.getElementById('systemMode').textContent = data.orders_enabled ? 'LIVE' : 'READ-ONLY';
+        document.getElementById('ordersBadge').textContent = data.orders_enabled ? 'ORDERS ON' : 'ORDERS OFF';
         if (data.active_signal) {{
           const s = data.active_signal;
-          box.classList.add('active');
-          box.innerHTML = '<strong>سیگنال فعال آزمایشی:</strong> ' +
-            s.side.toUpperCase() +
-            ' | ورود ' + s.entry +
-            ' | حد ضرر ' + s.stop_loss +
-            ' | حد سود ' + s.take_profit +
-            '<br><span style="color:var(--muted)">زمان سیگنال: ' + s.signal_time + '</span>';
+          state.className = 'state hot';
+          state.textContent = s.side.toUpperCase() + ' SETUP';
+          detail.textContent = 'ENTRY ' + s.entry + '  ·  SL ' + s.stop_loss + '  ·  TP ' + s.take_profit;
         }} else {{
-          box.classList.remove('active');
-          box.textContent = 'الان سیگنال فعالی روی آخرین کندل بسته‌شده نیست. سیستم آنلاین است و هر ۲ ساعت دوباره چک می‌کند.';
+          state.className = 'state wait';
+          state.textContent = 'NO ACTIVE SETUP';
+          detail.textContent = 'Waiting for next closed 4H confirmation · signals logged on trigger';
         }}
-      }} catch (err) {{
-        chip.innerHTML = '<i></i> آفلاین / در انتظار اولین آپدیت';
-        box.textContent = 'هنوز فایل وضعیت زنده آماده نشده. بعد از اولین آپدیت خودکار، اینجا قیمت و سیگنال نشان داده می‌شود.';
+      }} catch (e) {{
+        chip.innerHTML = '<i></i> STANDBY';
+        state.className = 'state wait';
+        state.textContent = 'AWAITING SNAPSHOT';
+        detail.textContent = 'Live feed will appear after the next scheduled refresh.';
       }}
     }}
     loadLive();
@@ -672,8 +706,8 @@ def main() -> None:
     out_share.write_text(html, encoding="utf-8")
     out_docs.write_text(html, encoding="utf-8")
     (Path("docs") / ".nojekyll").write_text("", encoding="utf-8")
-    print(f"Wrote beginner report -> {out_share.resolve()}")
-    print(f"Wrote GitHub Pages report -> {out_docs.resolve()}")
+    print(f"Wrote product demo -> {out_share.resolve()}")
+    print(f"Wrote GitHub Pages demo -> {out_docs.resolve()}")
 
 
 if __name__ == "__main__":
