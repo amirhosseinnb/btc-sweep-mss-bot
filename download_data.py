@@ -16,7 +16,12 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-BINANCE_KLINES = "https://api.binance.com/api/v3/klines"
+# Prefer the public market-data host first (works better from CI/cloud).
+API_BASES = (
+    "https://data-api.binance.vision",
+    "https://api.binance.com",
+    "https://api1.binance.com",
+)
 
 TIMEFRAME_MS = {
     "1m": 60_000,
@@ -29,6 +34,32 @@ TIMEFRAME_MS = {
     "4h": 14_400_000,
     "1d": 86_400_000,
 }
+
+
+def _get_json(path: str, params: dict) -> object:
+    """GET JSON from the first reachable Binance-compatible host."""
+    last_error: Exception | None = None
+    for base in API_BASES:
+        url = f"{base}{path}"
+        try:
+            resp = requests.get(url, params=params, timeout=30)
+            # 451 = geo-blocked on some hosts/regions.
+            if resp.status_code == 451:
+                last_error = requests.HTTPError(f"451 from {base}", response=resp)
+                continue
+            resp.raise_for_status()
+            return resp.json()
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+            continue
+    raise RuntimeError(f"All Binance API hosts failed for {path}: {last_error}")
+
+
+def fetch_ticker_price(symbol: str) -> float:
+    data = _get_json("/api/v3/ticker/price", {"symbol": symbol.upper()})
+    if not isinstance(data, dict) or "price" not in data:
+        raise RuntimeError(f"Unexpected ticker payload: {data}")
+    return float(data["price"])
 
 
 def fetch_klines(
@@ -55,10 +86,8 @@ def fetch_klines(
             "endTime": end_ms,
             "limit": limit,
         }
-        resp = requests.get(BINANCE_KLINES, params=params, timeout=30)
-        resp.raise_for_status()
-        batch = resp.json()
-        if not batch:
+        batch = _get_json("/api/v3/klines", params)
+        if not isinstance(batch, list) or not batch:
             break
 
         rows.extend(batch)

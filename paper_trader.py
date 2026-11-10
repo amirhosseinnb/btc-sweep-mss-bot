@@ -14,13 +14,10 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
-import requests
 
 from core_strategy import DEFAULT_TIMEZONE, generate_signals, to_project_timezone
-from download_data import TIMEFRAME_MS, fetch_klines, klines_to_df
+from download_data import TIMEFRAME_MS, fetch_klines, fetch_ticker_price, klines_to_df
 from validate import best_strategy_config
-
-BINANCE_PRICE = "https://api.binance.com/api/v3/ticker/price"
 
 
 def fetch_closed_ohlcv(
@@ -55,9 +52,7 @@ def fetch_closed_ohlcv(
 
 
 def latest_mark_price(symbol: str) -> float:
-    resp = requests.get(BINANCE_PRICE, params={"symbol": symbol.upper()}, timeout=15)
-    resp.raise_for_status()
-    return float(resp.json()["price"])
+    return fetch_ticker_price(symbol)
 
 
 def append_signal_log(path: Path, row: dict) -> None:
