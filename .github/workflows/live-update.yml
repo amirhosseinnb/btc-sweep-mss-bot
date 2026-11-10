@@ -2,19 +2,34 @@ name: Live market snapshot (read-only)
 
 on:
   schedule:
-    # Every 2 hours
-    - cron: "0 */2 * * *"
+    # Every 2 hours, offset from :00 to reduce GitHub schedule drops.
+    - cron: "17 */2 * * *"
   workflow_dispatch:
+  # Re-register / keep schedule healthy when workflow file itself changes.
+  push:
+    paths:
+      - ".github/workflows/live-update.yml"
+      - "update_live_site.py"
+      - "download_data.py"
+      - "paper_trader.py"
 
 permissions:
   contents: write
 
+concurrency:
+  group: ajv-live-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -34,7 +49,7 @@ jobs:
           git add docs/live.json share/live.json
           if git diff --staged --quiet; then
             echo "No changes to publish"
-          else
-            git commit -m "chore: refresh read-only live market snapshot"
-            git push
+            exit 0
           fi
+          git commit -m "chore: refresh read-only live market snapshot"
+          git push origin HEAD:main
