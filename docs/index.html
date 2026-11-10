@@ -347,23 +347,80 @@
       transition: color 0.2s ease, border-color 0.2s ease;
     }
     .nav-toc a:hover { color: var(--accent); border-color: rgba(63,208,201,0.35); }
-    .simple-box {
-      margin-top: 28px; border: 1px solid rgba(63,208,201,0.28);
-      background: rgba(63,208,201,0.05); padding: 22px 20px;
+    .chapter {
+      margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--line);
     }
-    .simple-box h3 {
-      margin: 0 0 14px; font-size: 1.2rem;
+    .chapter-head {
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+      align-items: end; margin-bottom: 22px;
     }
-    .simple-grid {
+    .chapter-badge {
+      display: inline-block; padding: 6px 10px; border: 1px solid rgba(63,208,201,0.35);
+      color: var(--accent); font-family: "Sora", sans-serif; font-size: 0.72rem;
+      letter-spacing: 0.12em; margin-bottom: 10px;
+    }
+    .chapter-head h2 {
+      margin: 0; font-size: clamp(1.7rem, 3vw, 2.2rem); font-weight: 800;
+      letter-spacing: -0.02em; max-width: 16ch;
+    }
+    .chapter-head p {
+      margin: 0; color: var(--muted); max-width: 28rem; font-size: 0.95rem;
+    }
+    .hub-nav {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+      margin: 28px 0 8px;
     }
-    .simple-item {
-      background: rgba(7,9,13,0.45); border: 1px solid var(--line); padding: 14px;
+    .hub-card {
+      display: block; text-decoration: none; color: inherit;
+      border: 1px solid var(--line); background: rgba(13,18,26,0.75); padding: 18px 16px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
     }
-    .simple-item strong {
-      display: block; margin-bottom: 6px; color: var(--accent); font-size: 0.92rem;
+    .hub-card:hover { border-color: rgba(63,208,201,0.4); transform: translateY(-2px); }
+    .hub-card .n {
+      font-family: "Sora", sans-serif; color: var(--accent); font-size: 0.75rem;
+      letter-spacing: 0.12em; margin-bottom: 8px;
     }
-    .simple-item p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    .hub-card strong { display: block; margin-bottom: 6px; font-size: 1.05rem; }
+    .hub-card p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+    .result-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px;
+    }
+    .result-card {
+      border: 1px solid var(--line); background: rgba(13,18,26,0.7); padding: 16px;
+    }
+    .result-card.featured {
+      border-color: rgba(63,208,201,0.4);
+      background: linear-gradient(180deg, rgba(63,208,201,0.08), rgba(13,18,26,0.7));
+    }
+    .result-top {
+      display: flex; justify-content: space-between; gap: 8px; align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .result-top span { color: var(--muted); font-size: 0.78rem; }
+    .result-pnl {
+      font-family: "IBM Plex Mono", monospace; font-size: 1.45rem; font-weight: 600;
+      direction: ltr; unicode-bidi: plaintext; margin-bottom: 12px;
+    }
+    .result-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .result-grid div {
+      background: rgba(0,0,0,0.22); padding: 8px; text-align: center;
+    }
+    .result-grid span { display: block; color: var(--muted); font-size: 0.72rem; }
+    .result-grid b { font-size: 0.92rem; }
+    .done-list {
+      display: grid; gap: 10px; margin: 0 0 18px;
+    }
+    .done-item {
+      display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start;
+      border: 1px solid var(--line); background: rgba(13,18,26,0.65); padding: 14px 16px;
+    }
+    .done-item i {
+      color: var(--up); font-style: normal; font-weight: 700;
+    }
+    .done-item p { margin: 0; color: var(--muted); }
+    .done-item strong { color: var(--text); }
     .prose {
       border: 1px solid var(--line); padding: 22px 20px; background: rgba(13,18,26,0.65);
     }
@@ -418,7 +475,7 @@
     }
 
     @media (max-width: 900px) {
-      .term-grid, .pillars, .pipeline, .kpi-strip, .split, .road, .simple-grid, .refresh-strip {
+      .term-grid, .pillars, .pipeline, .kpi-strip, .split, .road, .hub-nav, .result-cards, .refresh-strip {
         grid-template-columns: 1fr;
       }
       .term-metrics { border-left: 0; border-top: 1px solid var(--line); }
@@ -452,13 +509,41 @@
         که با قانون مشخص کار می‌کند — نه با حدس و هیجان.
       </p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#live">وضعیت زنده بازار</a>
-        <a class="btn btn-ghost" href="#why">این پروژه چیست؟</a>
+        <a class="btn btn-primary" href="#ops">بخش عملیات</a>
+        <a class="btn btn-ghost" href="#phase1">نتایج فاز ۱</a>
+        <a class="btn btn-ghost" href="#learn">آموزش</a>
       </div>
     </div>
   </header>
 
   <div class="wrap">
+    <nav class="hub-nav" aria-label="سه بخش اصلی">
+      <a class="hub-card" href="#ops">
+        <div class="n">01</div>
+        <strong>عملیات زنده</strong>
+        <p>قیمت، سیگنال، ساعت آپدیت و رفرش دستی</p>
+      </a>
+      <a class="hub-card" href="#phase1">
+        <div class="n">02</div>
+        <strong>فاز ۱ و نتایج</strong>
+        <p>چه ساختیم، روی BTC/ETH/SOL چه شد</p>
+      </a>
+      <a class="hub-card" href="#learn">
+        <div class="n">03</div>
+        <strong>آموزش</strong>
+        <p>منطق کار، واژه‌ها و مسیر بعدی</p>
+      </a>
+    </nav>
+
+    <section class="chapter" id="ops">
+      <div class="chapter-head">
+        <div>
+          <div class="chapter-badge">SECTION A · OPERATIONS</div>
+          <h2>عملیات زنده پروژه</h2>
+        </div>
+        <p>این بخش فقط وضعیت فعلی بازار و سیستم را نشان می‌دهد. آموزش و جزئیات تحقیق این‌جا نیست.</p>
+      </div>
+
     <section class="terminal" id="live" aria-live="polite">
       <div class="term-bar">
         <div>
@@ -499,250 +584,107 @@
         <span class="badge" id="ordersBadge">سفارش خاموش</span>
       </div>
     </section>
-
-    <section class="simple-box" id="simple">
-      <h3>اگر هیچی از ترید بلد نیستی، همین ۳ خط کافی است</h3>
-      <div class="simple-grid">
-        <div class="simple-item">
-          <strong>۱) این چیه؟</strong>
-          <p>یک پروژه آزمایشی برای ساخت ربات معامله‌گر با قانون مشخص — نه با حدس شخصی.</p>
-        </div>
-        <div class="simple-item">
-          <strong>۲) الان چه کار می‌کند؟</strong>
-          <p>روی داده‌های گذشته تست شده و قیمت زنده را نشان می‌دهد. هنوز پول واقعی جابه‌جا نمی‌کند.</p>
-        </div>
-        <div class="simple-item">
-          <strong>۳) نتیجه اولیه؟</strong>
-          <p>روی بیت‌کوین امیدوارکننده بوده، روی بعضی ارزها ضعیف‌تر. هنوز قطعی نیست.</p>
-        </div>
-      </div>
     </section>
 
-    <nav class="nav-toc" aria-label="فهرست">
-      <a href="#simple">خلاصه ساده</a>
-      <a href="#why">این پروژه چیست؟</a>
-      <a href="#scope">الان چه می‌کند؟</a>
-      <a href="#method">چطور کار می‌کند؟</a>
-      <a href="#built">چه ساخته شده؟</a>
-      <a href="#results">نتایج</a>
-      <a href="#validation">چقدر پایدار است؟</a>
-      <a href="#not">چه چیزی نیست؟</a>
-      <a href="#words">معنی واژه‌ها</a>
-      <a href="#roadmap">بعدش چی؟</a>
-    </nav>
-
-    <section id="why">
-      <div class="sec-kicker">PURPOSE</div>
-      <h3 class="sec-title">AJV چیست؟</h3>
-      <div class="prose">
-        <p>
-          <strong>AJV</strong> مخفف اسم سه نفر تیم است: <strong>Amir · Javid · Vahid</strong>.
-          هدف‌شان ساخت یک سیستم معاملاتی است که فقط وقتی وارد شود که <strong>قانون از قبل نوشته‌شده</strong> برقرار باشد؛
-          نه وقتی حال کسی خوب است یا از ضرر قبلی عصبانی است.
-        </p>
-        <p>
-          مسیر کار ساده است: اول منطق را روی داده‌های گذشته بازار تست می‌کنیم.
-          اگر نتیجه پایدار بود، بعداً به حالت آزمایشی (بدون پول واقعی) می‌رویم.
-          معامله واقعی فقط وقتی مطرح می‌شود که آمار واقعاً قابل‌اتکا باشد.
-        </p>
-        <p>
-          الان <strong>فاز ۱</strong> است: تحقیق و آزمایش. پول واقعی در صرافی نیست.
-          این صفحه آنلاین است و حدوداً هر ۲ ساعت قیمت بازار را می‌خواند،
-          ولی فقط برای نمایش وضعیت — <strong>سفارش واقعی ارسال نمی‌شود</strong>.
-        </p>
-        <div class="callout">
-          مثل تست موتور روی میز کارگاه: هنوز وارد خیابان نشده‌ایم.
+    <section class="chapter" id="phase1">
+      <div class="chapter-head">
+        <div>
+          <div class="chapter-badge">SECTION B · PHASE 1</div>
+          <h2>فاز ۱: چه کردیم و به چه نتیجه‌ای رسیدیم؟</h2>
         </div>
+        <p>اینجا گزارش کار تیم است؛ نه آموزش ترید. تمرکز روی کارهای انجام‌شده و عددهای آزمایشی.</p>
       </div>
-    </section>
 
-    <section id="scope">
-      <div class="sec-kicker">SCOPE</div>
-      <h3 class="sec-title">الان دقیقاً چه کار می‌کند؟</h3>
-      <p class="sec-lead">مرز فاز ۱ را شفاف بگوییم: چه چیزی هست و چه چیزی هنوز نیست.</p>
-      <div class="split">
-        <div class="block">
-          <h4>الان فعال است</h4>
-          <ul>
-            <li><strong>بازار:</strong> کریپتو — تمرکز اصلی روی بیت‌کوین</li>
-            <li><strong>چارت:</strong> کندل ۴ ساعته</li>
-            <li><strong>روش:</strong> قانون‌محور (نه هوش مصنوعی پیش‌بینی‌کننده)</li>
-            <li><strong>خروجی:</strong> سیگنال آزمایشی + نتیجه بک‌تست</li>
-            <li><strong>صرافی:</strong> فقط خواندن قیمت</li>
-            <li><strong>آپدیت صفحه:</strong> حدوداً هر ۲ ساعت</li>
-          </ul>
-        </div>
-        <div class="block">
-          <h4>الان انجام نمی‌دهد</h4>
-          <ul>
-            <li>خرید و فروش واقعی در صرافی</li>
-            <li>وعده یا تضمین سود</li>
-            <li>ادعای اینکه روی همه ارزها عالی کار می‌کند</li>
-            <li>اپ موبایل یا هشدار کامل</li>
-          </ul>
-        </div>
+      <div class="prose" style="margin-bottom:22px">
+        <p>
+          <strong>AJV</strong> پروژهٔ مشترک <strong>Amir · Javid · Vahid</strong> است.
+          در فاز ۱ هدف این بود که یک هستهٔ معاملاتی قانون‌محور بسازیم، روی دادهٔ گذشته تست کنیم،
+          و ببینیم ایده اصلاً ارزش ادامه دارد یا نه — بدون معامله واقعی.
+        </p>
       </div>
-      <div class="pillars" style="margin-top:18px">
-        <div class="pillar">
-          <strong>موتور قوانین</strong>
-          <p>فقط وقتی همه شرط‌های ورود برقرار باشد، می‌گوید «الان می‌شود وارد شد».</p>
-        </div>
-        <div class="pillar">
-          <strong>مدیریت ریسک</strong>
-          <p>در هر معامله حداکثر ۱٪ کل پول ریسک می‌شود. اگر روز بد باشد، دست نگه می‌دارد.</p>
-        </div>
-        <div class="pillar">
-          <strong>نمایش زنده</strong>
-          <p>قیمت بازار را می‌بیند و سیگنال آزمایشی را نشان می‌دهد؛ بدون خرید و فروش واقعی.</p>
-        </div>
-      </div>
-    </section>
 
-    <section id="method">
-      <div class="sec-kicker">METHOD</div>
-      <h3 class="sec-title">چطور تصمیم می‌گیرد؟</h3>
+      <h3 class="sec-title" style="font-size:1.35rem; margin-top:8px">کارهای انجام‌شده در فاز ۱</h3>
+      <div class="done-list">
+        <div class="done-item"><i>✓</i><p><strong>موتور قوانین:</strong> تشخیص شکار نقدینگی، تغییر ساختار، و صدور سیگنال ورود/خروج</p></div>
+        <div class="done-item"><i>✓</i><p><strong>بک‌تست:</strong> شبیه‌سازی معامله روی تاریخچه قیمت با کارمزد و لغزش واقعی‌تر</p></div>
+        <div class="done-item"><i>✓</i><p><strong>مدیریت ریسک:</strong> ریسک ۱٪ در هر معامله، سقف ضرر روزانه، توقف بعد از ضررهای متوالی</p></div>
+        <div class="done-item"><i>✓</i><p><strong>بررسی چند ارز مهم:</strong> بیت‌کوین، اتریوم و سولانا روی تایم‌فریم ۴ ساعته</p></div>
+        <div class="done-item"><i>✓</i><p><strong>اعتبارسنجی زمانی:</strong> تست تکه‌تکه (Walk-Forward) برای بیت‌کوین</p></div>
+        <div class="done-item"><i>✓</i><p><strong>مانیتور زنده فقط‌خواندنی:</strong> قیمت و سیگنال آزمایشی روی همین صفحه، بدون سفارش واقعی</p></div>
+      </div>
+
+      <h3 class="sec-title" id="results" style="font-size:1.35rem; margin-top:28px">نتایج آزمایشی</h3>
       <p class="sec-lead">
-        فکر کن یک چک‌لیست ۴ مرحله‌ای است. اگر حتی یک مرحله رد شود، وارد معامله نمی‌شود.
-      </p>
-      <div class="pipeline" style="margin-bottom:18px">
-        <div class="pipe">
-          <div class="n">01</div>
-          <h4>تله قیمت</h4>
-          <p>قیمت یک لحظه از سقف یا کف مهم رد می‌شود و سریع برمی‌گردد.</p>
-        </div>
-        <div class="pipe">
-          <div class="n">02</div>
-          <h4>تأیید جهت</h4>
-          <p>بعدش ساختار چارت می‌شکند؛ یعنی احتمال عوض شدن جهت بالاتر می‌رود.</p>
-        </div>
-        <div class="pipe">
-          <div class="n">03</div>
-          <h4>ورود امن‌تر</h4>
-          <p>حد ضرر مشخص می‌گذارد و هدف سود حدود ۲ برابر همان ریسک است.</p>
-        </div>
-        <div class="pipe">
-          <div class="n">04</div>
-          <h4>فیلتر نهایی</h4>
-          <p>اگر ساعت بازار یا جهت روزانه مناسب نباشد، وارد نمی‌شود.</p>
-        </div>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-no">۱</div>
-          <div>
-            <h4>شکار نقدینگی</h4>
-            <p>بازار گاهی برای فعال‌کردن سفارش‌های پشت یک سقف یا کف، یک لحظه از آن رد می‌شود و سریع برمی‌گردد.
-            سیستم دنبال همین حرکت است.</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-no">۲</div>
-          <div>
-            <h4>تأیید تغییر جهت</h4>
-            <p>برگشت کافی نیست. باید ساختار قبلی چارت هم بشکند تا سیستم بگوید «احتمال تغییر جهت بالاست».</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-no">۳</div>
-          <div>
-            <h4>ورود با سقف ضرر مشخص</h4>
-            <p>حد ضرر پشت همان نقطهٔ شکار نقدینگی گذاشته می‌شود. هدف سود حدود ۲ برابر همان ریسک است.
-            اگر اشتباه باشد، فقط بخش کوچکی از حساب آسیب می‌بیند.</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-no">۴</div>
-          <div>
-            <h4>فیلتر کیفیت</h4>
-            <p>اگر جهت روزانه مخالف باشد، یا سشن مناسب نباشد، یا چند ضرر پشت‌سرهم خورده باشد،
-            سیستم دست نگه می‌دارد.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="built">
-      <div class="sec-kicker">BUILD</div>
-      <h3 class="sec-title">تا اینجا چه ساخته‌ایم؟</h3>
-      <div class="prose">
-        <p><strong>۱. موتور استراتژی:</strong> سقف/کف مهم، شکار نقدینگی، تغییر ساختار و صدور سیگنال را تشخیص می‌دهد.</p>
-        <p><strong>۲. بک‌تست:</strong> روی تاریخچه قیمت، معامله‌ها را شبیه‌سازی می‌کند و سود/زیان را حساب می‌کند.</p>
-        <p><strong>۳. ریسک:</strong> سقف ضرر روزانه، توقف بعد از ضررهای متوالی، و احتساب کارمزد/لغزش قیمت.</p>
-        <p><strong>۴. اعتبارسنجی:</strong> تست روی BTC / ETH / SOL و تست تکه‌تکه زمانی (Walk-Forward).</p>
-        <p><strong>۵. Paper:</strong> قیمت زنده را می‌خواند و فقط می‌گوید سیگنال هست یا نه.</p>
-        <p><strong>۶. این صفحه:</strong> دموی عمومی AJV برای دیدن وضعیت زنده و توضیح کامل پروژه.</p>
-      </div>
-    </section>
-
-    <section id="results">
-      <div class="sec-kicker">BACKTEST</div>
-      <h3 class="sec-title">نتیجه آزمایش روی گذشته</h3>
-      <p class="sec-lead">
-        فرض: شروع با ۱۰٬۰۰۰ تتر · تایم‌فریم ۴ ساعته · با احتساب کارمزد و لغزش.
-        بازه بیت‌کوین: 2024-11-10 → 2026-11-10. سبز = سود آزمایشی، قرمز = زیان آزمایشی.
+        فرض مشترک همه تست‌ها: شروع با ۱۰٬۰۰۰ تتر · چارت ۴ ساعته · با احتساب هزینه معامله.
+        بازه بیت‌کوین: 2024-11-10 → 2026-11-10.
       </p>
       <div class="kpi-strip">
-        <div class="kpi"><span>سود/زیان آزمایشی BTC</span><b class="up">+1,068</b></div>
-        <div class="kpi"><span>چند درصد معامله‌ها سود شد</span><b>50%</b></div>
-        <div class="kpi"><span>نسبت کل سود به کل ضرر</span><b>1.91</b></div>
-        <div class="kpi"><span>سرمایه نهایی فرضی</span><b>11,044</b></div>
+        <div class="kpi"><span>BTC · نتیجه اصلی</span><b class="up">+1,068</b></div>
+        <div class="kpi"><span>ETH · بررسی مقایسه‌ای</span><b class="down">-450</b></div>
+        <div class="kpi"><span>SOL · بررسی مقایسه‌ای</span><b class="up">+199</b></div>
+        <div class="kpi"><span>BTC · سرمایه نهایی فرضی</span><b>11,044</b></div>
       </div>
-      <div class="table-shell">
-        <table>
-          <thead>
-            <tr>
-              <th>ارز</th><th>سود/زیان</th><th>درصد برد</th><th>تعداد معامله</th><th>قدرت سود</th><th>بیشترین افت</th><th>سرمایه نهایی</th>
-            </tr>
-          </thead>
-          <tbody>
-            
-        <tr class="featured">
-          <td><strong>BTC</strong><span class="muted"> /USDT · 4H</span></td>
-          <td class="mono up">+1,067.84</td>
-          <td class="mono">50.0%</td>
-          <td class="mono">22</td>
-          <td class="mono">1.91</td>
-          <td class="mono">2.12%</td>
-          <td class="mono">11,044</td>
-        </tr>
+      <div class="result-cards">
         
-        <tr class="">
-          <td><strong>ETH</strong><span class="muted"> /USDT · 4H</span></td>
-          <td class="mono down">-450.04</td>
-          <td class="mono">27.3%</td>
-          <td class="mono">22</td>
-          <td class="mono">0.72</td>
-          <td class="mono">6.42%</td>
-          <td class="mono">9,534</td>
-        </tr>
+        <article class="result-card featured">
+          <div class="result-top">
+            <strong>بیت‌کوین</strong>
+            <span>تمرکز اصلی فاز ۱</span>
+          </div>
+          <div class="result-pnl up">+1,068 USDT</div>
+          <div class="result-grid">
+            <div><span>درصد برد</span><b>50%</b></div>
+            <div><span>تعداد معامله</span><b>22</b></div>
+            <div><span>قدرت سود</span><b>1.91</b></div>
+            <div><span>بیشترین افت</span><b>2.1%</b></div>
+          </div>
+        </article>
         
-        <tr class="">
-          <td><strong>SOL</strong><span class="muted"> /USDT · 4H</span></td>
-          <td class="mono up">+199.45</td>
-          <td class="mono">41.7%</td>
-          <td class="mono">12</td>
-          <td class="mono">1.29</td>
-          <td class="mono">5.01%</td>
-          <td class="mono">10,190</td>
-        </tr>
+        <article class="result-card">
+          <div class="result-top">
+            <strong>اتریوم</strong>
+            <span>بررسی مقایسه‌ای روی ارز مهم دیگر</span>
+          </div>
+          <div class="result-pnl down">-450 USDT</div>
+          <div class="result-grid">
+            <div><span>درصد برد</span><b>27%</b></div>
+            <div><span>تعداد معامله</span><b>22</b></div>
+            <div><span>قدرت سود</span><b>0.72</b></div>
+            <div><span>بیشترین افت</span><b>6.4%</b></div>
+          </div>
+        </article>
         
-          </tbody>
-        </table>
+        <article class="result-card">
+          <div class="result-top">
+            <strong>سولانا</strong>
+            <span>بررسی مقایسه‌ای روی ارز مهم دیگر</span>
+          </div>
+          <div class="result-pnl up">+199 USDT</div>
+          <div class="result-grid">
+            <div><span>درصد برد</span><b>42%</b></div>
+            <div><span>تعداد معامله</span><b>12</b></div>
+            <div><span>قدرت سود</span><b>1.29</b></div>
+            <div><span>بیشترین افت</span><b>5.0%</b></div>
+          </div>
+        </article>
+        
       </div>
-      <div class="prose" style="margin-top:16px">
+      <div class="prose">
         <p>
-          روی <strong>بیت‌کوین</strong> بهتر جواب داده: حدود +1,068 سود آزمایشی و سرمایه نهایی حدود 11,044.
-          روی اتریوم ضعیف‌تر است. پس این منطق هنوز برای همه ارزها ثابت نشده و باید محتاط باشیم.
+          جمع‌بندی فاز ۱: روی <strong>بیت‌کوین</strong> نتیجه امیدوارکننده‌تر بوده
+          (حدود +1,068 سود آزمایشی، درصد برد حدود 50%، قدرت سود 1.91).
+          روی <strong>اتریوم</strong> و <strong>سولانا</strong> هم بررسی کرده‌ایم تا فقط به یک ارز وابسته نباشیم؛
+          ولی نتیجه روی همه یکسان نیست. فعلاً بیت‌کوین بهتر از بقیه جواب داده.
         </p>
+        <div class="callout">
+          مهم: این عددها آزمایش روی گذشته‌اند، نه سود واقعی در حساب صرافی.
+        </div>
       </div>
-    </section>
 
-    <section id="validation">
-      <div class="sec-kicker">VALIDATION</div>
-      <h3 class="sec-title">آیا نتیجه فقط شانس یک دوره بود؟</h3>
+      <h3 class="sec-title" id="validation" style="font-size:1.35rem; margin-top:28px">پایداری نتیجه روی بیت‌کوین</h3>
       <p class="sec-lead">
-        تاریخ را تکه‌تکه کرده‌ایم (حدود ۹۰ روزه) تا ببینیم نتیجه پایدار است یا نه.
-        فعلاً 4 از 8 تکه مثبت شده — امیدوارکننده است، ولی هنوز کامل یکدست نیست.
+        تاریخ را تکه‌تکه کرده‌ایم (حدود ۹۰ روزه) تا ببینیم نتیجه فقط شانس یک دوره نبوده.
+        فعلاً 4 از 8 تکه مثبت شده.
       </p>
       <div class="table-shell">
         <table>
@@ -754,62 +696,171 @@
           </tbody>
         </table>
       </div>
-    </section>
 
-    <section id="not">
-      <div class="sec-kicker">LIMITS</div>
-      <h3 class="sec-title">صریح بگوییم چه چیزی نیست</h3>
-      <div class="prose">
-        <p><strong>تضمین سود نیست.</strong> آینده بازار را کسی قطعی نمی‌داند.</p>
-        <p><strong>ربات پول‌ساز زنده نیست.</strong> هنوز چیزی در صرافی نمی‌خرد و نمی‌فروشد.</p>
-        <p><strong>محصول نهایی نیست.</strong> هنوز فاز تحقیق و ساخت هسته است.</p>
-        <p><strong>برای همه ارزها اثبات نشده.</strong> فعلاً بیت‌کوین بهتر از بقیه بوده.</p>
+      <h3 class="sec-title" style="font-size:1.35rem; margin-top:28px">جزئیات عددی همه ارزها</h3>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>ارز</th><th>سود/زیان</th><th>درصد برد</th><th>تعداد معامله</th><th>قدرت سود</th><th>بیشترین افت</th><th>سرمایه نهایی</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+        <tr class="featured">
+          <td><strong>بیت‌کوین</strong><span class="muted"> (BTC)</span></td>
+          <td class="mono up">+1,067.84</td>
+          <td class="mono">50.0%</td>
+          <td class="mono">22</td>
+          <td class="mono">1.91</td>
+          <td class="mono">2.12%</td>
+          <td class="mono">11,044</td>
+        </tr>
+        
+        <tr class="">
+          <td><strong>اتریوم</strong><span class="muted"> (ETH)</span></td>
+          <td class="mono down">-450.04</td>
+          <td class="mono">27.3%</td>
+          <td class="mono">22</td>
+          <td class="mono">0.72</td>
+          <td class="mono">6.42%</td>
+          <td class="mono">9,534</td>
+        </tr>
+        
+        <tr class="">
+          <td><strong>سولانا</strong><span class="muted"> (SOL)</span></td>
+          <td class="mono up">+199.45</td>
+          <td class="mono">41.7%</td>
+          <td class="mono">12</td>
+          <td class="mono">1.29</td>
+          <td class="mono">5.01%</td>
+          <td class="mono">10,190</td>
+        </tr>
+        
+          </tbody>
+        </table>
+      </div>
+
+      <div class="split" style="margin-top:22px">
+        <div class="block">
+          <h4>در فاز ۱ انجام شد</h4>
+          <ul>
+            <li>ساخت هسته قوانین و بک‌تست</li>
+            <li>بررسی BTC + ETH + SOL</li>
+            <li>ریسک و هزینه معامله</li>
+            <li>مانیتور زنده فقط‌خواندنی</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>عمداً انجام نشد</h4>
+          <ul>
+            <li>خرید و فروش واقعی</li>
+            <li>تضمین سود</li>
+            <li>ادعای آماده‌بودن برای همه ارزها</li>
+            <li>محصول نهایی کاربرپسند کامل</li>
+          </ul>
+        </div>
       </div>
     </section>
 
-    <section id="words">
-      <div class="sec-kicker">WORDS</div>
-      <h3 class="sec-title">معنی واژه‌های سخت</h3>
-      <p class="sec-lead">اگر جایی اصطلاحی دیدی و نفهمیدی، همین‌جا معنیش هست.</p>
+    <section class="chapter" id="learn">
+      <div class="chapter-head">
+        <div>
+          <div class="chapter-badge">SECTION C · LEARN</div>
+          <h2>آموزش: سیستم چطور فکر می‌کند؟</h2>
+        </div>
+        <p>اگر تازه واردی و می‌خواهی منطق کار را بفهمی، این بخش برای توست. از نتایج فاز ۱ جداست.</p>
+      </div>
+
+      <h3 class="sec-title" style="font-size:1.35rem">چک‌لیست ۴ مرحله‌ای ورود</h3>
+      <p class="sec-lead">اگر حتی یک مرحله برقرار نباشد، سیستم وارد معامله نمی‌شود.</p>
+      <div class="pipeline" style="margin-bottom:18px">
+        <div class="pipe">
+          <div class="n">01</div>
+          <h4>تله قیمت</h4>
+          <p>قیمت یک لحظه از سقف یا کف مهم رد می‌شود و سریع برمی‌گردد.</p>
+        </div>
+        <div class="pipe">
+          <div class="n">02</div>
+          <h4>تأیید جهت</h4>
+          <p>ساختار چارت می‌شکند؛ احتمال عوض شدن جهت بالاتر می‌رود.</p>
+        </div>
+        <div class="pipe">
+          <div class="n">03</div>
+          <h4>ورود کنترل‌شده</h4>
+          <p>حد ضرر مشخص؛ هدف سود حدود ۲ برابر ریسک؛ حجم با ۱٪ حساب.</p>
+        </div>
+        <div class="pipe">
+          <div class="n">04</div>
+          <h4>فیلتر نهایی</h4>
+          <p>فقط اگر جهت روزانه و ساعت بازار مناسب باشد.</p>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-no">۱</div>
+          <div>
+            <h4>شکار نقدینگی</h4>
+            <p>گاهی بازار برای فعال‌کردن سفارش‌های پشت یک سقف/کف، یک لحظه از آن رد می‌شود و برمی‌گردد. سیستم دنبال همین حرکت است.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-no">۲</div>
+          <div>
+            <h4>تأیید تغییر جهت</h4>
+            <p>برگشت به‌تنهایی کافی نیست؛ باید ساختار قبلی چارت هم بشکند.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-no">۳</div>
+          <div>
+            <h4>ورود با سقف ضرر</h4>
+            <p>حد ضرر پشت همان نقطه گذاشته می‌شود تا اگر اشتباه بود، ضرر بزرگ نشود.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-no">۴</div>
+          <div>
+            <h4>فیلتر کیفیت</h4>
+            <p>اگر جهت روزانه مخالف باشد یا چند ضرر پشت‌سرهم خورده باشد، دست نگه می‌دارد.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sec-title" id="words" style="font-size:1.35rem; margin-top:28px">معنی واژه‌ها</h3>
       <div class="glossary">
-        <div class="term"><h4>بک‌تست</h4><p>امتحان استراتژی روی قیمت‌های گذشته، مثل بازپخش فیلم بازی‌های قبلی.</p></div>
-        <div class="term"><h4>سیگنال</h4><p>پیامی که می‌گوید الان شرایط ورود به معامله از نظر قوانین سیستم برقرار است.</p></div>
-        <div class="term"><h4>حد ضرر (SL)</h4><p>خط قرمز خروج؛ اگر قیمت به آنجا برسد معامله بسته می‌شود تا ضرر بزرگ نشود.</p></div>
-        <div class="term"><h4>حد سود (TP)</h4><p>هدف قیمتی برای بستن معامله با سود.</p></div>
-        <div class="term"><h4>Win Rate</h4><p>از هر ۱۰۰ معامله، چندتایش سود بوده.</p></div>
-        <div class="term"><h4>Max Drawdown</h4><p>بیشترین افت سرمایه از قله تا دره در طول آزمایش.</p></div>
-        <div class="term"><h4>Profit Factor</h4><p>جمع سودها تقسیم بر جمع ضررها. بالاتر از ۱ یعنی سود کل بیشتر از ضرر کل بوده.</p></div>
-        <div class="term"><h4>Paper Trading</h4><p>تمرین با سیگنال واقعی بازار، بدون گذاشتن پول واقعی.</p></div>
-        <div class="term"><h4>Rule-based</h4><p>سیستم فقط وقتی عمل می‌کند که قانون از قبل نوشته‌شده برقرار باشد؛ نه با حس شخصی.</p></div>
-        <div class="term"><h4>Walk-Forward</h4><p>تست تکه‌تکه روی بازه‌های زمانی مختلف، برای اینکه ببینیم نتیجه اتفاقی یک دوره نبوده.</p></div>
+        <div class="term"><h4>بک‌تست</h4><p>امتحان استراتژی روی قیمت‌های گذشته.</p></div>
+        <div class="term"><h4>سیگنال</h4><p>یعنی شرایط ورود از نظر قوانین سیستم برقرار است.</p></div>
+        <div class="term"><h4>حد ضرر</h4><p>خط قرمز خروج برای اینکه ضرر بزرگ نشود.</p></div>
+        <div class="term"><h4>حد سود</h4><p>هدف قیمتی برای بستن معامله با سود.</p></div>
+        <div class="term"><h4>درصد برد</h4><p>از هر ۱۰۰ معامله، چندتایش سود بوده.</p></div>
+        <div class="term"><h4>بیشترین افت</h4><p>بدترین افت سرمایه از قله تا دره در طول آزمایش.</p></div>
+        <div class="term"><h4>قدرت سود</h4><p>جمع سودها ÷ جمع ضررها. بالای ۱ یعنی سود کل بیشتر بوده.</p></div>
+        <div class="term"><h4>Paper</h4><p>تمرین با بازار واقعی، بدون پول واقعی.</p></div>
       </div>
-    </section>
 
-    <section id="roadmap">
-      <div class="sec-kicker">NEXT</div>
-      <h3 class="sec-title">بعدش چی؟</h3>
+      <h3 class="sec-title" id="roadmap" style="font-size:1.35rem; margin-top:28px">مسیر بعدی</h3>
       <div class="roadmap">
         <div class="road">
           <div class="tag done">انجام شده</div>
-          <p><strong>فاز ۱:</strong> ساخت هسته قوانین، تست روی گذشته، مدیریت ریسک، و این صفحه معرفی</p>
+          <p><strong>فاز ۱:</strong> هسته قوانین، تست روی BTC/ETH/SOL، ریسک، مانیتور زنده</p>
         </div>
         <div class="road">
           <div class="tag now">الان</div>
-          <p><strong>رصد آزمایشی:</strong> چند روز سیگنال‌ها را بدون پول واقعی نگاه می‌کنیم</p>
+          <p><strong>رصد آزمایشی:</strong> نگاه به سیگنال‌ها بدون پول واقعی</p>
         </div>
         <div class="road">
           <div class="tag next">بعدی</div>
-          <p><strong>حساب تست:</strong> اگر کیفیت خوب بود، سفارش آزمایشی روی حساب دمو (هنوز بدون پول واقعی)</p>
+          <p><strong>حساب تست:</strong> اگر کیفیت خوب بود، سفارش آزمایشی روی دمو</p>
         </div>
         <div class="road">
           <div class="tag next">آینده</div>
-          <p><strong>نسخه جدی‌تر:</strong> فقط اگر آمار پایدار بود — داشبورد، هشدار، و اتصال امن‌تر</p>
+          <p><strong>نسخه جدی‌تر:</strong> فقط اگر آمار پایدار بود</p>
         </div>
       </div>
       <div class="disclaimer">
-        این صفحه توصیه سرمایه‌گذاری نیست و تضمین سود نمی‌دهد.
-        فقط وضعیت پروژه <strong>AJV</strong> (Amir · Javid · Vahid) را نشان می‌دهد:
-        چه ساخته شده، الان کجا هستیم، و نتیجه آزمایش اولیه چه بوده است.
+        این صفحه توصیه سرمایه‌گذاری نیست.
+        فقط نشان می‌دهد تیم <strong>AJV</strong> در فاز ۱ چه کرده و به چه نتایج آزمایشی رسیده است.
         حالت فعلی: فقط‌خواندنی — سفارش واقعی ارسال نمی‌شود.
       </div>
     </section>
