@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# Large / regenerable market data (keep sample + small outputs)
+data/*usdt*.csv
+data/btc_*.csv
+data/eth_*.csv
+data/sol_*.csv
+data/paper_signals.csv
+data/paper_state.json
+data/validation/
+data/trades.csv
+
+# Keep tiny sample dataset
+!data/sample_ohlcv.csv
