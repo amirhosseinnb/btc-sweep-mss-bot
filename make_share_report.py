@@ -113,8 +113,9 @@ def main() -> None:
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AJV — سیستم معاملاتی قانون‌محور ICT/SMC با بک‌تست، مدیریت ریسک و مانیتور زنده فقط‌خواندنی. Amir · Javid · Vahid." />
-  <title>AJV — Rule-Based Crypto Execution Research</title>
+  <meta name="description" content="AJV (Amir · Javid · Vahid) — سیستم معاملاتی قانون‌محور برای کریپتو با بک‌تست، مدیریت ریسک و مانیتور زنده فقط‌خواندنی." />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>AJV — Amir · Javid · Vahid</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Sora:wght@500;600;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -189,18 +190,19 @@ def main() -> None:
       display: flex; align-items: center; gap: 12px;
     }}
     .mark {{
-      width: 36px; height: 36px; border-radius: 10px;
+      width: 40px; height: 40px; border-radius: 10px;
       background: linear-gradient(145deg, var(--accent), #1a8f8a);
-      position: relative;
+      display: grid; place-items: center;
+      font-family: "Sora", sans-serif; font-weight: 700; font-size: 0.72rem;
+      color: #041214; letter-spacing: 0.04em;
     }}
-    .mark::after {{
-      content: ""; position: absolute; inset: 9px 8px;
-      border-right: 2.5px solid #061014; border-bottom: 2.5px solid #061014;
-      transform: skewX(-16deg);
+    .logo-text strong {{
+      display: block;
+      font-family: "Sora", sans-serif; font-size: 1.2rem; font-weight: 700;
+      letter-spacing: 0.12em;
     }}
-    .logo strong {{
-      font-family: "Sora", sans-serif; font-size: 1.05rem; font-weight: 700;
-      letter-spacing: 0.08em;
+    .logo-text span {{
+      display: block; color: var(--muted); font-size: 0.78rem; margin-top: 2px;
     }}
     .status-pill {{
       display: inline-flex; align-items: center; gap: 8px;
@@ -498,8 +500,11 @@ def main() -> None:
 
     <div class="topbar">
       <div class="logo">
-        <div class="mark" aria-hidden="true"></div>
-        <strong>AJV</strong>
+        <div class="mark" aria-hidden="true">AJV</div>
+        <div class="logo-text">
+          <strong>AJV</strong>
+          <span>Amir · Javid · Vahid</span>
+        </div>
       </div>
       <div class="status-pill" id="statusChip"><i></i> CONNECTING</div>
     </div>
@@ -507,12 +512,12 @@ def main() -> None:
     <div class="hero-content">
       <h1 class="hero-brand"><span>AMIR · JAVID · VAHID</span>AJV</h1>
       <p class="hero-line">
-        سیستم معاملاتی قانون‌محور برای کریپتو — با منطق ICT/SMC، مدیریت ریسک سخت‌گیرانه،
-        و مانیتور زنده فقط‌خواندنی.
+        پروژهٔ مشترک امیر، جاوید و وحید برای ساخت یک سیستم معاملاتی کریپتو
+        که با قانون مشخص کار می‌کند — نه با حدس و هیجان.
       </p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#live">ورود به ترمینال زنده</a>
-        <a class="btn btn-ghost" href="#method">مشاهده متدولوژی</a>
+        <a class="btn btn-primary" href="#live">وضعیت زنده بازار</a>
+        <a class="btn btn-ghost" href="#why">این پروژه چیست؟</a>
       </div>
     </div>
   </header>
@@ -556,131 +561,129 @@ def main() -> None:
 
     <section id="why">
       <div class="sec-kicker">PURPOSE</div>
-      <h3 class="sec-title">هدف این پروژه چیست؟</h3>
+      <h3 class="sec-title">AJV چیست؟</h3>
       <div class="prose">
         <p>
-          هدف نهایی ساخت یک سیستم معاملاتی است که <strong>با قانون مشخص</strong> کار کند؛
-          نه با حس و حال لحظه‌ای. اول روی داده‌های گذشته امتحان می‌شود، بعد اگر نتیجه پایدار بود،
-          کم‌کم به حالت نیمه‌خودکار و در آینده شاید معامله واقعی می‌رسد.
+          <strong>AJV</strong> مخفف اسم سه نفر تیم است: <strong>Amir · Javid · Vahid</strong>.
+          هدف‌شان ساخت یک سیستم معاملاتی است که فقط وقتی وارد شود که <strong>قانون از قبل نوشته‌شده</strong> برقرار باشد؛
+          نه وقتی حال کسی خوب است یا از ضرر قبلی عصبانی است.
         </p>
         <p>
-          خیلی از تریدرها تصمیم لحظه‌ای می‌گیرند، زود هیجان‌زده می‌شوند، یا بعد از چند ضرر انتقام می‌گیرند.
-          AJV می‌خواهد تصمیم را به یک <strong>چک‌لیست قابل‌اندازه‌گیری</strong> تبدیل کند.
+          مسیر کار ساده است: اول منطق را روی داده‌های گذشته بازار تست می‌کنیم.
+          اگر نتیجه پایدار بود، بعداً به حالت آزمایشی (بدون پول واقعی) می‌رویم.
+          معامله واقعی فقط وقتی مطرح می‌شود که آمار واقعاً قابل‌اتکا باشد.
         </p>
         <p>
-          الان در <strong>فاز ۱</strong> هستیم: تحقیق و آزمایش. هنوز پول واقعی وارد بازار نشده و
-          سیستم سفارش واقعی به صرافی نمی‌فرستد. صفحه آنلاین است و حدوداً هر ۲ ساعت از بازار آپدیت می‌شود،
-          ولی فقط برای خواندن قیمت و سیگنال آزمایشی.
+          الان <strong>فاز ۱</strong> است: تحقیق و آزمایش. پول واقعی در صرافی نیست.
+          این صفحه آنلاین است و حدوداً هر ۲ ساعت قیمت بازار را می‌خواند،
+          ولی فقط برای نمایش وضعیت — <strong>سفارش واقعی ارسال نمی‌شود</strong>.
         </p>
         <div class="callout">
-          مثل ساخت موتور: اول روی میز تست می‌شود، بعد جاده آزمایشی، و فقط اگر ایمن بود می‌رود خیابان.
-          AJV الان در مرحلهٔ تست روی میز است.
+          مثل تست موتور روی میز کارگاه: هنوز وارد خیابان نشده‌ایم.
         </div>
       </div>
     </section>
 
     <section id="scope">
       <div class="sec-kicker">SCOPE</div>
-      <h3 class="sec-title">این نسخه شامل چیست؟</h3>
-      <p class="sec-lead">مرزهای شفاف فاز ۱ — چه چیزی داخل است و چه چیزی هنوز نه.</p>
+      <h3 class="sec-title">الان دقیقاً چه کار می‌کند؟</h3>
+      <p class="sec-lead">مرز فاز ۱ را شفاف بگوییم: چه چیزی هست و چه چیزی هنوز نیست.</p>
       <div class="split">
         <div class="block">
-          <h4>فعال در فاز ۱</h4>
+          <h4>الان فعال است</h4>
           <ul>
             <li><strong>بازار:</strong> کریپتو — تمرکز اصلی روی بیت‌کوین</li>
-            <li><strong>تایم‌فریم:</strong> کندل‌های ۴ ساعته</li>
-            <li><strong>نوع سیستم:</strong> قانون‌محور (Rule-based)، نه مدل پیش‌بینی جادویی</li>
-            <li><strong>خروجی:</strong> سیگنال آزمایشی + گزارش سود/زیان روی گذشته</li>
-            <li><strong>اتصال صرافی:</strong> فقط خواندن قیمت برای Paper</li>
-            <li><strong>آپدیت زنده:</strong> حدوداً هر ۲ ساعت روی این صفحه</li>
-            <li><strong>زبان ساخت:</strong> پایتون با تمرکز روی بک‌تست آفلاین</li>
+            <li><strong>چارت:</strong> کندل ۴ ساعته</li>
+            <li><strong>روش:</strong> قانون‌محور (نه هوش مصنوعی پیش‌بینی‌کننده)</li>
+            <li><strong>خروجی:</strong> سیگنال آزمایشی + نتیجه بک‌تست</li>
+            <li><strong>صرافی:</strong> فقط خواندن قیمت</li>
+            <li><strong>آپدیت صفحه:</strong> حدوداً هر ۲ ساعت</li>
           </ul>
         </div>
         <div class="block">
-          <h4>خارج از محدوده</h4>
+          <h4>الان انجام نمی‌دهد</h4>
           <ul>
-            <li>ارسال سفارش واقعی به صرافی</li>
-            <li>تضمین سود یا سیگنال فروش</li>
-            <li>ادعای اثبات‌شدگی روی همهٔ آلت‌کوین‌ها</li>
-            <li>داشبورد عملیاتی کامل / هشدار موبایل</li>
+            <li>خرید و فروش واقعی در صرافی</li>
+            <li>وعده یا تضمین سود</li>
+            <li>ادعای اینکه روی همه ارزها عالی کار می‌کند</li>
+            <li>اپ موبایل یا هشدار کامل</li>
           </ul>
         </div>
       </div>
       <div class="pillars" style="margin-top:18px">
         <div class="pillar">
-          <strong>Rule Engine</strong>
-          <p>تشخیص Sweep، MSS، فیلتر HTF و سشن لندن/نیویورک با قوانین ثابت و قابل‌بازتولید.</p>
+          <strong>موتور قوانین</strong>
+          <p>وقتی شرایط Sweep و تغییر ساختار برقرار باشد و فیلترها OK باشند، سیگنال می‌دهد.</p>
         </div>
         <div class="pillar">
-          <strong>Risk Layer</strong>
-          <p>ریسک ۱٪ در هر معامله، R:R حداقل ۲، سقف ضرر روزانه و توقف پس از ضررهای متوالی.</p>
+          <strong>مدیریت ریسک</strong>
+          <p>هر معامله حداکثر ۱٪ سرمایه. هدف سود حدود ۲ برابر ریسک. اگر روز بد باشد، متوقف می‌شود.</p>
         </div>
         <div class="pillar">
-          <strong>Paper Monitor</strong>
-          <p>خواندن قیمت زنده، ثبت سیگنال آزمایشی، بدون ارسال سفارش به صرافی.</p>
+          <strong>مانیتور Paper</strong>
+          <p>قیمت زنده را می‌بیند و سیگنال آزمایشی ثبت می‌کند؛ بدون سفارش واقعی.</p>
         </div>
       </div>
     </section>
 
     <section id="method">
       <div class="sec-kicker">METHODOLOGY</div>
-      <h3 class="sec-title">منطق ورود به زبان ساده</h3>
+      <h3 class="sec-title">چطور سیگنال می‌دهد؟</h3>
       <p class="sec-lead">
-        سیستم دنبال یک سناریوی تکراری در چارت می‌گردد. اگر هر مرحله برقرار نباشد، سیگنال صادر نمی‌شود.
+        چهار شرط پشت‌سرهم. اگر حتی یکی برقرار نباشد، ورود نمی‌کند.
       </p>
       <div class="pipeline" style="margin-bottom:18px">
         <div class="pipe">
           <div class="n">01</div>
-          <h4>Liquidity Sweep</h4>
-          <p>نفوذ کوتاه به سقف/کف نقدینگی و برگشت سریع.</p>
+          <h4>Sweep</h4>
+          <p>قیمت یک لحظه سقف/کف مهم را رد می‌کند و برمی‌گردد.</p>
         </div>
         <div class="pipe">
           <div class="n">02</div>
-          <h4>Market Structure Shift</h4>
-          <p>شکست ساختار قبلی به‌عنوان تأیید تغییر جهت.</p>
+          <h4>MSS</h4>
+          <p>ساختار قبلی بازار می‌شکند و جهت احتمالی عوض می‌شود.</p>
         </div>
         <div class="pipe">
           <div class="n">03</div>
-          <h4>Risk-Defined Entry</h4>
-          <p>ورود با حد ضرر پشت sweep و هدف حدود ۲× ریسک.</p>
+          <h4>ورود</h4>
+          <p>حد ضرر مشخص، هدف حدود ۲ برابر ریسک، حجم با ۱٪ حساب.</p>
         </div>
         <div class="pipe">
           <div class="n">04</div>
-          <h4>Quality Filters</h4>
-          <p>هم‌سویی با بایاس روزانه و پنجرهٔ سشن فعال.</p>
+          <h4>فیلتر</h4>
+          <p>فقط در جهت روزانه و در سشن لندن/نیویورک.</p>
         </div>
       </div>
       <div class="steps">
         <div class="step">
           <div class="step-no">۱</div>
           <div>
-            <h4>شکار نقدینگی (Liquidity Sweep)</h4>
-            <p>قیمت برای لحظه‌ای از یک سقف یا کف مهم رد می‌شود تا سفارش‌های پشت آن را فعال کند، بعد برمی‌گردد.
-            مثل این می‌ماند که بازار اول یک تله بزند و بعد مسیر اصلی را نشان بدهد.</p>
+            <h4>شکار نقدینگی</h4>
+            <p>بازار گاهی برای فعال‌کردن سفارش‌های پشت یک سقف یا کف، یک لحظه از آن رد می‌شود و سریع برمی‌گردد.
+            سیستم دنبال همین حرکت است.</p>
           </div>
         </div>
         <div class="step">
           <div class="step-no">۲</div>
           <div>
-            <h4>تغییر ساختار (MSS)</h4>
-            <p>بعد از آن برگشت، اگر قیمت ساختار قبلی بازار را بشکند، سیستم می‌گوید «احتمالاً جهت عوض شده»
-            و تازه اینجا به فکر ورود می‌افتد.</p>
+            <h4>تأیید تغییر جهت</h4>
+            <p>برگشت کافی نیست. باید ساختار قبلی چارت هم بشکند تا سیستم بگوید «احتمال تغییر جهت بالاست».</p>
           </div>
         </div>
         <div class="step">
           <div class="step-no">۳</div>
           <div>
-            <h4>ورود با ریسک کنترل‌شده</h4>
-            <p>اگر وارد شود، حد ضرر پشت همان نقطهٔ شکار نقدینگی است و هدف سود حدود ۲ برابر ریسک است.
-            در هر معامله فقط ۱٪ کل سرمایه ریسک می‌شود؛ یعنی اگر اشتباه باشد، کل حساب را خراب نکند.</p>
+            <h4>ورود با سقف ضرر مشخص</h4>
+            <p>حد ضرر پشت همان نقطهٔ شکار نقدینگی گذاشته می‌شود. هدف سود حدود ۲ برابر همان ریسک است.
+            اگر اشتباه باشد، فقط بخش کوچکی از حساب آسیب می‌بیند.</p>
           </div>
         </div>
         <div class="step">
           <div class="step-no">۴</div>
           <div>
             <h4>فیلتر کیفیت</h4>
-            <p>فقط وقتی وارد می‌شود که جهت کلی روزانه هم‌سو باشد و ساعت بازار در بازهٔ لندن/نیویورک باشد.
-            اگر روز بدی باشد یا چند ضرر پشت‌سرهم بخورد، موقتاً دست نگه می‌دارد تا معاملهٔ انتقام‌جویانه نکند.</p>
+            <p>اگر جهت روزانه مخالف باشد، یا سشن مناسب نباشد، یا چند ضرر پشت‌سرهم خورده باشد،
+            سیستم دست نگه می‌دارد.</p>
           </div>
         </div>
       </div>
@@ -688,23 +691,23 @@ def main() -> None:
 
     <section id="built">
       <div class="sec-kicker">BUILD</div>
-      <h3 class="sec-title">تا اینجا چه چیزهایی ساخته شده؟</h3>
+      <h3 class="sec-title">تا اینجا چه ساخته‌ایم؟</h3>
       <div class="prose">
-        <p><strong>۱. موتور استراتژی:</strong> تشخیص سقف و کف‌های مهم، شکار نقدینگی، تغییر ساختار، و صدور سیگنال ورود/خروج.</p>
-        <p><strong>۲. موتور بک‌تست:</strong> روی تاریخچهٔ قیمت، مثل یک شبیه‌ساز، معامله‌ها را یکی‌یکی اجرا می‌کند و حساب می‌کند چقدر سود یا ضرر می‌شد.</p>
-        <p><strong>۳. مدیریت ریسک:</strong> سقف ضرر روزانه، توقف بعد از چند ضرر متوالی، و کم‌کردن اثر خوش‌بینی با احتساب کارمزد و لغزش قیمت.</p>
-        <p><strong>۴. اعتبارسنجی:</strong> تست روی بیت‌کوین، اتریوم، سولانا + خردکردن تاریخ به بازه‌های جداگانه تا ببینیم نتیجه فقط شانس یک دوره نبوده.</p>
-        <p><strong>۵. حالت Paper:</strong> می‌تواند قیمت زنده را بخواند و فقط بگوید «الان سیگنال هست»؛ بدون اینکه واقعاً چیزی بخرد یا بفروشد.</p>
-        <p><strong>۶. این صفحهٔ دمو:</strong> ترمینال زنده + توضیح کامل پروژه برای اینکه مشخص باشد AJV چیست، کجا ایستاده، و قرار است به کجا برود.</p>
+        <p><strong>۱. موتور استراتژی:</strong> سقف/کف مهم، شکار نقدینگی، تغییر ساختار و صدور سیگنال را تشخیص می‌دهد.</p>
+        <p><strong>۲. بک‌تست:</strong> روی تاریخچه قیمت، معامله‌ها را شبیه‌سازی می‌کند و سود/زیان را حساب می‌کند.</p>
+        <p><strong>۳. ریسک:</strong> سقف ضرر روزانه، توقف بعد از ضررهای متوالی، و احتساب کارمزد/لغزش قیمت.</p>
+        <p><strong>۴. اعتبارسنجی:</strong> تست روی BTC / ETH / SOL و تست تکه‌تکه زمانی (Walk-Forward).</p>
+        <p><strong>۵. Paper:</strong> قیمت زنده را می‌خواند و فقط می‌گوید سیگنال هست یا نه.</p>
+        <p><strong>۶. این صفحه:</strong> دموی عمومی AJV برای دیدن وضعیت زنده و توضیح کامل پروژه.</p>
       </div>
     </section>
 
     <section id="results">
       <div class="sec-kicker">BACKTEST</div>
-      <h3 class="sec-title">نتایج آزمایشی یعنی چه؟</h3>
+      <h3 class="sec-title">نتیجه آزمایش روی گذشته</h3>
       <p class="sec-lead">
-        فرض آزمایش: شروع با ۱۰٬۰۰۰ USDT · کارمزد ۴bps · لغزش ۲bps · اسپرد ۲bps · تایم‌فریم ۴H.
-        بازه BTC: {btc_range}. عدد سبز یعنی در آن آزمایش سودآور بوده؛ قرمز یعنی زیان.
+        فرض: شروع با ۱۰٬۰۰۰ تتر · تایم‌فریم ۴ ساعته · با احتساب کارمزد و لغزش.
+        بازه بیت‌کوین: {btc_range}. سبز = سود آزمایشی، قرمز = زیان آزمایشی.
       </p>
       <div class="kpi-strip">
         <div class="kpi"><span>BTC Net PnL</span><b class="{_pnl_class(btc['pnl']) if btc else ''}">{headline_pnl}</b></div>
@@ -726,19 +729,18 @@ def main() -> None:
       </div>
       <div class="prose" style="margin-top:16px">
         <p>
-          روی <strong>بیت‌کوین</strong> نتیجه فعلاً امیدوارکننده‌تر است
-          (حدود {headline_pnl} سود آزمایشی و سرمایه نهایی حدود {btc_equity}).
-          روی اتریوم هنوز ضعیف است. یعنی این منطق فعلاً «برای همه ارزها عالی» نیست و باید محتاط باشیم.
+          روی <strong>بیت‌کوین</strong> بهتر جواب داده: حدود {headline_pnl} سود آزمایشی و سرمایه نهایی حدود {btc_equity}.
+          روی اتریوم ضعیف‌تر است. پس این منطق هنوز برای همه ارزها ثابت نشده و باید محتاط باشیم.
         </p>
       </div>
     </section>
 
     <section id="validation">
       <div class="sec-kicker">VALIDATION</div>
-      <h3 class="sec-title">تست تکه‌تکه (Walk-Forward)</h3>
+      <h3 class="sec-title">آیا نتیجه فقط شانس یک دوره بود؟</h3>
       <p class="sec-lead">
-        داده‌ها را تکه‌تکه کرده‌ایم (هر تکه حدود ۹۰ روز) تا ببینیم نتیجه فقط شانس یک بازه خاص نبوده.
-        فعلاً {positive_folds} از {total_folds} تکه مثبت شده؛ خوب است ولی هنوز یکنواخت کامل نیست.
+        تاریخ را تکه‌تکه کرده‌ایم (حدود ۹۰ روزه) تا ببینیم نتیجه پایدار است یا نه.
+        فعلاً {positive_folds} از {total_folds} تکه مثبت شده — امیدوارکننده است، ولی هنوز کامل یکدست نیست.
       </p>
       <div class="table-shell">
         <table>
@@ -754,12 +756,12 @@ def main() -> None:
 
     <section id="not">
       <div class="sec-kicker">LIMITS</div>
-      <h3 class="sec-title">این پروژه فعلاً چه چیزی نیست؟</h3>
+      <h3 class="sec-title">صریح بگوییم چه چیزی نیست</h3>
       <div class="prose">
-        <p><strong>سیگنال فروش تضمینی نیست.</strong> هیچ‌کس نمی‌تواند آینده بازار را قطعی بداند.</p>
-        <p><strong>ربات زندهٔ پول‌ساز نیست.</strong> هنوز سفارش واقعی نمی‌فرستد.</p>
-        <p><strong>محصول نهایی نیست.</strong> فاز اول تحقیق و ساخت هسته است.</p>
-        <p><strong>برای همه ارزها اثبات‌شده نیست.</strong> فعلاً بیت‌کوین بهتر از بقیه جواب داده.</p>
+        <p><strong>تضمین سود نیست.</strong> آینده بازار را کسی قطعی نمی‌داند.</p>
+        <p><strong>ربات پول‌ساز زنده نیست.</strong> هنوز چیزی در صرافی نمی‌خرد و نمی‌فروشد.</p>
+        <p><strong>محصول نهایی نیست.</strong> هنوز فاز تحقیق و ساخت هسته است.</p>
+        <p><strong>برای همه ارزها اثبات نشده.</strong> فعلاً بیت‌کوین بهتر از بقیه بوده.</p>
       </div>
     </section>
 
@@ -803,15 +805,16 @@ def main() -> None:
         </div>
       </div>
       <div class="disclaimer">
-        این صفحه تضمین سود نیست. فقط نشان می‌دهد تیم AJV (Amir · Javid · Vahid) چه چیزی ساخته،
-        چرا ساخته، الان کجای مسیر است، و در آزمایش اولیه به چه نتیجه‌ای رسیده است.
-        حالت فعلی: Paper / Read-only — سفارش واقعی ارسال نمی‌شود.
+        این صفحه توصیه سرمایه‌گذاری نیست و تضمین سود نمی‌دهد.
+        فقط وضعیت پروژه <strong>AJV</strong> (Amir · Javid · Vahid) را نشان می‌دهد:
+        چه ساخته شده، الان کجا هستیم، و نتیجه آزمایش اولیه چه بوده است.
+        حالت فعلی: فقط‌خواندنی — سفارش واقعی ارسال نمی‌شود.
       </div>
     </section>
 
     <footer>
-      <div><span class="brand-en">AJV</span> · Amir · Javid · Vahid · Phase 1 Research Demo</div>
-      <div>Read-only market sync · No live orders</div>
+      <div><span class="brand-en">AJV</span> · Amir · Javid · Vahid</div>
+      <div>Phase 1 · Read-only · No live orders</div>
     </footer>
   </div>
 
