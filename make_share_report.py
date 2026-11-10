@@ -318,6 +318,34 @@ def main() -> None:
       display: inline-block; padding: 2px 8px; border: 1px solid var(--line);
       font-size: 0.72rem; color: var(--accent);
     }}
+    .refresh-strip {{
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center;
+      padding: 14px 18px; border-top: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+    }}
+    .refresh-item span {{
+      display: block; color: var(--muted); font-size: 0.75rem; margin-bottom: 4px;
+    }}
+    .refresh-item b {{
+      font-family: "IBM Plex Mono", monospace; font-size: 1rem;
+      direction: ltr; unicode-bidi: plaintext; font-weight: 600;
+    }}
+    .refresh-btn {{
+      appearance: none; border: 1px solid rgba(63,208,201,0.45);
+      background: rgba(63,208,201,0.12); color: var(--accent);
+      padding: 12px 16px; font-family: "Vazirmatn", sans-serif; font-weight: 700;
+      font-size: 0.9rem; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease;
+      white-space: nowrap;
+    }}
+    .refresh-btn:hover:not(:disabled) {{
+      background: rgba(63,208,201,0.22); transform: translateY(-1px);
+    }}
+    .refresh-btn:disabled {{
+      opacity: 0.6; cursor: wait;
+    }}
+    .refresh-note {{
+      grid-column: 1 / -1; color: var(--muted); font-size: 0.78rem; margin: 0;
+    }}
 
     section {{ margin-top: 72px; }}
     .sec-kicker {{
@@ -500,12 +528,13 @@ def main() -> None:
     }}
 
     @media (max-width: 900px) {{
-      .term-grid, .pillars, .pipeline, .kpi-strip, .split, .road, .simple-grid {{
+      .term-grid, .pillars, .pipeline, .kpi-strip, .split, .road, .simple-grid, .refresh-strip {{
         grid-template-columns: 1fr;
       }}
       .term-metrics {{ border-left: 0; border-top: 1px solid var(--line); }}
       .hero-brand {{ font-size: clamp(2.8rem, 16vw, 4.5rem); }}
       .hero {{ min-height: 92vh; }}
+      .refresh-btn {{ width: 100%; }}
     }}
   </style>
 </head>
@@ -542,8 +571,11 @@ def main() -> None:
   <div class="wrap">
     <section class="terminal" id="live" aria-live="polite">
       <div class="term-bar">
-        <h2>وضعیت زنده بازار</h2>
-        <div class="term-meta">بیت‌کوین · چارت ۴ ساعته · آپدیت حدوداً هر ۲ ساعت</div>
+        <div>
+          <h2>وضعیت زنده بازار</h2>
+          <div class="term-meta">بیت‌کوین · چارت ۴ ساعته · همگام‌سازی خودکار هر ۲ ساعت</div>
+        </div>
+        <button type="button" class="refresh-btn" id="refreshBtn">به‌روزرسانی قیمت الان</button>
       </div>
       <div class="term-grid">
         <div class="signal-pane">
@@ -554,9 +586,23 @@ def main() -> None:
         <div class="term-metrics">
           <div class="metric"><span>قیمت زنده</span><b id="markPrice">—</b></div>
           <div class="metric"><span>آخرین قیمت بسته‌شده</span><b id="lastClose">—</b></div>
-          <div class="metric"><span>آخرین به‌روزرسانی</span><b id="updatedAt">—</b></div>
+          <div class="metric"><span>منبع قیمت</span><b id="priceSource">—</b></div>
           <div class="metric"><span>حالت سیستم</span><b id="systemMode">فقط نمایش</b></div>
         </div>
+      </div>
+      <div class="refresh-strip">
+        <div class="refresh-item">
+          <span>ساعت آخرین به‌روزرسانی</span>
+          <b id="updatedAt">—</b>
+        </div>
+        <div class="refresh-item">
+          <span>مانده تا آپدیت بعدی خودکار</span>
+          <b id="nextCountdown">—</b>
+        </div>
+        <p class="refresh-note">
+          دکمه «به‌روزرسانی قیمت الان» قیمت لحظه‌ای را مستقیم از بایننس می‌گیرد.
+          آپدیت کامل سیگنال‌ها همچنان حدوداً هر ۲ ساعت از سرور می‌آید.
+        </p>
       </div>
       <div class="term-foot">
         <span>این بخش فقط قیمت را می‌خواند. خرید و فروش واقعی انجام نمی‌شود.</span>
@@ -855,9 +901,56 @@ def main() -> None:
   </div>
 
   <script>
+    const PRICE_URLS = [
+      'https://data-api.binance.vision/api/v3/ticker/price?symbol=BTCUSDT',
+      'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT',
+    ];
+    let priceState = {{ value: null, at: 0, source: '—' }};
+
     function fmtPrice(v) {{
       return Number(v).toLocaleString('en-US', {{ maximumFractionDigits: 2 }}) + ' USDT';
     }}
+
+    function setPrice(value, atMs, source) {{
+      if (priceState.at && atMs < priceState.at) return;
+      priceState = {{ value, at: atMs, source }};
+      document.getElementById('markPrice').textContent = fmtPrice(value);
+      document.getElementById('priceSource').textContent = source;
+      document.getElementById('updatedAt').textContent = new Date(atMs).toLocaleString('fa-IR');
+    }}
+
+    function getNextScheduledUpdate(now) {{
+      const t = new Date(now.getTime());
+      t.setUTCSeconds(0, 0);
+      t.setUTCMilliseconds(0);
+      t.setUTCMinutes(17);
+      if (t <= now) {{
+        t.setUTCHours(t.getUTCHours() + 1);
+        t.setUTCMinutes(17);
+      }}
+      while (t.getUTCHours() % 2 !== 0) {{
+        t.setUTCHours(t.getUTCHours() + 1);
+        t.setUTCMinutes(17);
+      }}
+      return t;
+    }}
+
+    function fmtCountdown(ms) {{
+      if (ms < 0) ms = 0;
+      const total = Math.floor(ms / 1000);
+      const h = String(Math.floor(total / 3600)).padStart(2, '0');
+      const m = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
+      const s = String(total % 60).padStart(2, '0');
+      return h + ':' + m + ':' + s;
+    }}
+
+    function tickCountdown() {{
+      const el = document.getElementById('nextCountdown');
+      const next = getNextScheduledUpdate(new Date());
+      el.textContent = fmtCountdown(next - Date.now());
+      el.title = 'آپدیت بعدی حدوداً: ' + next.toLocaleString('fa-IR');
+    }}
+
     async function loadLive() {{
       const chip = document.getElementById('statusChip');
       const state = document.getElementById('signalState');
@@ -867,9 +960,9 @@ def main() -> None:
         if (!res.ok) throw new Error('missing');
         const data = await res.json();
         chip.innerHTML = '<i></i> آنلاین · وصل به بازار';
-        document.getElementById('markPrice').textContent = fmtPrice(data.mark_price);
+        const serverAt = new Date(data.updated_at_utc).getTime();
+        setPrice(Number(data.mark_price), serverAt, 'سرور · خودکار');
         document.getElementById('lastClose').textContent = fmtPrice(data.last_close);
-        document.getElementById('updatedAt').textContent = new Date(data.updated_at_utc).toLocaleString('fa-IR');
         document.getElementById('systemMode').textContent = data.orders_enabled ? 'معامله واقعی' : 'فقط نمایش';
         document.getElementById('ordersBadge').textContent = data.orders_enabled ? 'سفارش روشن' : 'سفارش خاموش';
         if (data.active_signal) {{
@@ -890,8 +983,43 @@ def main() -> None:
         detail.textContent = 'بعد از اولین آپدیت خودکار، اینجا قیمت و وضعیت نشان داده می‌شود.';
       }}
     }}
+
+    async function refreshPriceNow() {{
+      const btn = document.getElementById('refreshBtn');
+      btn.disabled = true;
+      btn.textContent = 'در حال دریافت...';
+      try {{
+        let price = null;
+        let lastErr = null;
+        for (const url of PRICE_URLS) {{
+          try {{
+            const res = await fetch(url, {{ cache: 'no-store' }});
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            price = Number(data.price);
+            if (!Number.isFinite(price)) throw new Error('bad price');
+            break;
+          }} catch (err) {{
+            lastErr = err;
+          }}
+        }}
+        if (price == null) throw lastErr || new Error('price fetch failed');
+        setPrice(price, Date.now(), 'بایننس · دستی');
+        document.getElementById('statusChip').innerHTML = '<i></i> آنلاین · قیمت دستی تازه‌شد';
+      }} catch (err) {{
+        document.getElementById('priceSource').textContent = 'خطا در رفرش';
+        alert('نتوانستیم قیمت لحظه‌ای را بگیریم. اینترنت یا دسترسی به بایننس را چک کن.');
+      }} finally {{
+        btn.disabled = false;
+        btn.textContent = 'به‌روزرسانی قیمت الان';
+      }}
+    }}
+
+    document.getElementById('refreshBtn').addEventListener('click', refreshPriceNow);
     loadLive();
+    tickCountdown();
     setInterval(loadLive, 60 * 1000);
+    setInterval(tickCountdown, 1000);
   </script>
 </body>
 </html>
