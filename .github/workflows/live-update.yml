@@ -29,8 +29,8 @@ jobs:
 
       - name: Commit and push live.json
         run: |
-          git config user.name "tr-bot-live"
-          git config user.email "tr-bot-live@users.noreply.github.com"
+          git config user.name "ajv-live"
+          git config user.email "ajv-live@users.noreply.github.com"
           git add docs/live.json share/live.json
           if git diff --staged --quiet; then
             echo "No changes to publish"
