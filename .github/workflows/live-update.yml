@@ -1,0 +1,42 @@
+name: Live market snapshot (read-only)
+
+on:
+  schedule:
+    # Every 2 hours
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Refresh live snapshot + report
+        run: |
+          python update_live_site.py
+          python make_share_report.py
+
+      - name: Commit and push docs
+        run: |
+          git config user.name "tr-bot-live"
+          git config user.email "tr-bot-live@users.noreply.github.com"
+          git add docs/live.json docs/index.html docs/.nojekyll share/live.json share/index.html data/paper_signals.csv || true
+          if git diff --staged --quiet; then
+            echo "No changes to publish"
+          else
+            git commit -m "chore: refresh read-only live market snapshot"
+            git push
+          fi

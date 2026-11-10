@@ -1,0 +1,54 @@
+{
+  "status": "online",
+  "mode": "read_only_paper",
+  "connected_to_market": true,
+  "orders_enabled": false,
+  "symbol": "BTCUSDT",
+  "timeframe": "4h",
+  "timezone": "America/New_York",
+  "updated_at_utc": "2026-11-10T14:19:54.600718+00:00",
+  "mark_price": 73841.47,
+  "last_closed_bar": "2026-11-10T07:00:00-05:00",
+  "last_close": 73841.47,
+  "bars_used": 2400,
+  "signals_total": 19,
+  "active_signal": null,
+  "recent_signals": [
+    {
+      "side": "long",
+      "entry": 79100.01,
+      "stop_loss": 75952.09,
+      "take_profit": 85395.85,
+      "bar_time": "2026-08-24T08:00:00-04:00"
+    },
+    {
+      "side": "long",
+      "entry": 81348.0,
+      "stop_loss": 76264.0,
+      "take_profit": 91516.0,
+      "bar_time": "2026-09-03T08:00:00-04:00"
+    },
+    {
+      "side": "long",
+      "entry": 77892.24,
+      "stop_loss": 76388.72,
+      "take_profit": 80899.28,
+      "bar_time": "2026-09-14T00:00:00-04:00"
+    },
+    {
+      "side": "long",
+      "entry": 80725.6,
+      "stop_loss": 75605.0,
+      "take_profit": 90966.8,
+      "bar_time": "2026-09-18T08:00:00-04:00"
+    },
+    {
+      "side": "short",
+      "entry": 77991.89,
+      "stop_loss": 81971.0,
+      "take_profit": 70033.67,
+      "bar_time": "2026-10-29T16:00:00-04:00"
+    }
+  ],
+  "note_fa": "اتصال فقط برای خواندن قیمت و سیگنال آزمایشی است؛ سفارش واقعی ارسال نمی‌شود."
+}

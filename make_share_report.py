@@ -196,6 +196,41 @@ def main() -> None:
       width: 8px; height: 8px; border-radius: 50%; background: var(--mint);
       box-shadow: 0 0 0 0 rgba(95, 224, 168, 0.7); animation: pulse 1.8s infinite;
     }}
+    .live-panel {{
+      border: 1px solid rgba(95, 224, 168, 0.28);
+      background:
+        linear-gradient(135deg, rgba(14, 40, 30, 0.95), rgba(8, 20, 14, 0.92)),
+        radial-gradient(500px 220px at 0% 0%, rgba(95, 224, 168, 0.14), transparent 60%);
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      animation: rise 0.75s ease both;
+    }}
+    .live-head {{
+      display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap;
+      margin-bottom: 12px;
+    }}
+    .live-head h2 {{ margin: 0; font-size: 1.15rem; }}
+    .live-grid {{
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;
+    }}
+    .live-metric {{
+      background: rgba(0,0,0,0.22); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+    }}
+    .live-metric span {{ display: block; color: var(--muted); font-size: 0.78rem; margin-bottom: 4px; }}
+    .live-metric b {{
+      font-family: "IBM Plex Mono", monospace; font-size: 1.05rem; direction: ltr; unicode-bidi: plaintext;
+    }}
+    .signal-box {{
+      margin-top: 12px; border-radius: 16px; padding: 14px; border: 1px dashed var(--line);
+      background: rgba(0,0,0,0.18); color: var(--muted);
+    }}
+    .signal-box.active {{
+      border-style: solid; border-color: rgba(182, 242, 109, 0.35);
+      background: rgba(182, 242, 109, 0.08); color: var(--text);
+    }}
+    .signal-box strong {{ color: var(--lime); }}
     .hero {{
       position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 28px;
       padding: clamp(24px, 4vw, 40px);
@@ -338,6 +373,7 @@ def main() -> None:
     @media (max-width: 800px) {{
       .hero-stats {{ grid-template-columns: 1fr; }}
       .road {{ grid-template-columns: 1fr; }}
+      .live-grid {{ grid-template-columns: 1fr 1fr; }}
       h1 {{ max-width: none; }}
     }}
   </style>
@@ -349,11 +385,31 @@ def main() -> None:
         <div class="mark" aria-hidden="true"></div>
         <div>
           <strong>TR BOT</strong>
-          <span>معرفی ساده پروژه · فاز ۱</span>
+          <span>معرفی ساده پروژه · فاز ۱ · آنلاین فقط‌خواندنی</span>
         </div>
       </div>
-      <div class="live-chip"><i></i> نسخهٔ آزمایشی</div>
+      <div class="live-chip" id="statusChip"><i></i> در حال اتصال...</div>
     </div>
+
+    <section class="live-panel" id="livePanel" aria-live="polite">
+      <div class="live-head">
+        <h2>وضعیت آنلاین بازار</h2>
+        <div class="live-chip"><i></i> آپدیت خودکار حدود هر ۲ ساعت</div>
+      </div>
+      <div class="live-grid">
+        <div class="live-metric"><span>قیمت زنده BTC</span><b id="markPrice">—</b></div>
+        <div class="live-metric"><span>آخرین کندل بسته‌شده</span><b id="lastClose">—</b></div>
+        <div class="live-metric"><span>آخرین به‌روزرسانی</span><b id="updatedAt">—</b></div>
+        <div class="live-metric"><span>حالت سیستم</span><b id="systemMode">Paper / Read-only</b></div>
+      </div>
+      <div class="signal-box" id="signalBox">
+        در حال خواندن آخرین وضعیت از بازار...
+      </div>
+      <p class="section-note" style="margin:12px 0 0">
+        این بخش به بایننس وصل است ولی فقط قیمت و سیگنال آزمایشی را می‌خواند.
+        سفارش واقعی ارسال نمی‌شود.
+      </p>
+    </section>
 
     <header class="hero">
       <div class="kicker">برای کسی که ترید یا برنامه‌نویسی بلد نیست</div>
@@ -567,9 +623,44 @@ def main() -> None:
     </section>
 
     <div class="footer">
-      TR BOT · Phase 1 Report · بدون معامله واقعی · ساخته‌شده برای توضیح شفاف به افراد غیرتخصصی
+      TR BOT · Phase 1 Report · آنلاین فقط‌خواندنی · بدون معامله واقعی · آپدیت حدوداً هر ۲ ساعت
     </div>
   </div>
+  <script>
+    async function loadLive() {{
+      const chip = document.getElementById('statusChip');
+      const box = document.getElementById('signalBox');
+      try {{
+        const res = await fetch('./live.json?ts=' + Date.now(), {{ cache: 'no-store' }});
+        if (!res.ok) throw new Error('live.json missing');
+        const data = await res.json();
+        chip.innerHTML = '<i></i> آنلاین · وصل به بازار';
+        document.getElementById('markPrice').textContent = Number(data.mark_price).toLocaleString('en-US') + ' USDT';
+        document.getElementById('lastClose').textContent = Number(data.last_close).toLocaleString('en-US') + ' USDT';
+        const updated = new Date(data.updated_at_utc);
+        document.getElementById('updatedAt').textContent = updated.toLocaleString('fa-IR');
+        document.getElementById('systemMode').textContent = data.orders_enabled ? 'Live Trading' : 'Paper / Read-only';
+        if (data.active_signal) {{
+          const s = data.active_signal;
+          box.classList.add('active');
+          box.innerHTML = '<strong>سیگنال فعال آزمایشی:</strong> ' +
+            s.side.toUpperCase() +
+            ' | ورود ' + s.entry +
+            ' | حد ضرر ' + s.stop_loss +
+            ' | حد سود ' + s.take_profit +
+            '<br><span style="color:var(--muted)">زمان سیگنال: ' + s.signal_time + '</span>';
+        }} else {{
+          box.classList.remove('active');
+          box.textContent = 'الان سیگنال فعالی روی آخرین کندل بسته‌شده نیست. سیستم آنلاین است و هر ۲ ساعت دوباره چک می‌کند.';
+        }}
+      }} catch (err) {{
+        chip.innerHTML = '<i></i> آفلاین / در انتظار اولین آپدیت';
+        box.textContent = 'هنوز فایل وضعیت زنده آماده نشده. بعد از اولین آپدیت خودکار، اینجا قیمت و سیگنال نشان داده می‌شود.';
+      }}
+    }}
+    loadLive();
+    setInterval(loadLive, 60 * 1000);
+  </script>
 </body>
 </html>
 """
