@@ -429,6 +429,23 @@ def main() -> None:
       transition: color 0.2s ease, border-color 0.2s ease;
     }}
     .nav-toc a:hover {{ color: var(--accent); border-color: rgba(63,208,201,0.35); }}
+    .simple-box {{
+      margin-top: 28px; border: 1px solid rgba(63,208,201,0.28);
+      background: rgba(63,208,201,0.05); padding: 22px 20px;
+    }}
+    .simple-box h3 {{
+      margin: 0 0 14px; font-size: 1.2rem;
+    }}
+    .simple-grid {{
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    }}
+    .simple-item {{
+      background: rgba(7,9,13,0.45); border: 1px solid var(--line); padding: 14px;
+    }}
+    .simple-item strong {{
+      display: block; margin-bottom: 6px; color: var(--accent); font-size: 0.92rem;
+    }}
+    .simple-item p {{ margin: 0; color: var(--muted); font-size: 0.9rem; }}
     .prose {{
       border: 1px solid var(--line); padding: 22px 20px; background: rgba(13,18,26,0.65);
     }}
@@ -483,7 +500,7 @@ def main() -> None:
     }}
 
     @media (max-width: 900px) {{
-      .term-grid, .pillars, .pipeline, .kpi-strip, .split, .road {{
+      .term-grid, .pillars, .pipeline, .kpi-strip, .split, .road, .simple-grid {{
         grid-template-columns: 1fr;
       }}
       .term-metrics {{ border-left: 0; border-top: 1px solid var(--line); }}
@@ -525,38 +542,57 @@ def main() -> None:
   <div class="wrap">
     <section class="terminal" id="live" aria-live="polite">
       <div class="term-bar">
-        <h2>LIVE MARKET TERMINAL</h2>
-        <div class="term-meta">BTCUSDT · 4H · America/New_York · refresh ≈ 2h</div>
+        <h2>وضعیت زنده بازار</h2>
+        <div class="term-meta">بیت‌کوین · چارت ۴ ساعته · آپدیت حدوداً هر ۲ ساعت</div>
       </div>
       <div class="term-grid">
         <div class="signal-pane">
-          <div class="label">Active Signal</div>
-          <div class="state wait" id="signalState">SCANNING</div>
-          <div class="detail" id="signalDetail">در حال همگام‌سازی با بازار…</div>
+          <div class="label">سیگنال الان</div>
+          <div class="state wait" id="signalState">در حال بررسی</div>
+          <div class="detail" id="signalDetail">در حال خواندن آخرین وضعیت از بازار…</div>
         </div>
         <div class="term-metrics">
-          <div class="metric"><span>Mark Price</span><b id="markPrice">—</b></div>
-          <div class="metric"><span>Last Close</span><b id="lastClose">—</b></div>
-          <div class="metric"><span>Updated (UTC)</span><b id="updatedAt">—</b></div>
-          <div class="metric"><span>Execution</span><b id="systemMode">READ-ONLY</b></div>
+          <div class="metric"><span>قیمت زنده</span><b id="markPrice">—</b></div>
+          <div class="metric"><span>آخرین قیمت بسته‌شده</span><b id="lastClose">—</b></div>
+          <div class="metric"><span>آخرین به‌روزرسانی</span><b id="updatedAt">—</b></div>
+          <div class="metric"><span>حالت سیستم</span><b id="systemMode">فقط نمایش</b></div>
         </div>
       </div>
       <div class="term-foot">
-        <span>اتصال به بایننس فقط برای خواندن قیمت و سیگنال آزمایشی است.</span>
-        <span class="badge" id="ordersBadge">ORDERS OFF</span>
+        <span>این بخش فقط قیمت را می‌خواند. خرید و فروش واقعی انجام نمی‌شود.</span>
+        <span class="badge" id="ordersBadge">سفارش خاموش</span>
+      </div>
+    </section>
+
+    <section class="simple-box" id="simple">
+      <h3>اگر هیچی از ترید بلد نیستی، همین ۳ خط کافی است</h3>
+      <div class="simple-grid">
+        <div class="simple-item">
+          <strong>۱) این چیه؟</strong>
+          <p>یک پروژه آزمایشی برای ساخت ربات معامله‌گر با قانون مشخص — نه با حدس شخصی.</p>
+        </div>
+        <div class="simple-item">
+          <strong>۲) الان چه کار می‌کند؟</strong>
+          <p>روی داده‌های گذشته تست شده و قیمت زنده را نشان می‌دهد. هنوز پول واقعی جابه‌جا نمی‌کند.</p>
+        </div>
+        <div class="simple-item">
+          <strong>۳) نتیجه اولیه؟</strong>
+          <p>روی بیت‌کوین امیدوارکننده بوده، روی بعضی ارزها ضعیف‌تر. هنوز قطعی نیست.</p>
+        </div>
       </div>
     </section>
 
     <nav class="nav-toc" aria-label="فهرست">
-      <a href="#why">هدف</a>
-      <a href="#scope">محدوده</a>
-      <a href="#method">منطق ورود</a>
-      <a href="#built">پیاده‌سازی</a>
+      <a href="#simple">خلاصه ساده</a>
+      <a href="#why">این پروژه چیست؟</a>
+      <a href="#scope">الان چه می‌کند؟</a>
+      <a href="#method">چطور کار می‌کند؟</a>
+      <a href="#built">چه ساخته شده؟</a>
       <a href="#results">نتایج</a>
-      <a href="#validation">اعتبارسنجی</a>
-      <a href="#not">چه چیزی نیست</a>
-      <a href="#words">واژه‌نامه</a>
-      <a href="#roadmap">مسیر بعدی</a>
+      <a href="#validation">چقدر پایدار است؟</a>
+      <a href="#not">چه چیزی نیست؟</a>
+      <a href="#words">معنی واژه‌ها</a>
+      <a href="#roadmap">بعدش چی؟</a>
     </nav>
 
     <section id="why">
@@ -613,45 +649,45 @@ def main() -> None:
       <div class="pillars" style="margin-top:18px">
         <div class="pillar">
           <strong>موتور قوانین</strong>
-          <p>وقتی شرایط Sweep و تغییر ساختار برقرار باشد و فیلترها OK باشند، سیگنال می‌دهد.</p>
+          <p>فقط وقتی همه شرط‌های ورود برقرار باشد، می‌گوید «الان می‌شود وارد شد».</p>
         </div>
         <div class="pillar">
           <strong>مدیریت ریسک</strong>
-          <p>هر معامله حداکثر ۱٪ سرمایه. هدف سود حدود ۲ برابر ریسک. اگر روز بد باشد، متوقف می‌شود.</p>
+          <p>در هر معامله حداکثر ۱٪ کل پول ریسک می‌شود. اگر روز بد باشد، دست نگه می‌دارد.</p>
         </div>
         <div class="pillar">
-          <strong>مانیتور Paper</strong>
-          <p>قیمت زنده را می‌بیند و سیگنال آزمایشی ثبت می‌کند؛ بدون سفارش واقعی.</p>
+          <strong>نمایش زنده</strong>
+          <p>قیمت بازار را می‌بیند و سیگنال آزمایشی را نشان می‌دهد؛ بدون خرید و فروش واقعی.</p>
         </div>
       </div>
     </section>
 
     <section id="method">
-      <div class="sec-kicker">METHODOLOGY</div>
-      <h3 class="sec-title">چطور سیگنال می‌دهد؟</h3>
+      <div class="sec-kicker">METHOD</div>
+      <h3 class="sec-title">چطور تصمیم می‌گیرد؟</h3>
       <p class="sec-lead">
-        چهار شرط پشت‌سرهم. اگر حتی یکی برقرار نباشد، ورود نمی‌کند.
+        فکر کن یک چک‌لیست ۴ مرحله‌ای است. اگر حتی یک مرحله رد شود، وارد معامله نمی‌شود.
       </p>
       <div class="pipeline" style="margin-bottom:18px">
         <div class="pipe">
           <div class="n">01</div>
-          <h4>Sweep</h4>
-          <p>قیمت یک لحظه سقف/کف مهم را رد می‌کند و برمی‌گردد.</p>
+          <h4>تله قیمت</h4>
+          <p>قیمت یک لحظه از سقف یا کف مهم رد می‌شود و سریع برمی‌گردد.</p>
         </div>
         <div class="pipe">
           <div class="n">02</div>
-          <h4>MSS</h4>
-          <p>ساختار قبلی بازار می‌شکند و جهت احتمالی عوض می‌شود.</p>
+          <h4>تأیید جهت</h4>
+          <p>بعدش ساختار چارت می‌شکند؛ یعنی احتمال عوض شدن جهت بالاتر می‌رود.</p>
         </div>
         <div class="pipe">
           <div class="n">03</div>
-          <h4>ورود</h4>
-          <p>حد ضرر مشخص، هدف حدود ۲ برابر ریسک، حجم با ۱٪ حساب.</p>
+          <h4>ورود امن‌تر</h4>
+          <p>حد ضرر مشخص می‌گذارد و هدف سود حدود ۲ برابر همان ریسک است.</p>
         </div>
         <div class="pipe">
           <div class="n">04</div>
-          <h4>فیلتر</h4>
-          <p>فقط در جهت روزانه و در سشن لندن/نیویورک.</p>
+          <h4>فیلتر نهایی</h4>
+          <p>اگر ساعت بازار یا جهت روزانه مناسب نباشد، وارد نمی‌شود.</p>
         </div>
       </div>
       <div class="steps">
@@ -710,16 +746,16 @@ def main() -> None:
         بازه بیت‌کوین: {btc_range}. سبز = سود آزمایشی، قرمز = زیان آزمایشی.
       </p>
       <div class="kpi-strip">
-        <div class="kpi"><span>BTC Net PnL</span><b class="{_pnl_class(btc['pnl']) if btc else ''}">{headline_pnl}</b></div>
-        <div class="kpi"><span>Win Rate</span><b>{headline_wr}</b></div>
-        <div class="kpi"><span>Profit Factor</span><b>{headline_pf}</b></div>
-        <div class="kpi"><span>Final Equity</span><b>{btc_equity}</b></div>
+        <div class="kpi"><span>سود/زیان آزمایشی BTC</span><b class="{_pnl_class(btc['pnl']) if btc else ''}">{headline_pnl}</b></div>
+        <div class="kpi"><span>چند درصد معامله‌ها سود شد</span><b>{headline_wr}</b></div>
+        <div class="kpi"><span>نسبت کل سود به کل ضرر</span><b>{headline_pf}</b></div>
+        <div class="kpi"><span>سرمایه نهایی فرضی</span><b>{btc_equity}</b></div>
       </div>
       <div class="table-shell">
         <table>
           <thead>
             <tr>
-              <th>Asset</th><th>PnL</th><th>Win%</th><th>Trades</th><th>PF</th><th>Max DD</th><th>Equity</th>
+              <th>ارز</th><th>سود/زیان</th><th>درصد برد</th><th>تعداد معامله</th><th>قدرت سود</th><th>بیشترین افت</th><th>سرمایه نهایی</th>
             </tr>
           </thead>
           <tbody>
@@ -745,7 +781,7 @@ def main() -> None:
       <div class="table-shell">
         <table>
           <thead>
-            <tr><th>OOS Window</th><th>Trades</th><th>Win%</th><th>PnL</th><th>PF</th></tr>
+            <tr><th>بازه زمانی</th><th>تعداد معامله</th><th>درصد برد</th><th>سود/زیان</th><th>قدرت سود</th></tr>
           </thead>
           <tbody>
             {wf_rows if wf_rows else "<tr><td colspan='5'>داده walk-forward موجود نیست</td></tr>"}
@@ -766,9 +802,9 @@ def main() -> None:
     </section>
 
     <section id="words">
-      <div class="sec-kicker">GLOSSARY</div>
-      <h3 class="sec-title">واژه‌نامه</h3>
-      <p class="sec-lead">اصطلاح‌هایی که در گزارش و ترمینال می‌بینید.</p>
+      <div class="sec-kicker">WORDS</div>
+      <h3 class="sec-title">معنی واژه‌های سخت</h3>
+      <p class="sec-lead">اگر جایی اصطلاحی دیدی و نفهمیدی، همین‌جا معنیش هست.</p>
       <div class="glossary">
         <div class="term"><h4>بک‌تست</h4><p>امتحان استراتژی روی قیمت‌های گذشته، مثل بازپخش فیلم بازی‌های قبلی.</p></div>
         <div class="term"><h4>سیگنال</h4><p>پیامی که می‌گوید الان شرایط ورود به معامله از نظر قوانین سیستم برقرار است.</p></div>
@@ -784,24 +820,24 @@ def main() -> None:
     </section>
 
     <section id="roadmap">
-      <div class="sec-kicker">ROADMAP</div>
-      <h3 class="sec-title">مسیر بعدی</h3>
+      <div class="sec-kicker">NEXT</div>
+      <h3 class="sec-title">بعدش چی؟</h3>
       <div class="roadmap">
         <div class="road">
-          <div class="tag done">DONE</div>
-          <p><strong>Phase 1:</strong> هسته قوانین، بک‌تست، ریسک، اعتبارسنجی، ترمینال Paper و صفحه معرفی</p>
+          <div class="tag done">انجام شده</div>
+          <p><strong>فاز ۱:</strong> ساخت هسته قوانین، تست روی گذشته، مدیریت ریسک، و این صفحه معرفی</p>
         </div>
         <div class="road">
-          <div class="tag now">NOW</div>
-          <p><strong>Paper Observation:</strong> چند روز سیگنال‌ها را بدون پول واقعی نگاه می‌کنیم و کیفیت‌شان را چک می‌کنیم</p>
+          <div class="tag now">الان</div>
+          <p><strong>رصد آزمایشی:</strong> چند روز سیگنال‌ها را بدون پول واقعی نگاه می‌کنیم</p>
         </div>
         <div class="road">
-          <div class="tag next">NEXT</div>
-          <p><strong>Testnet Execution:</strong> اگر سیگنال‌ها تمیز بودند، سفارش آزمایشی روی حساب تست (هنوز بدون پول واقعی)</p>
+          <div class="tag next">بعدی</div>
+          <p><strong>حساب تست:</strong> اگر کیفیت خوب بود، سفارش آزمایشی روی حساب دمو (هنوز بدون پول واقعی)</p>
         </div>
         <div class="road">
-          <div class="tag next">LATER</div>
-          <p><strong>Controlled Live:</strong> داشبورد، هشدار، اتصال امن به صرافی — فقط در صورت پایداری آمار</p>
+          <div class="tag next">آینده</div>
+          <p><strong>نسخه جدی‌تر:</strong> فقط اگر آمار پایدار بود — داشبورد، هشدار، و اتصال امن‌تر</p>
         </div>
       </div>
       <div class="disclaimer">
@@ -830,27 +866,28 @@ def main() -> None:
         const res = await fetch('./live.json?ts=' + Date.now(), {{ cache: 'no-store' }});
         if (!res.ok) throw new Error('missing');
         const data = await res.json();
-        chip.innerHTML = '<i></i> ONLINE · MARKET LINKED';
+        chip.innerHTML = '<i></i> آنلاین · وصل به بازار';
         document.getElementById('markPrice').textContent = fmtPrice(data.mark_price);
         document.getElementById('lastClose').textContent = fmtPrice(data.last_close);
-        document.getElementById('updatedAt').textContent = new Date(data.updated_at_utc).toISOString().replace('T',' ').slice(0,19);
-        document.getElementById('systemMode').textContent = data.orders_enabled ? 'LIVE' : 'READ-ONLY';
-        document.getElementById('ordersBadge').textContent = data.orders_enabled ? 'ORDERS ON' : 'ORDERS OFF';
+        document.getElementById('updatedAt').textContent = new Date(data.updated_at_utc).toLocaleString('fa-IR');
+        document.getElementById('systemMode').textContent = data.orders_enabled ? 'معامله واقعی' : 'فقط نمایش';
+        document.getElementById('ordersBadge').textContent = data.orders_enabled ? 'سفارش روشن' : 'سفارش خاموش';
         if (data.active_signal) {{
           const s = data.active_signal;
+          const sideFa = s.side === 'long' ? 'خرید' : 'فروش';
           state.className = 'state hot';
-          state.textContent = s.side.toUpperCase() + ' SETUP';
-          detail.textContent = 'ENTRY ' + s.entry + '  ·  SL ' + s.stop_loss + '  ·  TP ' + s.take_profit;
+          state.textContent = 'سیگنال فعال: ' + sideFa;
+          detail.textContent = 'ورود ' + s.entry + '  ·  حد ضرر ' + s.stop_loss + '  ·  حد سود ' + s.take_profit;
         }} else {{
           state.className = 'state wait';
-          state.textContent = 'NO ACTIVE SETUP';
-          detail.textContent = 'Waiting for next closed 4H confirmation · signals logged on trigger';
+          state.textContent = 'الان سیگنال فعالی نیست';
+          detail.textContent = 'سیستم آنلاین است و منتظر شرایط بعدی می‌ماند';
         }}
       }} catch (e) {{
-        chip.innerHTML = '<i></i> STANDBY';
+        chip.innerHTML = '<i></i> در انتظار آپدیت';
         state.className = 'state wait';
-        state.textContent = 'AWAITING SNAPSHOT';
-        detail.textContent = 'Live feed will appear after the next scheduled refresh.';
+        state.textContent = 'هنوز داده زنده نیامده';
+        detail.textContent = 'بعد از اولین آپدیت خودکار، اینجا قیمت و وضعیت نشان داده می‌شود.';
       }}
     }}
     loadLive();
