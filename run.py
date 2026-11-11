@@ -16,6 +16,8 @@ import pandas as pd
 
 from backtester import BacktestConfig, Backtester
 from core_strategy import DEFAULT_TIMEZONE, StrategyConfig, to_project_timezone
+from philosophy import check_philosophy
+from trade_management import TradeManageConfig
 
 
 def load_ohlcv(path: Path, timezone: str = DEFAULT_TIMEZONE) -> pd.DataFrame:
@@ -95,6 +97,8 @@ def format_metrics(metrics: dict[str, float]) -> str:
     pf = metrics["profit_factor"]
     pf_str = "inf" if not np.isfinite(pf) else f"{pf:.3f}"
     skipped = int(metrics.get("skipped_by_risk", 0.0))
+    skipped_nt = int(metrics.get("skipped_by_no_trade", 0.0))
+    partials = int(metrics.get("partial_exits", 0.0))
     return (
         f"Trades         : {int(metrics['n_trades'])}\n"
         f"Win Rate       : {wr:.2f}%\n"
@@ -102,7 +106,9 @@ def format_metrics(metrics: dict[str, float]) -> str:
         f"Max Drawdown   : {mdd:.2f}%\n"
         f"Profit Factor  : {pf_str}\n"
         f"Final Equity   : {metrics['final_equity']:.2f}\n"
-        f"Skipped(risk)  : {skipped}"
+        f"Skipped(risk)  : {skipped}\n"
+        f"Skipped(no-tr) : {skipped_nt}\n"
+        f"Partial exits  : {partials}"
     )
 
 
@@ -214,10 +220,98 @@ def parse_args() -> argparse.Namespace:
         help="Disable daily loss / consecutive-loss circuit breakers",
     )
     p.add_argument(
+        "--max-trades-per-day",
+        type=int,
+        default=None,
+        help="No-trade: max new entries per NY calendar day",
+    )
+    p.add_argument(
+        "--cooldown-bars-after-loss",
+        type=int,
+        default=0,
+        help="No-trade: bars to wait after a losing trade before next entry",
+    )
+    p.add_argument(
+        "--manage-trades",
+        action="store_true",
+        help="Enable in-trade management (breakeven / partial / trail)",
+    )
+    p.add_argument(
+        "--be-at-r",
+        type=float,
+        default=1.0,
+        help="Move stop to breakeven after this R multiple (with --manage-trades)",
+    )
+    p.add_argument(
+        "--partial-at-r",
+        type=float,
+        default=1.0,
+        help="Take partial profit at this R multiple (with --manage-trades)",
+    )
+    p.add_argument(
+        "--partial-fraction",
+        type=float,
+        default=0.5,
+        help="Fraction of size to close at partial (default 0.5)",
+    )
+    p.add_argument(
+        "--trail-after-r",
+        type=float,
+        default=None,
+        help="Start trailing stop after this R multiple (optional)",
+    )
+    p.add_argument(
+        "--trail-step-r",
+        type=float,
+        default=0.5,
+        help="Trail distance behind best extreme, in R units",
+    )
+    p.add_argument(
+        "--no-breakeven",
+        action="store_true",
+        help="Disable breakeven even when --manage-trades is set",
+    )
+    p.add_argument(
+        "--no-partial",
+        action="store_true",
+        help="Disable partial take-profit even when --manage-trades is set",
+    )
+    p.add_argument(
+        "--enable-scoring",
+        action="store_true",
+        help="Enable 24-point confluence scoring and min-score filter",
+    )
+    p.add_argument(
+        "--min-score",
+        type=int,
+        default=12,
+        help="Minimum confluence score to take a trade (0-24, default 12)",
+    )
+    p.add_argument(
+        "--require-order-block",
+        action="store_true",
+        help="Require a detectable order block between sweep and MSS",
+    )
+    p.add_argument(
+        "--require-pd-alignment",
+        action="store_true",
+        help="Require long in discount / short in premium of dealing range",
+    )
+    p.add_argument(
+        "--require-ote",
+        action="store_true",
+        help="Require entry price inside OTE (61.8%%-79%%) of sweep-MSS impulse",
+    )
+    p.add_argument(
+        "--require-choch",
+        action="store_true",
+        help="Require a recent CHOCH aligned with trade side",
+    )
+    p.add_argument(
         "--preset",
-        choices=("none", "best", "best_fvg"),
+        choices=("none", "best", "best_fvg", "full"),
         default="none",
-        help="best=HTF+session; best_fvg=HTF+session+FVG retrace entry",
+        help="best=HTF+session; best_fvg=+FVG; full=HTF+session+CRT+div+scoring",
     )
     p.add_argument(
         "--export-trades",
@@ -239,6 +333,15 @@ def main() -> None:
         args.require_session = True
         args.session_mode = "london_ny"
         args.entry_mode = "fvg_retrace"
+    elif args.preset == "full":
+        args.require_htf_bias = True
+        args.require_session = True
+        args.session_mode = "london_ny"
+        args.require_crt_reclaim = True
+        args.require_divergence = True
+        args.enable_scoring = True
+        args.min_score = max(int(args.min_score), 14)
+        args.manage_trades = True
 
     csv_path = ensure_sample_csv(args.csv) if args.csv == Path("data/sample_ohlcv.csv") else args.csv
     if not csv_path.exists():
@@ -260,6 +363,20 @@ def main() -> None:
         require_crt_reclaim=args.require_crt_reclaim,
         require_crt_sweep=args.require_crt_sweep,
         require_divergence=args.require_divergence,
+        enable_scoring=bool(args.enable_scoring),
+        min_score=int(args.min_score),
+        require_order_block=bool(args.require_order_block),
+        require_pd_alignment=bool(args.require_pd_alignment),
+        require_ote=bool(args.require_ote),
+        require_choch=bool(args.require_choch),
+    )
+    manage_cfg = TradeManageConfig(
+        enable=bool(args.manage_trades),
+        breakeven_at_r=None if args.no_breakeven else args.be_at_r,
+        partial_at_r=None if args.no_partial else args.partial_at_r,
+        partial_fraction=args.partial_fraction,
+        trail_after_r=args.trail_after_r,
+        trail_step_r=args.trail_step_r,
     )
     bt_cfg = BacktestConfig(
         initial_equity=args.equity,
@@ -270,6 +387,9 @@ def main() -> None:
         daily_loss_limit=args.daily_loss_limit,
         max_consecutive_losses=args.max_consecutive_losses,
         enable_risk_guards=not args.no_risk_guards,
+        max_trades_per_day=args.max_trades_per_day,
+        cooldown_bars_after_loss=args.cooldown_bars_after_loss,
+        trade_manage=manage_cfg,
     )
     result = Backtester(strategy_cfg, bt_cfg).run(ohlcv)
 
@@ -289,11 +409,34 @@ def main() -> None:
         f"max_losses={args.max_consecutive_losses}"
     )
     print(
+        f"No-trade       : max_day={args.max_trades_per_day} "
+        f"cooldown_bars={args.cooldown_bars_after_loss}"
+    )
+    print(
+        f"Trade manage   : enabled={args.manage_trades} "
+        f"be_at_r={None if args.no_breakeven else args.be_at_r} "
+        f"partial_at_r={None if args.no_partial else args.partial_at_r} "
+        f"partial_frac={args.partial_fraction} "
+        f"trail_after_r={args.trail_after_r} trail_step_r={args.trail_step_r}"
+    )
+    print(
         f"Filters        : disp={args.require_displacement} "
         f"htf={args.require_htf_bias} session={args.require_session}:{args.session_mode} "
         f"crt_reclaim={args.require_crt_reclaim} crt_sweep={args.require_crt_sweep} "
         f"div={args.require_divergence} "
         f"max_bars={args.max_bars_sweep_mss} min_sweep_atr={args.min_sweep_atr}"
+    )
+    print(
+        f"Scoring        : enabled={args.enable_scoring} min_score={args.min_score}/24"
+    )
+    print(
+        f"ICT/PA         : OB={args.require_order_block} PD={args.require_pd_alignment} "
+        f"OTE={args.require_ote} CHOCH={args.require_choch}"
+    )
+    report = check_philosophy(strategy_cfg, bt_cfg, orders_enabled=False)
+    print(
+        f"Philosophy     : ok={report.ok}"
+        + (f" violations={list(report.violations)}" if report.violations else "")
     )
     print("-" * 48)
     print(format_metrics(result.metrics))
@@ -312,6 +455,14 @@ def main() -> None:
                 "exit": t.exit_price,
                 "reason": t.exit_reason,
                 "pnl": t.pnl,
+                "partial_pnl": t.partial_pnl,
+                "management": t.management_notes,
+                "score": (
+                    float(result.annotated["signal_score"].iloc[t.signal_index])
+                    if "signal_score" in result.annotated.columns
+                    and np.isfinite(result.annotated["signal_score"].iloc[t.signal_index])
+                    else None
+                ),
             }
             for t in result.trades
         ]

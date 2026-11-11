@@ -2,7 +2,7 @@
 Offline event-driven backtest engine for Phase 1 MVP.
 
 Consumes signals from core_strategy and simulates fills, stops, targets,
-and equity risk sizing on historical OHLCV bars.
+equity risk sizing, no-trade gates, and optional in-trade management.
 """
 
 from __future__ import annotations
@@ -14,7 +14,9 @@ import numpy as np
 import pandas as pd
 
 from core_strategy import Side, Signal, StrategyConfig, generate_signals
+from no_trade import NoTradeConfig, NoTradeGate
 from risk import RiskManager
+from trade_management import TradeManageConfig, initial_state, manage_open_trade
 
 
 @dataclass
@@ -32,6 +34,11 @@ class Trade:
     exit_reason: Optional[str] = None
     pnl: float = 0.0
     return_pct: float = 0.0
+    # Management bookkeeping
+    initial_stop: Optional[float] = None
+    original_size: Optional[float] = None
+    partial_pnl: float = 0.0
+    management_notes: str = ""
 
 
 @dataclass
@@ -56,6 +63,11 @@ class BacktestConfig:
     daily_loss_limit: float = 0.03  # 3% of day-start equity
     max_consecutive_losses: int = 3
     enable_risk_guards: bool = True
+    # Explicit no-trade extras (on top of risk guards).
+    max_trades_per_day: Optional[int] = None
+    cooldown_bars_after_loss: int = 0
+    # In-trade management (off by default).
+    trade_manage: TradeManageConfig = field(default_factory=TradeManageConfig)
 
 
 def _position_size(equity: float, risk_pct: float, entry: float, stop: float) -> tuple[float, float]:
@@ -144,6 +156,8 @@ def compute_metrics(trades: list[Trade], equity_curve: pd.Series) -> dict[str, f
         "profit_factor": float(profit_factor) if np.isfinite(profit_factor) else float("inf"),
         "final_equity": float(equity_curve.iloc[-1]),
         "skipped_by_risk": 0.0,
+        "skipped_by_no_trade": 0.0,
+        "partial_exits": float(sum(1 for t in closed if t.partial_pnl != 0.0)),
     }
 
 
@@ -166,7 +180,9 @@ class Backtester:
         equity_points: list[tuple[pd.Timestamp, float]] = []
         trades: list[Trade] = []
         open_trade: Optional[Trade] = None
+        manage_state = None
         skipped_by_risk = 0
+        skipped_by_no_trade = 0
 
         risk_mgr: Optional[RiskManager] = None
         if self.backtest_config.enable_risk_guards:
@@ -174,6 +190,14 @@ class Backtester:
                 daily_loss_limit=self.backtest_config.daily_loss_limit,
                 max_consecutive_losses=self.backtest_config.max_consecutive_losses,
             )
+        gate = NoTradeGate(
+            NoTradeConfig(
+                max_trades_per_day=self.backtest_config.max_trades_per_day,
+                cooldown_bars_after_loss=self.backtest_config.cooldown_bars_after_loss,
+            ),
+            risk_mgr=risk_mgr,
+        )
+        manage_cfg = self.backtest_config.trade_manage
 
         highs = annotated["high"].to_numpy(dtype=float)
         lows = annotated["low"].to_numpy(dtype=float)
@@ -181,15 +205,18 @@ class Backtester:
 
         for i in range(len(annotated)):
             ts = index[i]
-            if risk_mgr is not None:
-                risk_mgr.on_bar(ts, equity)
+            gate.on_bar(ts, equity)
+            bar_high = float(highs[i])
+            bar_low = float(lows[i])
 
-            # 1) Manage open position exits from the bar AFTER entry onward.
+            # 1) Manage open position from the bar AFTER entry onward.
+            # Conservative order: evaluate exits with the stop inherited from
+            # prior bars, then tighten management for subsequent bars.
             if open_trade is not None and i > open_trade.signal_index:
                 result = _exit_on_bar(
                     open_trade,
-                    bar_high=float(highs[i]),
-                    bar_low=float(lows[i]),
+                    bar_high=bar_high,
+                    bar_low=bar_low,
                     conservative=self.backtest_config.conservative_exits,
                 )
                 if result is not None:
@@ -201,22 +228,65 @@ class Backtester:
                         slippage_bps=self.backtest_config.slippage_bps,
                         spread_bps=self.backtest_config.spread_bps,
                     )
-                    pnl = self._realize(open_trade, exit_price)
+                    remainder_pnl = self._realize(open_trade, exit_price)
+                    total_pnl = open_trade.partial_pnl + remainder_pnl
                     open_trade.exit_time = ts
                     open_trade.exit_price = exit_price
                     open_trade.exit_reason = reason
-                    open_trade.pnl = pnl
-                    open_trade.return_pct = pnl / equity if equity else 0.0
-                    equity += pnl
+                    open_trade.pnl = total_pnl
+                    open_trade.return_pct = total_pnl / equity if equity else 0.0
+                    equity += remainder_pnl
                     trades.append(open_trade)
-                    if risk_mgr is not None:
-                        risk_mgr.register_closed_trade(ts, equity, pnl)
+                    gate.register_closed_trade(ts, equity, total_pnl, i)
                     open_trade = None
+                    manage_state = None
+                elif manage_cfg.enable and manage_state is not None:
+                    action = manage_open_trade(
+                        side=open_trade.side,
+                        entry=open_trade.entry_price,
+                        stop_loss=open_trade.stop_loss,
+                        take_profit=open_trade.take_profit,
+                        bar_high=bar_high,
+                        bar_low=bar_low,
+                        state=manage_state,
+                        config=manage_cfg,
+                    )
+                    if action.new_stop is not None:
+                        open_trade.stop_loss = action.new_stop
+                    if action.partial_price is not None and action.partial_size is not None:
+                        fill = _adverse_fill(
+                            open_trade.side,
+                            action.partial_price,
+                            is_entry=False,
+                            slippage_bps=self.backtest_config.slippage_bps,
+                            spread_bps=self.backtest_config.spread_bps,
+                        )
+                        part_pnl = self._realize_size(open_trade, fill, action.partial_size)
+                        open_trade.partial_pnl += part_pnl
+                        open_trade.size = manage_state.remaining_size
+                        equity += part_pnl
+                    if action.notes:
+                        notes = list(
+                            filter(
+                                None,
+                                (open_trade.management_notes, *action.notes),
+                            )
+                        )
+                        open_trade.management_notes = ",".join(dict.fromkeys(notes))
 
             # 2) Enter new trades only when flat, on signal bar close.
             if open_trade is None and i in signal_map:
-                if risk_mgr is not None and not risk_mgr.allow_entry(ts):
-                    skipped_by_risk += 1
+                allowed, reason = gate.allow_entry(ts, i)
+                if not allowed:
+                    if reason in {
+                        "daily_loss_limit",
+                        "consecutive_losses",
+                        "locked_day",
+                        "risk_lock",
+                    }:
+                        skipped_by_risk += 1
+                    else:
+                        skipped_by_no_trade += 1
                 else:
                     sig = signal_map[i]
                     fill_entry = _adverse_fill(
@@ -245,7 +315,18 @@ class Backtester:
                             take_profit=sig.take_profit,
                             size=size,
                             risk_amount=risk_amount,
+                            initial_stop=sig.stop_loss,
+                            original_size=size,
                         )
+                        if manage_cfg.enable:
+                            # Management R is measured from adverse entry fill vs structural stop.
+                            manage_state = initial_state(
+                                open_trade.side,
+                                open_trade.entry_price,
+                                open_trade.stop_loss,
+                                open_trade.size,
+                            )
+                        gate.register_entry(ts)
 
             equity_points.append((ts, equity))
 
@@ -260,16 +341,16 @@ class Backtester:
                 slippage_bps=self.backtest_config.slippage_bps,
                 spread_bps=self.backtest_config.spread_bps,
             )
-            pnl = self._realize(open_trade, exit_price)
+            remainder_pnl = self._realize(open_trade, exit_price)
+            total_pnl = open_trade.partial_pnl + remainder_pnl
             open_trade.exit_time = last_ts
             open_trade.exit_price = exit_price
             open_trade.exit_reason = "eod"
-            open_trade.pnl = pnl
-            open_trade.return_pct = pnl / equity if equity else 0.0
-            equity += pnl
+            open_trade.pnl = total_pnl
+            open_trade.return_pct = total_pnl / equity if equity else 0.0
+            equity += remainder_pnl
             trades.append(open_trade)
-            if risk_mgr is not None:
-                risk_mgr.register_closed_trade(last_ts, equity, pnl)
+            gate.register_closed_trade(last_ts, equity, total_pnl, len(annotated) - 1)
             equity_points[-1] = (last_ts, equity)
 
         equity_curve = pd.Series(
@@ -279,6 +360,9 @@ class Backtester:
         )
         metrics = compute_metrics(trades, equity_curve)
         metrics["skipped_by_risk"] = float(skipped_by_risk)
+        metrics["skipped_by_no_trade"] = float(skipped_by_no_trade)
+        for reason, count in gate.state.skip_counts.items():
+            metrics[f"skip_{reason}"] = float(count)
         return BacktestResult(
             trades=trades,
             equity_curve=equity_curve,
@@ -287,7 +371,10 @@ class Backtester:
         )
 
     def _realize(self, trade: Trade, exit_price: float) -> float:
-        direction = 1.0 if trade.side == Side.LONG else -1.0
-        gross = direction * (exit_price - trade.entry_price) * trade.size
-        fee = _apply_fee(trade.size * exit_price, self.backtest_config.fee_bps)
+        return self._realize_size(trade, exit_price, trade.size)
+
+    def _realize_size(self, trade: Trade, exit_price: float, size: float) -> float:
+        direction = 1.0 if trade.side is Side.LONG else -1.0
+        gross = direction * (exit_price - trade.entry_price) * size
+        fee = _apply_fee(size * exit_price, self.backtest_config.fee_bps)
         return gross - fee

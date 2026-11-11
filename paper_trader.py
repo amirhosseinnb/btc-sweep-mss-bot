@@ -138,6 +138,8 @@ def evaluate_once(
                 "stop_loss": sig.stop_loss,
                 "take_profit": sig.take_profit,
                 "risk_reward": sig.risk_reward,
+                "score": sig.score,
+                "score_detail": sig.score_detail,
                 "mark_price": mark,
                 "status": "paper_signal_only",
             }
@@ -152,6 +154,8 @@ def evaluate_once(
             print(f"Entry  : {sig.entry:.2f}")
             print(f"SL     : {sig.stop_loss:.2f}")
             print(f"TP     : {sig.take_profit:.2f}")
+            if sig.score is not None:
+                print(f"Score  : {sig.score_detail or sig.score}")
             print(f"Mark   : {mark:.2f}")
             print(f"Logged : {log_path}")
             print("=" * 60)

@@ -423,10 +423,22 @@
     .done-item strong { color: var(--text); }
     .prose {
       border: 1px solid var(--line); padding: 22px 20px; background: rgba(13,18,26,0.65);
+      direction: rtl; text-align: right;
+    }
+    .prose h3 {
+      margin: 0 0 14px; font-size: 1.35rem; font-weight: 800; color: var(--text);
+    }
+    .prose h4 {
+      margin: 18px 0 8px; font-size: 1.05rem; font-weight: 700; color: var(--text);
     }
     .prose p { margin: 0 0 14px; color: var(--muted); }
     .prose p:last-child { margin-bottom: 0; }
     .prose strong { color: var(--text); font-weight: 700; }
+    .prose ul, .prose ol {
+      margin: 0 0 8px; padding: 0 18px 0 0; color: var(--muted);
+    }
+    .prose li { margin: 0 0 8px; }
+    .prose li:last-child { margin-bottom: 0; }
     .callout {
       margin-top: 14px; padding: 14px 16px;
       border: 1px solid rgba(63,208,201,0.25); background: rgba(63,208,201,0.06);
@@ -534,6 +546,44 @@
         <p>منطق کار، واژه‌ها و مسیر بعدی</p>
       </a>
     </nav>
+
+    <section class="chapter" id="intro">
+      <div class="chapter-head">
+        <div>
+          <div class="chapter-badge">SECTION · INTRO</div>
+          <h2>معرفی</h2>
+        </div>
+        <p>خلاصهٔ وضعیت فعلی پروژه، چیزهایی که آماده است، و مسیر بعدی.</p>
+      </div>
+      <div class="prose">
+        <p>
+          AJV الان در فاز ۱ تحقیقاتی است: سیستم قانون‌محور کریپتو روی BTCUSDT تایم‌فریم ۴ساعته،
+          با بک‌تست و مانیتور فقط‌خواندنی. ساختار ۱۷بندی ICT/SMC در کد پیاده شده است.
+          سفارش واقعی هنوز خاموش است.
+        </p>
+        <h4>وضعیت فعلی</h4>
+        <ul>
+          <li>هستهٔ Sweep/MSS + ICT (FVG/OB/OTE/PD) + Price Action (BOS/CHOCH) آماده است.</li>
+          <li>امتیاز ۲۴تایی، No-Trade، Trade Management و فلسفهٔ معاملاتی کد شده‌اند.</li>
+          <li>دموی عمومی روی GitHub Pages است و تقریباً هر ۲ ساعت با Actions آپدیت می‌شود.</li>
+          <li>اسنپ‌شات زنده فقط‌خواندنی است؛ سفارش واقعی ارسال نمی‌شود.</li>
+        </ul>
+        <h4>چی آماده است</h4>
+        <ul>
+          <li>استراتژی کامل فاز ۱ با فیلترها و scoring</li>
+          <li>بک‌تست با کارمزد، اسلیپیج، ریسک و مدیریت معامله</li>
+          <li>اعتبارسنجی چندنماد و Walk-Forward</li>
+          <li>Paper Trader فقط‌خواندنی</li>
+          <li>اسناد: docs/AJV_STRUCTURE.md و docs/PHILOSOPHY.md</li>
+        </ul>
+        <h4>مسیر بعدی</h4>
+        <ol>
+          <li>مانیتور سیگنال‌های Paper بدون پول واقعی</li>
+          <li>اگر کیفیت خوب بود، Demo/Testnet</li>
+          <li>بعداً داشبورد، هشدار و اتصال امن‌تر به صرافی</li>
+        </ol>
+      </div>
+    </section>
 
     <section class="chapter" id="ops">
       <div class="chapter-head">

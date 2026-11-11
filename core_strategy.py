@@ -67,6 +67,8 @@ class Signal:
     take_profit: float
     sweep_index: int
     risk_reward: float
+    score: Optional[int] = None
+    score_detail: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -96,6 +98,14 @@ class StrategyConfig:
     divergence_lookback: int = 40
     fvg_lookback_bars: int = 20
     max_bars_mss_to_fvg: int = 20
+    # 24-point confluence scoring (optional; default off).
+    enable_scoring: bool = False
+    min_score: int = 12
+    # ICT / Price-Action confluence hard filters (optional; default off).
+    require_order_block: bool = False
+    require_pd_alignment: bool = False  # long in discount / short in premium
+    require_ote: bool = False
+    require_choch: bool = False  # MSS side should match a recent CHOCH
 
     def __post_init__(self) -> None:
         if self.swing_n < 1:
@@ -128,6 +138,8 @@ class StrategyConfig:
             raise ValueError("fvg_lookback_bars must be >= 1")
         if self.max_bars_mss_to_fvg < 1:
             raise ValueError("max_bars_mss_to_fvg must be >= 1")
+        if self.min_score < 0 or self.min_score > 24:
+            raise ValueError("min_score must be in [0, 24]")
         try:
             ZoneInfo(self.timezone)
         except Exception as exc:  # noqa: BLE001
@@ -434,7 +446,18 @@ def generate_signals(
         pierces_crt_boundary,
     )
     from divergence import divergence_seen_recently, regular_divergence_flags
-    from ict import detect_fvgs, fvg_entry_price, fvg_touched, latest_fvg_between
+    from ict import (
+        detect_fvgs,
+        find_order_block,
+        fvg_entry_price,
+        fvg_touched,
+        impulse_from_sweep_mss,
+        latest_fvg_between,
+        ote_zone_from_impulse,
+        pd_aligned_for_side,
+    )
+    from price_action import StructureKind, active_dealing_range, infer_structure_events
+    from scoring import SetupScoreContext, format_score, passes_min_score, score_setup
 
     cfg = config or StrategyConfig()
     data = _require_ohlcv(df, timezone=cfg.timezone)
@@ -462,6 +485,7 @@ def generate_signals(
             )
         ]
 
+    need_htf = cfg.require_htf_bias or cfg.enable_scoring
     htf_bias = (
         compute_htf_bias_series(
             data,
@@ -469,7 +493,7 @@ def generate_signals(
             ema_period=cfg.htf_ema_period,
             timezone=cfg.timezone,
         )
-        if cfg.require_htf_bias
+        if need_htf
         else pd.Series(0, index=data.index, dtype=int)
     )
     htf_vals = htf_bias.to_numpy(dtype=int)
@@ -483,12 +507,21 @@ def generate_signals(
     annotated["bearish_mss"] = False
     if not isinstance(data.index, pd.DatetimeIndex):
         session_ok = np.ones(len(data), dtype=bool)
+        session_london_ny = np.ones(len(data), dtype=bool)
+        session_killzone = np.zeros(len(data), dtype=bool)
     else:
-        session_ok = (
-            in_session_mask(data.index, cfg.session_mode, timezone=cfg.timezone)
-            if cfg.require_session
-            else np.ones(len(data), dtype=bool)
+        session_london_ny = in_session_mask(
+            data.index, "london_ny", timezone=cfg.timezone
         )
+        session_killzone = in_session_mask(
+            data.index, "killzones", timezone=cfg.timezone
+        )
+        if cfg.require_session:
+            session_ok = in_session_mask(
+                data.index, cfg.session_mode, timezone=cfg.timezone
+            )
+        else:
+            session_ok = np.ones(len(data), dtype=bool)
 
     bull_div, bear_div = regular_divergence_flags(
         data,
@@ -497,15 +530,19 @@ def generate_signals(
         lookback=cfg.divergence_lookback,
     )
     fvgs = detect_fvgs(data)
+    structure_events = infer_structure_events(data, swings)
 
     annotated["atr"] = atr
     annotated["htf_bias"] = htf_vals
     annotated["in_session"] = session_ok
+    annotated["in_london_ny"] = session_london_ny
+    annotated["in_killzone"] = session_killzone
     annotated["crt_high"] = crt_high
     annotated["crt_low"] = crt_low
     annotated["bull_div"] = bull_div
     annotated["bear_div"] = bear_div
     annotated["signal"] = pd.Series(pd.NA, index=annotated.index, dtype="string")
+    annotated["signal_score"] = np.nan
 
     swing_high_vals = annotated["swing_high"].to_numpy(copy=True)
     swing_low_vals = annotated["swing_low"].to_numpy(copy=True)
@@ -538,8 +575,12 @@ def generate_signals(
     signals: list[Signal] = []
     pending: Optional[SweepEvent] = None
     pending_reclaimed: bool = False
-    # (sweep, mss_index, stop, optional_fvg)
-    awaiting_retrace: Optional[tuple[SweepEvent, int, float, object | None]] = None
+    pending_crt_swept: bool = False
+    # (sweep, mss_index, stop, optional_fvg, crt_reclaimed, crt_swept)
+    awaiting_retrace: Optional[
+        tuple[SweepEvent, int, float, object | None, bool, bool]
+    ] = None
+    score_vals = annotated["signal_score"].to_numpy(copy=True)
 
     def _passes_quality(side: Side, bar_i: int) -> bool:
         if cfg.require_session and not bool(session_ok[bar_i]):
@@ -565,18 +606,121 @@ def generate_signals(
                 return False
         return True
 
+    def _ict_pa_flags(
+        *,
+        side: Side,
+        sweep: SweepEvent,
+        mss_index: int,
+        entry_price: float,
+    ) -> dict[str, bool]:
+        ob = find_order_block(
+            data, side=side, sweep_index=sweep.index, mss_index=mss_index
+        )
+        impulse = impulse_from_sweep_mss(
+            side=side,
+            sweep_extreme=float(sweep.sweep_extreme),
+            mss_close=float(closes[mss_index]),
+        )
+        ote_ok = False
+        if impulse is not None:
+            zone = ote_zone_from_impulse(
+                side=side, impulse_low=impulse[0], impulse_high=impulse[1]
+            )
+            ote_ok = bool(zone and zone.contains(entry_price))
+        dealing = active_dealing_range(swings, asof_index=mss_index)
+        pd_ok = False
+        if dealing is not None:
+            pd_ok = pd_aligned_for_side(side, entry_price, dealing[0], dealing[1])
+        choch_ok = False
+        for ev in reversed(structure_events):
+            if ev.index > mss_index:
+                continue
+            if ev.side is side and ev.kind is StructureKind.CHOCH:
+                choch_ok = True
+                break
+            if ev.index < sweep.index:
+                break
+        return {
+            "order_block_present": ob is not None,
+            "ote_aligned": ote_ok,
+            "pd_aligned": pd_ok,
+            "choch_aligned": choch_ok,
+        }
+
+    def _passes_ict_pa_filters(flags: dict[str, bool]) -> bool:
+        if cfg.require_order_block and not flags["order_block_present"]:
+            return False
+        if cfg.require_ote and not flags["ote_aligned"]:
+            return False
+        if cfg.require_pd_alignment and not flags["pd_aligned"]:
+            return False
+        if cfg.require_choch and not flags["choch_aligned"]:
+            return False
+        return True
+
+    def _score_signal(
+        *,
+        side: Side,
+        sweep: SweepEvent,
+        mss_index: int,
+        entry_index: int,
+        entry_price: float,
+        crt_reclaimed: bool,
+        crt_swept: bool,
+        fvg_present: bool,
+        flags: dict[str, bool],
+    ) -> tuple[Optional[int], Optional[str]]:
+        if not cfg.enable_scoring:
+            return None, None
+        if sweep.side == Side.LONG:
+            penetration = float(sweep.swept_level - lows[sweep.index])
+        else:
+            penetration = float(highs[sweep.index] - sweep.swept_level)
+        div_flags = bull_div if side == Side.LONG else bear_div
+        breakdown = score_setup(
+            SetupScoreContext(
+                side=side,
+                sweep_index=sweep.index,
+                mss_index=mss_index,
+                atr_at_sweep=float(atr[sweep.index]),
+                sweep_penetration=max(0.0, penetration),
+                mss_body=float(abs(closes[mss_index] - opens[mss_index])),
+                atr_at_mss=float(atr[mss_index]),
+                htf_bias=int(htf_vals[entry_index]),
+                in_london_ny=bool(session_london_ny[entry_index]),
+                in_killzone=bool(session_killzone[entry_index]),
+                crt_swept=crt_swept,
+                crt_reclaimed=crt_reclaimed,
+                divergence_ok=divergence_seen_recently(
+                    div_flags, entry_index, cfg.divergence_lookback
+                ),
+                fvg_present=fvg_present,
+                order_block_present=flags["order_block_present"],
+                ote_aligned=flags["ote_aligned"],
+                pd_aligned=flags["pd_aligned"],
+                choch_aligned=flags["choch_aligned"],
+                displacement_atr_mult=cfg.displacement_atr_mult,
+            )
+        )
+        if not passes_min_score(breakdown, cfg.min_score):
+            return breakdown.total, None  # total for reject tracking; detail None => drop
+        return breakdown.total, format_score(breakdown)
+
     def _emit(sig: Signal) -> None:
         signals.append(sig)
         signal_vals[sig.index] = sig.side.value
+        if sig.score is not None:
+            score_vals[sig.index] = float(sig.score)
 
     for i in range(len(data)):
         if pending is not None and cfg.max_bars_sweep_to_mss is not None:
             if i - pending.index > cfg.max_bars_sweep_to_mss:
                 pending = None
                 pending_reclaimed = False
+                pending_crt_swept = False
 
         if awaiting_retrace is not None:
-            _, mss_i, _, _ = awaiting_retrace
+            _, mss_i, _, _, _, _ = awaiting_retrace
             if i - mss_i > cfg.max_bars_mss_to_fvg:
                 awaiting_retrace = None
 
@@ -584,6 +728,13 @@ def generate_signals(
         if i in sweeps_by_bar:
             pending = sweeps_by_bar[i][-1]
             awaiting_retrace = None
+            pending_crt_swept = pierces_crt_boundary(
+                pending.side,
+                high=float(highs[i]),
+                low=float(lows[i]),
+                crt_high=float(crt_high[i]),
+                crt_low=float(crt_low[i]),
+            )
             # Sweep candle itself can already reclaim into the CRT range.
             pending_reclaimed = is_reclaim_close(
                 pending.side,
@@ -616,9 +767,16 @@ def generate_signals(
                         continue
                     pending = None
                     pending_reclaimed = False
+                    pending_crt_swept = False
                     continue
 
                 stop = float(pending.sweep_extreme)
+                fvg_near = latest_fvg_between(
+                    fvgs,
+                    side=pending.side,
+                    start_index=pending.index,
+                    end_index=i,
+                )
 
                 if cfg.entry_mode == "mss_close":
                     entry = float(closes[i])
@@ -627,6 +785,34 @@ def generate_signals(
                     except ValueError:
                         pending = None
                         pending_reclaimed = False
+                        pending_crt_swept = False
+                        continue
+                    flags = _ict_pa_flags(
+                        side=pending.side,
+                        sweep=pending,
+                        mss_index=i,
+                        entry_price=entry,
+                    )
+                    if not _passes_ict_pa_filters(flags):
+                        pending = None
+                        pending_reclaimed = False
+                        pending_crt_swept = False
+                        continue
+                    score, detail = _score_signal(
+                        side=pending.side,
+                        sweep=pending,
+                        mss_index=i,
+                        entry_index=i,
+                        entry_price=entry,
+                        crt_reclaimed=pending_reclaimed,
+                        crt_swept=pending_crt_swept,
+                        fvg_present=fvg_near is not None,
+                        flags=flags,
+                    )
+                    if cfg.enable_scoring and detail is None:
+                        pending = None
+                        pending_reclaimed = False
+                        pending_crt_swept = False
                         continue
                     _emit(
                         Signal(
@@ -637,23 +823,29 @@ def generate_signals(
                             take_profit=tp,
                             sweep_index=pending.index,
                             risk_reward=cfg.risk_reward,
+                            score=score,
+                            score_detail=detail,
                         )
                     )
                     pending = None
                     pending_reclaimed = False
+                    pending_crt_swept = False
                 elif cfg.entry_mode == "first_retracement":
-                    awaiting_retrace = (pending, i, stop, None)
+                    awaiting_retrace = (
+                        pending,
+                        i,
+                        stop,
+                        None,
+                        pending_reclaimed,
+                        pending_crt_swept,
+                    )
                     pending = None
                     pending_reclaimed = False
+                    pending_crt_swept = False
                 elif cfg.entry_mode == "fvg_retrace":
                     # Prefer FVG formed between sweep and MSS; else any recent
                     # same-side FVG in the lookback window (relaxed Phase 1.8).
-                    gap = latest_fvg_between(
-                        fvgs,
-                        side=pending.side,
-                        start_index=pending.index,
-                        end_index=i,
-                    )
+                    gap = fvg_near
                     if gap is None:
                         start = max(0, i - cfg.fvg_lookback_bars)
                         gap = latest_fvg_between(
@@ -666,13 +858,24 @@ def generate_signals(
                         # Still no FVG — skip this setup.
                         pending = None
                         pending_reclaimed = False
+                        pending_crt_swept = False
                         continue
-                    awaiting_retrace = (pending, i, stop, gap)
+                    awaiting_retrace = (
+                        pending,
+                        i,
+                        stop,
+                        gap,
+                        pending_reclaimed,
+                        pending_crt_swept,
+                    )
                     pending = None
                     pending_reclaimed = False
+                    pending_crt_swept = False
 
         if awaiting_retrace is not None:
-            sweep, mss_i, stop, gap = awaiting_retrace
+            sweep, mss_i, stop, gap, crt_reclaimed_at_mss, crt_swept_at_mss = (
+                awaiting_retrace
+            )
             if i <= mss_i:
                 continue
 
@@ -705,6 +908,29 @@ def generate_signals(
                 except ValueError:
                     awaiting_retrace = None
                     continue
+                flags = _ict_pa_flags(
+                    side=sweep.side,
+                    sweep=sweep,
+                    mss_index=mss_i,
+                    entry_price=entry,
+                )
+                if not _passes_ict_pa_filters(flags):
+                    awaiting_retrace = None
+                    continue
+                score, detail = _score_signal(
+                    side=sweep.side,
+                    sweep=sweep,
+                    mss_index=mss_i,
+                    entry_index=i,
+                    entry_price=entry,
+                    crt_reclaimed=crt_reclaimed_at_mss,
+                    crt_swept=crt_swept_at_mss,
+                    fvg_present=gap is not None,
+                    flags=flags,
+                )
+                if cfg.enable_scoring and detail is None:
+                    awaiting_retrace = None
+                    continue
                 _emit(
                     Signal(
                         index=i,
@@ -714,6 +940,8 @@ def generate_signals(
                         take_profit=tp,
                         sweep_index=sweep.index,
                         risk_reward=cfg.risk_reward,
+                        score=score,
+                        score_detail=detail,
                     )
                 )
                 awaiting_retrace = None
@@ -721,4 +949,5 @@ def generate_signals(
     annotated["bullish_mss"] = bullish_mss_flags
     annotated["bearish_mss"] = bearish_mss_flags
     annotated["signal"] = pd.Series(signal_vals, index=annotated.index, dtype="string")
+    annotated["signal_score"] = score_vals
     return annotated, signals
