@@ -6,12 +6,12 @@
   "symbol": "BTCUSDT",
   "timeframe": "4h",
   "timezone": "America/New_York",
-  "updated_at_utc": "2026-11-13T23:36:37.919719+00:00",
-  "mark_price": 68192.01,
-  "last_closed_bar": "2026-11-13T15:00:00-05:00",
-  "last_close": 68192.01,
+  "updated_at_utc": "2026-11-14T06:30:17.771209+00:00",
+  "mark_price": 67346.01,
+  "last_closed_bar": "2026-11-13T23:00:00-05:00",
+  "last_close": 67346.01,
   "bars_used": 2400,
-  "signals_total": 19,
+  "signals_total": 20,
   "active_signal": null,
   "recent_signals": [
     {
