@@ -61,10 +61,15 @@ pip install -r requirements.txt
 python download_data.py --symbol BTCUSDT --timeframe 4h --days 730
 python run.py --csv data/btcusdt_4h.csv --preset best
 python run.py --csv data/btcusdt_4h.csv --preset full
+python run.py --csv data/btcusdt_4h.csv --preset javid
 python validate.py
 python paper_trader.py --once
+python paper_trader.py --once --preset javid
+python update_live_site.py
 python make_share_report.py
 ```
+
+Paper و دموی زنده به‌طور پیش‌فرض روی preset **`javid`** (Rulebook + امتیاز ۲۴تایی) اجرا می‌شوند.
 
 ### Presetها
 
@@ -73,6 +78,9 @@ python make_share_report.py
 | `best` | HTF + session — baseline پایدار |
 | `best_fvg` | همان + ورود از FVG |
 | `full` | CRT reclaim + divergence + scoring + trade manage |
+| `javid` | Rulebook جاوید: CRT + displacement + div + امتیاز ≥۱۶ (رد Weak) + TP نقدینگی |
+
+جزئیات قوانین: [`docs/RULEBOOK.md`](docs/RULEBOOK.md)
 
 ## نکته مهم
 

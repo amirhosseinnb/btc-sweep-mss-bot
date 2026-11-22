@@ -199,6 +199,113 @@
       color: var(--muted); font-size: 0.9rem;
       font-family: "IBM Plex Mono", monospace; direction: ltr; unicode-bidi: plaintext;
     }
+    .signal-pane .score-line {
+      margin-top: 10px; font-size: 0.92rem; font-weight: 700; color: var(--text);
+    }
+    .signal-pane .score-line .mono {
+      font-family: "IBM Plex Mono", monospace; direction: ltr; unicode-bidi: plaintext;
+      color: var(--accent);
+    }
+    .score-board {
+      margin-top: 18px; padding: 16px 18px; border-top: 1px solid var(--line);
+    }
+    .score-board h3 {
+      margin: 0 0 10px; font-size: 0.95rem; font-weight: 700;
+    }
+    .score-bands {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+    }
+    .score-band {
+      border: 1px solid var(--line); padding: 6px 10px; font-size: 0.78rem; color: var(--muted);
+    }
+    .score-band b { color: var(--text); font-weight: 700; }
+    .recent-signals { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .recent-signals th, .recent-signals td {
+      border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: right;
+    }
+    .recent-signals th { color: var(--muted); font-weight: 600; }
+    .recent-signals .mono {
+      font-family: "IBM Plex Mono", monospace; direction: ltr; unicode-bidi: plaintext;
+    }
+    .q-pill {
+      display: inline-block; padding: 2px 8px; border: 1px solid var(--line); font-size: 0.72rem;
+    }
+    .q-pill.good, .q-pill.a_plus { color: var(--accent-2); border-color: rgba(63,208,201,0.45); }
+    .q-pill.review { color: var(--accent); }
+    .q-pill.weak { color: #d4a017; }
+    .q-pill.no_trade { color: var(--muted); }
+    .preset-chip {
+      font-size: 0.75rem; color: var(--muted); margin-top: 6px;
+    }
+    .dual-date {
+      display: flex; flex-direction: column; gap: 2px; line-height: 1.35;
+    }
+    .dual-date .g {
+      font-family: "IBM Plex Mono", monospace; direction: ltr; unicode-bidi: plaintext;
+      font-size: 0.82rem;
+    }
+    .dual-date .j {
+      color: var(--accent-2); font-size: 0.78rem; font-weight: 600;
+    }
+    .javid-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+    }
+    .javid-card {
+      border: 1px solid var(--line); background: rgba(255,255,255,0.02);
+      padding: 14px 14px 12px;
+    }
+    .javid-card .top {
+      display: flex; justify-content: space-between; gap: 10px; align-items: flex-start;
+      margin-bottom: 6px;
+    }
+    .javid-card strong { font-size: 0.95rem; }
+    .javid-card .code {
+      font-family: "IBM Plex Mono", monospace; direction: ltr; unicode-bidi: plaintext;
+      color: var(--muted); font-size: 0.72rem;
+    }
+    .status-done {
+      color: #041214; background: var(--accent); font-size: 0.7rem; font-weight: 700;
+      padding: 2px 8px; white-space: nowrap;
+    }
+    .status-phase2 {
+      color: var(--accent-2); border: 1px solid rgba(240,180,41,0.45);
+      font-size: 0.7rem; font-weight: 700; padding: 2px 8px; white-space: nowrap;
+    }
+    .chain {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 8px;
+    }
+    .chain span {
+      border: 1px solid rgba(63,208,201,0.35); color: var(--accent);
+      padding: 6px 10px; font-size: 0.78rem; font-weight: 600;
+    }
+    .market-report-meta {
+      display: flex; flex-wrap: wrap; gap: 10px 18px; color: var(--muted);
+      font-size: 0.85rem; margin-bottom: 16px;
+    }
+    .perf-tabs {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .perf-tab {
+      appearance: none; cursor: pointer; border: 1px solid var(--line);
+      background: transparent; color: var(--muted); padding: 8px 12px;
+      font-family: "Vazirmatn", sans-serif; font-weight: 700; font-size: 0.85rem;
+    }
+    .perf-tab.active {
+      color: #041214; background: var(--accent); border-color: var(--accent);
+    }
+    .assumptions {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px;
+    }
+    .assumptions span {
+      border: 1px solid var(--line); padding: 6px 10px; font-size: 0.78rem; color: var(--muted);
+    }
+    @media (max-width: 900px) {
+      .javid-grid { grid-template-columns: 1fr; }
+      .hub-nav { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .hub-nav { grid-template-columns: 1fr; }
+    }
     .term-foot {
       padding: 12px 18px; border-top: 1px solid var(--line);
       font-size: 0.8rem; color: var(--muted);
@@ -367,7 +474,7 @@
       margin: 0; color: var(--muted); max-width: 28rem; font-size: 0.95rem;
     }
     .hub-nav {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
       margin: 28px 0 8px;
     }
     .hub-card {
@@ -522,26 +629,32 @@
       </p>
       <div class="cta-row">
         <a class="btn btn-primary" href="#ops">بخش عملیات</a>
-        <a class="btn btn-ghost" href="#phase1">نتایج فاز ۱</a>
+        <a class="btn btn-ghost" href="#markets">گزارش بازارها</a>
+        <a class="btn btn-ghost" href="#javid">Rulebook جاوید</a>
         <a class="btn btn-ghost" href="#learn">آموزش</a>
       </div>
     </div>
   </header>
 
   <div class="wrap">
-    <nav class="hub-nav" aria-label="سه بخش اصلی">
+    <nav class="hub-nav" aria-label="چهار بخش اصلی">
       <a class="hub-card" href="#ops">
         <div class="n">01</div>
         <strong>عملیات زنده</strong>
-        <p>قیمت، سیگنال، ساعت آپدیت و رفرش دستی</p>
+        <p>قیمت، سیگنال، امتیاز و تاریخ میلادی/شمسی</p>
       </a>
-      <a class="hub-card" href="#phase1">
+      <a class="hub-card" href="#markets">
         <div class="n">02</div>
-        <strong>فاز ۱ و نتایج</strong>
-        <p>چه ساختیم، روی BTC/ETH/SOL چه شد</p>
+        <strong>گزارش بازارها</strong>
+        <p>BTC / ETH / SOL با تاریخ شمسی و Walk-Forward</p>
+      </a>
+      <a class="hub-card" href="#javid">
+        <div class="n">03</div>
+        <strong>Rulebook جاوید</strong>
+        <p>چیزهایی که گفتی، در کد و UI پیاده شده</p>
       </a>
       <a class="hub-card" href="#learn">
-        <div class="n">03</div>
+        <div class="n">04</div>
         <strong>آموزش</strong>
         <p>منطق کار، واژه‌ها و مسیر بعدی</p>
       </a>
@@ -564,7 +677,7 @@
         <h4>وضعیت فعلی</h4>
         <ul>
           <li>هستهٔ Sweep/MSS + ICT (FVG/OB/OTE/PD) + Price Action (BOS/CHOCH) آماده است.</li>
-          <li>امتیاز ۲۴تایی، No-Trade، Trade Management و فلسفهٔ معاملاتی کد شده‌اند.</li>
+          <li>امتیاز ۲۴تایی Rulebook جاوید (۱۲×۰–۲)، No-Trade، Trade Management و فلسفهٔ معاملاتی کد شده‌اند.</li>
           <li>دموی عمومی روی GitHub Pages است و تقریباً هر ۲ ساعت با Actions آپدیت می‌شود.</li>
           <li>اسنپ‌شات زنده فقط‌خواندنی است؛ سفارش واقعی ارسال نمی‌شود.</li>
         </ul>
@@ -607,6 +720,8 @@
           <div class="label">سیگنال الان</div>
           <div class="state wait" id="signalState">در حال بررسی</div>
           <div class="detail" id="signalDetail">در حال خواندن آخرین وضعیت از بازار…</div>
+          <div class="score-line" id="signalScore">امتیاز: —</div>
+          <div class="preset-chip" id="presetChip">Preset: javid</div>
         </div>
         <div class="term-metrics">
           <div class="metric"><span>قیمت زنده</span><b id="markPrice">—</b></div>
@@ -614,6 +729,25 @@
           <div class="metric"><span>منبع قیمت</span><b id="priceSource">—</b></div>
           <div class="metric"><span>حالت سیستم</span><b id="systemMode">فقط نمایش</b></div>
         </div>
+      </div>
+      <div class="score-board" id="scoreBoard">
+        <h3>داشبورد امتیاز Rulebook (۲۴تایی)</h3>
+        <div class="score-bands" id="scoreBands"></div>
+        <table class="recent-signals" id="recentSignalsTable">
+          <thead>
+            <tr>
+              <th>زمان</th>
+              <th>سمت</th>
+              <th>ورود</th>
+              <th>امتیاز</th>
+              <th>کیفیت</th>
+              <th>هدف</th>
+            </tr>
+          </thead>
+          <tbody id="recentSignalsBody">
+            <tr><td colspan="6">در حال بارگذاری سیگنال‌های اخیر…</td></tr>
+          </tbody>
+        </table>
       </div>
       <div class="refresh-strip">
         <div class="refresh-item">
@@ -635,6 +769,101 @@
         <span class="badge" id="ordersBadge">سفارش خاموش</span>
       </div>
     </section>
+    </section>
+
+    <section class="chapter" id="javid">
+      <div class="chapter-head">
+        <div>
+          <div class="chapter-badge">SECTION · JAVID RULEBOOK</div>
+          <h2>آنچه جاوید گفت — در پروژه اعمال شد</h2>
+        </div>
+        <p>این بخش عمداً شفاف است تا ببینی خواسته‌هایت از Rulebook به کد و مانیتور زنده وصل شده‌اند.</p>
+      </div>
+
+      <div class="prose" style="margin-bottom:16px">
+        <p>
+          سیستم تلفیقی <strong>Price Action + ICT + CRT + Divergence</strong>،
+          امتیاز <strong>۲۴تایی (۱۲×۰–۲)</strong>، قانون طلایی
+          <strong>Sweep + MSS + R:R ≥ ۱:۲</strong>، و مسیر
+          <strong>Backtest → Paper → Demo → Live</strong>.
+        </p>
+      </div>
+
+      <div class="chain" aria-label="زنجیره ایده‌آل">
+        <span>HTF Bias</span><span>Structure</span><span>Key Zone</span><span>CRT</span>
+        <span>Sweep</span><span>Divergence</span><span>Reclaim</span><span>Displacement</span>
+        <span>MSS/BOS</span><span>FVG/OB</span><span>Entry</span><span>SL/TP</span>
+      </div>
+
+      <div class="prose" style="margin:10px 0 16px">
+        <h4>باندهای تصمیم امتیاز</h4>
+        <ul>
+          <li>۰–۱۱: No Trade</li>
+          <li>۱۲–۱۵: Weak (در preset javid رد می‌شود)</li>
+          <li>۱۶–۱۸: Review</li>
+          <li>۱۹–۲۱: Good</li>
+          <li>۲۲–۲۴: A+</li>
+        </ul>
+      </div>
+
+      <div class="javid-grid" id="javidCoverage">
+        <div class="javid-card"><div class="top"><strong>در حال بارگذاری پوشش Rulebook…</strong></div></div>
+      </div>
+      <div class="callout" style="margin-top:16px">
+        سفارش واقعی عمداً خاموش است (فاز ۱ / Paper). اول پایداری، بعد Demo/Live.
+      </div>
+    </section>
+
+    <section class="chapter" id="markets">
+      <div class="chapter-head">
+        <div>
+          <div class="chapter-badge">SECTION · MARKET REPORT</div>
+          <h2>گزارش دقیق عملکرد بازارها</h2>
+        </div>
+        <p>عددها از بک‌تست آفلاین‌اند. کنار هر تاریخ میلادی، تاریخ شمسی هم آمده است.</p>
+      </div>
+
+      <div class="assumptions" id="perfAssumptions"></div>
+      <div class="market-report-meta" id="perfMeta">در حال بارگذاری گزارش…</div>
+
+      <div class="perf-tabs" role="tablist">
+        <button type="button" class="perf-tab active" data-preset="best" id="tabBest">Preset best (پایه)</button>
+        <button type="button" class="perf-tab" data-preset="javid" id="tabJavid">Preset javid (Rulebook)</button>
+      </div>
+
+      <div class="kpi-strip" id="perfKpis"></div>
+      <div class="result-cards" id="perfCards"></div>
+
+      <h3 class="sec-title" style="font-size:1.25rem; margin-top:28px">جزئیات عددی</h3>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>بازار</th><th>بازه (میلادی / شمسی)</th><th>سود/زیان</th>
+              <th>برد</th><th>معامله</th><th>قدرت سود</th><th>افت</th><th>سرمایه نهایی</th>
+            </tr>
+          </thead>
+          <tbody id="perfTableBody">
+            <tr><td colspan="8">در حال بارگذاری…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sec-title" style="font-size:1.25rem; margin-top:28px">پایداری بیت‌کوین (Walk-Forward)</h3>
+      <p class="sec-lead" id="wfLead">تکه‌های حدود ۹۰ روزه برای سنجش پایداری.</p>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>بازه میلادی</th><th>بازه شمسی</th><th>معامله</th><th>برد</th><th>سود/زیان</th><th>قدرت سود</th>
+            </tr>
+          </thead>
+          <tbody id="wfTableBody">
+            <tr><td colspan="6">در حال بارگذاری…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">این عددها آزمایش روی گذشته‌اند، نه سود واقعی حساب صرافی.</div>
     </section>
 
     <section class="chapter" id="phase1">
@@ -923,7 +1152,6 @@
   </div>
 
   <script>
-    // Binance is often 451 from Iran browsers; use public fallbacks first.
     const PRICE_SOURCES = [
       {
         name: 'CoinGecko',
@@ -947,9 +1175,52 @@
       },
     ];
     let priceState = { value: null, at: 0, source: '—' };
+    let perfData = null;
+    let activePreset = 'best';
 
     function fmtPrice(v) {
       return Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' USDT';
+    }
+
+    function fmtNum(v, digits) {
+      if (v == null || !Number.isFinite(Number(v))) return '∞';
+      return Number(v).toLocaleString('en-US', {
+        maximumFractionDigits: digits == null ? 2 : digits,
+        minimumFractionDigits: 0,
+      });
+    }
+
+    function fmtPct(v) {
+      return (Number(v) * 100).toFixed(1) + '%';
+    }
+
+    function jalaliLabel(d) {
+      try {
+        return new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit'
+        }).format(d);
+      } catch (e) {
+        return d.toLocaleString('fa-IR');
+      }
+    }
+
+    function gregorianLabel(d) {
+      return new Intl.DateTimeFormat('en-CA', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false
+      }).format(d);
+    }
+
+    function dualFromIso(iso) {
+      if (!iso) return { g: '—', j: '—' };
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return { g: String(iso), j: '—' };
+      return { g: gregorianLabel(d), j: jalaliLabel(d) };
+    }
+
+    function dualHtml(g, j) {
+      return '<div class="dual-date"><span class="g">' + g + '</span><span class="j">' + j + '</span></div>';
     }
 
     function setPrice(value, atMs, source) {
@@ -957,7 +1228,8 @@
       priceState = { value, at: atMs, source };
       document.getElementById('markPrice').textContent = fmtPrice(value);
       document.getElementById('priceSource').textContent = source;
-      document.getElementById('updatedAt').textContent = new Date(atMs).toLocaleString('fa-IR');
+      const dual = dualFromIso(new Date(atMs).toISOString());
+      document.getElementById('updatedAt').innerHTML = dualHtml(dual.g, dual.j);
     }
 
     function getNextScheduledUpdate(now) {
@@ -989,13 +1261,179 @@
       const el = document.getElementById('nextCountdown');
       const next = getNextScheduledUpdate(new Date());
       el.textContent = fmtCountdown(next - Date.now());
-      el.title = 'آپدیت بعدی حدوداً: ' + next.toLocaleString('fa-IR');
+      const dual = dualFromIso(next.toISOString());
+      el.title = 'آپدیت بعدی حدوداً: ' + dual.g + ' · ' + dual.j;
+    }
+
+    function qualityFa(key, fallback) {
+      const map = {
+        no_trade: 'بدون معامله',
+        weak: 'ضعیف',
+        review: 'متوسط / بررسی',
+        good: 'خوب',
+        a_plus: 'عالی A+'
+      };
+      return fallback || map[key] || '—';
+    }
+
+    function renderScoreBoard(data) {
+      const bandsEl = document.getElementById('scoreBands');
+      const body = document.getElementById('recentSignalsBody');
+      const presetEl = document.getElementById('presetChip');
+      const board = data.score_board || {};
+      const bands = board.bands || [];
+      bandsEl.innerHTML = bands.map(function (b) {
+        return '<div class="score-band"><b>' + b.range + '</b> · ' + b.label_fa + '</div>';
+      }).join('') +
+        '<div class="score-band"><b>حداقل</b> · ' + (board.min_score != null ? board.min_score : '—') +
+        (board.reject_weak ? ' · Weak رد می‌شود' : '') + '</div>';
+
+      presetEl.textContent = 'Preset: ' + (data.preset || 'javid') +
+        ' · سیگنال‌های کل: ' + (data.signals_total != null ? data.signals_total : '—');
+
+      const recent = data.recent_signals || [];
+      if (!recent.length) {
+        body.innerHTML = '<tr><td colspan="6">هنوز سیگنال اخیر ثبت نشده</td></tr>';
+        return;
+      }
+      body.innerHTML = recent.map(function (s) {
+        const sideFa = s.side === 'long' ? 'خرید' : 'فروش';
+        const q = s.score_quality || '';
+        const qFa = qualityFa(q, s.score_quality_fa);
+        const scoreTxt = s.score != null ? (s.score + '/24') : '—';
+        const g = s.bar_time_gregorian || dualFromIso(s.bar_time).g;
+        const j = s.bar_time_jalali || dualFromIso(s.bar_time).j;
+        return '<tr>' +
+          '<td>' + dualHtml(g, j) + '</td>' +
+          '<td>' + sideFa + '</td>' +
+          '<td class="mono">' + (s.entry != null ? s.entry : '—') + '</td>' +
+          '<td class="mono">' + scoreTxt + '</td>' +
+          '<td><span class="q-pill ' + q + '">' + qFa + '</span></td>' +
+          '<td class="mono">' + (s.tp_reason || '—') + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    function renderJavidCoverage(items) {
+      const el = document.getElementById('javidCoverage');
+      if (!el) return;
+      el.innerHTML = (items || []).map(function (it) {
+        const badge = it.status === 'done'
+          ? '<span class="status-done">اعمال شد</span>'
+          : '<span class="status-phase2">فاز بعد</span>';
+        return '<div class="javid-card"><div class="top"><strong>' + it.title_fa +
+          '</strong>' + badge + '</div><div class="code">' + it.code + '</div></div>';
+      }).join('');
+    }
+
+    function renderMarkets(preset) {
+      if (!perfData) return;
+      activePreset = preset;
+      document.querySelectorAll('.perf-tab').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-preset') === preset);
+      });
+      const rows = preset === 'javid' ? (perfData.markets_javid || []) : (perfData.markets_best || []);
+      const kpis = document.getElementById('perfKpis');
+      const cards = document.getElementById('perfCards');
+      const table = document.getElementById('perfTableBody');
+      const meta = document.getElementById('perfMeta');
+
+      meta.textContent = (perfData.generated_note_fa || '') +
+        ' · نمایش: preset ' + preset;
+
+      if (!rows.length) {
+        kpis.innerHTML = '';
+        cards.innerHTML = '<p class="muted">برای این preset هنوز داده نیست.</p>';
+        table.innerHTML = '<tr><td colspan="8">داده‌ای نیست</td></tr>';
+        return;
+      }
+
+      kpis.innerHTML = rows.map(function (r) {
+        const cls = r.pnl >= 0 ? 'up' : 'down';
+        return '<div class="kpi"><span>' + r.name_fa + ' · ' + r.name +
+          '</span><b class="' + cls + '">' + (r.pnl >= 0 ? '+' : '') +
+          fmtNum(r.pnl, 0) + '</b></div>';
+      }).join('');
+
+      cards.innerHTML = rows.map(function (r) {
+        const featured = r.name === 'BTC' ? ' featured' : '';
+        const cls = r.pnl >= 0 ? 'up' : 'down';
+        const note = r.name === 'BTC' ? 'تمرکز اصلی' : 'بررسی مقایسه‌ای';
+        return '<article class="result-card' + featured + '">' +
+          '<div class="result-top"><strong>' + r.name_fa + '</strong><span>' + note +
+          ' · ' + r.preset + '</span></div>' +
+          '<div class="result-pnl ' + cls + '">' + (r.pnl >= 0 ? '+' : '') +
+          fmtNum(r.pnl, 0) + ' USDT</div>' +
+          '<div class="result-grid">' +
+          '<div><span>درصد برد</span><b>' + fmtPct(r.win_rate) + '</b></div>' +
+          '<div><span>تعداد معامله</span><b>' + r.trades + '</b></div>' +
+          '<div><span>قدرت سود</span><b>' + (r.profit_factor == null ? '∞' : fmtNum(r.profit_factor, 2)) + '</b></div>' +
+          '<div><span>بیشترین افت</span><b>' + fmtPct(r.max_drawdown) + '</b></div>' +
+          '</div>' +
+          '<div class="preset-chip" style="margin-top:12px">' +
+          dualHtml(r.start.gregorian + ' → ' + r.end.gregorian, r.start.jalali + ' → ' + r.end.jalali) +
+          '</div></article>';
+      }).join('');
+
+      table.innerHTML = rows.map(function (r) {
+        const cls = r.pnl >= 0 ? 'up' : 'down';
+        return '<tr' + (r.name === 'BTC' ? ' class="featured"' : '') + '>' +
+          '<td><strong>' + r.name_fa + '</strong> <span class="muted">(' + r.name + ')</span></td>' +
+          '<td>' + dualHtml(r.start.gregorian + ' → ' + r.end.gregorian, r.start.jalali + ' → ' + r.end.jalali) + '</td>' +
+          '<td class="mono ' + cls + '">' + (r.pnl >= 0 ? '+' : '') + fmtNum(r.pnl, 2) + '</td>' +
+          '<td class="mono">' + fmtPct(r.win_rate) + '</td>' +
+          '<td class="mono">' + r.trades + '</td>' +
+          '<td class="mono">' + (r.profit_factor == null ? '∞' : fmtNum(r.profit_factor, 2)) + '</td>' +
+          '<td class="mono">' + fmtPct(r.max_drawdown) + '</td>' +
+          '<td class="mono">' + fmtNum(r.final_equity, 0) + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    function renderWalkForward(wf) {
+      const body = document.getElementById('wfTableBody');
+      const lead = document.getElementById('wfLead');
+      if (!wf) {
+        body.innerHTML = '<tr><td colspan="6">داده‌ای نیست</td></tr>';
+        return;
+      }
+      lead.textContent = 'تکه‌های حدود ' + wf.fold_days +
+        ' روزه · ' + wf.positive_folds + ' از ' + wf.total_folds + ' تکه مثبت (preset best).';
+      body.innerHTML = (wf.folds || []).map(function (f) {
+        const cls = f.pnl >= 0 ? 'up' : 'down';
+        return '<tr>' +
+          '<td class="mono">' + f.start.gregorian + ' → ' + f.end.gregorian + '</td>' +
+          '<td><span class="dual-date"><span class="j">' + f.start.jalali + ' → ' + f.end.jalali + '</span></span></td>' +
+          '<td>' + f.trades + '</td>' +
+          '<td>' + fmtPct(f.win_rate) + '</td>' +
+          '<td class="' + cls + '">' + (f.pnl >= 0 ? '+' : '') + fmtNum(f.pnl, 2) + '</td>' +
+          '<td class="mono">' + (f.profit_factor == null ? '∞' : fmtNum(f.profit_factor, 2)) + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    async function loadPerformance() {
+      try {
+        const res = await fetch('./performance.json?ts=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) throw new Error('missing');
+        perfData = await res.json();
+        const ass = document.getElementById('perfAssumptions');
+        ass.innerHTML = (perfData.assumptions_fa || []).map(function (a) {
+          return '<span>' + a + '</span>';
+        }).join('');
+        renderJavidCoverage(perfData.rulebook_coverage || []);
+        renderMarkets(activePreset);
+        renderWalkForward(perfData.walk_forward_btc_best);
+      } catch (e) {
+        document.getElementById('perfMeta').textContent = 'گزارش عملکرد هنوز در دسترس نیست.';
+      }
     }
 
     async function loadLive() {
       const chip = document.getElementById('statusChip');
       const state = document.getElementById('signalState');
       const detail = document.getElementById('signalDetail');
+      const scoreEl = document.getElementById('signalScore');
       try {
         const res = await fetch('./live.json?ts=' + Date.now(), { cache: 'no-store' });
         if (!res.ok) throw new Error('missing');
@@ -1006,22 +1444,29 @@
         document.getElementById('lastClose').textContent = fmtPrice(data.last_close);
         document.getElementById('systemMode').textContent = data.orders_enabled ? 'معامله واقعی' : 'فقط نمایش';
         document.getElementById('ordersBadge').textContent = data.orders_enabled ? 'سفارش روشن' : 'سفارش خاموش';
+        renderScoreBoard(data);
         if (data.active_signal) {
           const s = data.active_signal;
           const sideFa = s.side === 'long' ? 'خرید' : 'فروش';
           state.className = 'state hot';
           state.textContent = 'سیگنال فعال: ' + sideFa;
           detail.textContent = 'ورود ' + s.entry + '  ·  حد ضرر ' + s.stop_loss + '  ·  حد سود ' + s.take_profit;
+          const qFa = qualityFa(s.score_quality, s.score_quality_fa);
+          scoreEl.innerHTML = s.score != null
+            ? ('امتیاز: <span class="mono">' + s.score + '/24</span> · ' + qFa)
+            : 'امتیاز: —';
         } else {
           state.className = 'state wait';
           state.textContent = 'الان سیگنال فعالی نیست';
           detail.textContent = 'سیستم آنلاین است و منتظر شرایط بعدی می‌ماند';
+          scoreEl.textContent = 'امتیاز: — (بدون سیگنال فعال)';
         }
       } catch (e) {
         chip.innerHTML = '<i></i> در انتظار آپدیت';
         state.className = 'state wait';
         state.textContent = 'هنوز داده زنده نیامده';
         detail.textContent = 'بعد از اولین آپدیت خودکار، اینجا قیمت و وضعیت نشان داده می‌شود.';
+        scoreEl.textContent = 'امتیاز: —';
       }
     }
 
@@ -1060,10 +1505,17 @@
     }
 
     document.getElementById('refreshBtn').addEventListener('click', refreshPriceNow);
+    document.querySelectorAll('.perf-tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        renderMarkets(btn.getAttribute('data-preset'));
+      });
+    });
     loadLive();
+    loadPerformance();
     tickCountdown();
     setInterval(loadLive, 60 * 1000);
     setInterval(tickCountdown, 1000);
+
   </script>
 </body>
 </html>

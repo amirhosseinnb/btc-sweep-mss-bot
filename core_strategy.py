@@ -69,6 +69,8 @@ class Signal:
     risk_reward: float
     score: Optional[int] = None
     score_detail: Optional[str] = None
+    score_quality: Optional[str] = None
+    tp_reason: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -92,15 +94,19 @@ class StrategyConfig:
     # CRT filters (prior NY-day range).
     require_crt_reclaim: bool = False
     require_crt_sweep: bool = False
-    # Divergence + FVG (Phase 1.7).
+    # Divergence + FVG (Phase 1.7 / Rulebook §8).
     require_divergence: bool = False
+    accept_hidden_divergence: bool = True
     rsi_period: int = 14
     divergence_lookback: int = 40
     fvg_lookback_bars: int = 20
     max_bars_mss_to_fvg: int = 20
-    # 24-point confluence scoring (optional; default off).
+    # Javid Rulebook 24-point scoring (12 × 0–2).
     enable_scoring: bool = False
     min_score: int = 12
+    reject_weak_scores: bool = False  # reject 12–15 (Weak band)
+    # Take-profit objective (Rulebook §6–7).
+    tp_mode: str = "fixed_rr"  # fixed_rr | liquidity | crt_opposite
     # ICT / Price-Action confluence hard filters (optional; default off).
     require_order_block: bool = False
     require_pd_alignment: bool = False  # long in discount / short in premium
@@ -115,6 +121,10 @@ class StrategyConfig:
         if self.entry_mode not in {"mss_close", "first_retracement", "fvg_retrace"}:
             raise ValueError(
                 "entry_mode must be 'mss_close', 'first_retracement', or 'fvg_retrace'"
+            )
+        if self.tp_mode not in {"fixed_rr", "liquidity", "crt_opposite"}:
+            raise ValueError(
+                "tp_mode must be 'fixed_rr', 'liquidity', or 'crt_opposite'"
             )
         if self.atr_period < 1:
             raise ValueError("atr_period must be >= 1")
@@ -325,12 +335,10 @@ def in_session_mask(
 
 
 def _rr_targets(side: Side, entry: float, stop: float, rr: float) -> float:
-    risk = abs(entry - stop)
-    if risk <= 0:
-        raise ValueError("invalid stop: zero or negative risk distance")
-    if side == Side.LONG:
-        return entry + rr * risk
-    return entry - rr * risk
+    """Backward-compatible fixed R:R helper; prefer targets.resolve_take_profit."""
+    from targets import fixed_rr_target
+
+    return fixed_rr_target(side, entry, stop, rr)
 
 
 def compute_atr(df: pd.DataFrame, period: int = 14) -> np.ndarray:
@@ -445,7 +453,11 @@ def generate_signals(
         is_reclaim_close,
         pierces_crt_boundary,
     )
-    from divergence import divergence_seen_recently, regular_divergence_flags
+    from divergence import (
+        divergence_seen_recently,
+        hidden_divergence_flags,
+        regular_divergence_flags,
+    )
     from ict import (
         detect_fvgs,
         find_order_block,
@@ -457,7 +469,14 @@ def generate_signals(
         pd_aligned_for_side,
     )
     from price_action import StructureKind, active_dealing_range, infer_structure_events
-    from scoring import SetupScoreContext, format_score, passes_min_score, score_setup
+    from scoring import (
+        SetupScoreContext,
+        format_score,
+        passes_min_score,
+        score_quality,
+        score_setup,
+    )
+    from targets import realized_rr, resolve_take_profit
 
     cfg = config or StrategyConfig()
     data = _require_ohlcv(df, timezone=cfg.timezone)
@@ -529,6 +548,12 @@ def generate_signals(
         swing_n=cfg.swing_n,
         lookback=cfg.divergence_lookback,
     )
+    bull_hid, bear_hid = hidden_divergence_flags(
+        data,
+        rsi_period=cfg.rsi_period,
+        swing_n=cfg.swing_n,
+        lookback=cfg.divergence_lookback,
+    )
     fvgs = detect_fvgs(data)
     structure_events = infer_structure_events(data, swings)
 
@@ -541,6 +566,8 @@ def generate_signals(
     annotated["crt_low"] = crt_low
     annotated["bull_div"] = bull_div
     annotated["bear_div"] = bear_div
+    annotated["bull_hid_div"] = bull_hid
+    annotated["bear_hid_div"] = bear_hid
     annotated["signal"] = pd.Series(pd.NA, index=annotated.index, dtype="string")
     annotated["signal_score"] = np.nan
 
@@ -601,8 +628,14 @@ def generate_signals(
         if cfg.require_crt_reclaim and not pending_reclaimed:
             return False
         if cfg.require_divergence:
-            flags = bull_div if side == Side.LONG else bear_div
-            if not divergence_seen_recently(flags, bar_i, cfg.divergence_lookback):
+            reg = bull_div if side == Side.LONG else bear_div
+            hid = bull_hid if side == Side.LONG else bear_hid
+            has_reg = divergence_seen_recently(reg, bar_i, cfg.divergence_lookback)
+            has_hid = (
+                cfg.accept_hidden_divergence
+                and divergence_seen_recently(hid, bar_i, cfg.divergence_lookback)
+            )
+            if not (has_reg or has_hid):
                 return False
         return True
 
@@ -632,12 +665,14 @@ def generate_signals(
         if dealing is not None:
             pd_ok = pd_aligned_for_side(side, entry_price, dealing[0], dealing[1])
         choch_ok = False
+        bos_ok = False
         for ev in reversed(structure_events):
             if ev.index > mss_index:
                 continue
             if ev.side is side and ev.kind is StructureKind.CHOCH:
                 choch_ok = True
-                break
+            if ev.side is side and ev.kind is StructureKind.BOS:
+                bos_ok = True
             if ev.index < sweep.index:
                 break
         return {
@@ -645,6 +680,7 @@ def generate_signals(
             "ote_aligned": ote_ok,
             "pd_aligned": pd_ok,
             "choch_aligned": choch_ok,
+            "bos_aligned": bos_ok,
         }
 
     def _passes_ict_pa_filters(flags: dict[str, bool]) -> bool:
@@ -658,6 +694,25 @@ def generate_signals(
             return False
         return True
 
+    def _build_tp(
+        *,
+        side: Side,
+        entry: float,
+        stop: float,
+        asof_index: int,
+    ) -> tuple[float, bool, str]:
+        return resolve_take_profit(
+            side=side,
+            entry=entry,
+            stop=stop,
+            risk_reward=cfg.risk_reward,
+            tp_mode=cfg.tp_mode,
+            swings=swings,
+            asof_index=asof_index,
+            crt_high=float(crt_high[asof_index]),
+            crt_low=float(crt_low[asof_index]),
+        )
+
     def _score_signal(
         *,
         side: Side,
@@ -665,18 +720,29 @@ def generate_signals(
         mss_index: int,
         entry_index: int,
         entry_price: float,
+        stop: float,
+        take_profit: float,
         crt_reclaimed: bool,
         crt_swept: bool,
         fvg_present: bool,
+        liquidity_target_used: bool,
         flags: dict[str, bool],
-    ) -> tuple[Optional[int], Optional[str]]:
+    ) -> tuple[Optional[int], Optional[str], Optional[str]]:
+        """Returns (total, detail_or_None_if_rejected, quality)."""
         if not cfg.enable_scoring:
-            return None, None
+            return None, "scoring_off", None
         if sweep.side == Side.LONG:
             penetration = float(sweep.swept_level - lows[sweep.index])
         else:
             penetration = float(highs[sweep.index] - sweep.swept_level)
-        div_flags = bull_div if side == Side.LONG else bear_div
+        reg_flags = bull_div if side == Side.LONG else bear_div
+        hid_flags = bull_hid if side == Side.LONG else bear_hid
+        crt_ok = bool(
+            np.isfinite(crt_high[entry_index])
+            and np.isfinite(crt_low[entry_index])
+            and crt_high[entry_index] > crt_low[entry_index]
+        )
+        rr = realized_rr(side, entry_price, stop, take_profit)
         breakdown = score_setup(
             SetupScoreContext(
                 side=side,
@@ -687,24 +753,35 @@ def generate_signals(
                 mss_body=float(abs(closes[mss_index] - opens[mss_index])),
                 atr_at_mss=float(atr[mss_index]),
                 htf_bias=int(htf_vals[entry_index]),
-                in_london_ny=bool(session_london_ny[entry_index]),
-                in_killzone=bool(session_killzone[entry_index]),
+                crt_levels_valid=crt_ok,
                 crt_swept=crt_swept,
                 crt_reclaimed=crt_reclaimed,
-                divergence_ok=divergence_seen_recently(
-                    div_flags, entry_index, cfg.divergence_lookback
+                divergence_regular=divergence_seen_recently(
+                    reg_flags, entry_index, cfg.divergence_lookback
+                ),
+                divergence_hidden=divergence_seen_recently(
+                    hid_flags, entry_index, cfg.divergence_lookback
                 ),
                 fvg_present=fvg_present,
                 order_block_present=flags["order_block_present"],
                 ote_aligned=flags["ote_aligned"],
                 pd_aligned=flags["pd_aligned"],
                 choch_aligned=flags["choch_aligned"],
+                bos_aligned=flags["bos_aligned"],
                 displacement_atr_mult=cfg.displacement_atr_mult,
+                realized_rr=rr,
+                liquidity_target_used=liquidity_target_used,
+                mss_confirmed=True,
             )
         )
-        if not passes_min_score(breakdown, cfg.min_score):
-            return breakdown.total, None  # total for reject tracking; detail None => drop
-        return breakdown.total, format_score(breakdown)
+        quality = score_quality(breakdown.total).value
+        if not passes_min_score(
+            breakdown,
+            cfg.min_score,
+            reject_weak=cfg.reject_weak_scores,
+        ):
+            return breakdown.total, None, quality
+        return breakdown.total, format_score(breakdown), quality
 
     def _emit(sig: Signal) -> None:
         signals.append(sig)
@@ -781,7 +858,12 @@ def generate_signals(
                 if cfg.entry_mode == "mss_close":
                     entry = float(closes[i])
                     try:
-                        tp = _rr_targets(pending.side, entry, stop, cfg.risk_reward)
+                        tp, liq_used, tp_reason = _build_tp(
+                            side=pending.side,
+                            entry=entry,
+                            stop=stop,
+                            asof_index=i,
+                        )
                     except ValueError:
                         pending = None
                         pending_reclaimed = False
@@ -798,15 +880,18 @@ def generate_signals(
                         pending_reclaimed = False
                         pending_crt_swept = False
                         continue
-                    score, detail = _score_signal(
+                    score, detail, quality = _score_signal(
                         side=pending.side,
                         sweep=pending,
                         mss_index=i,
                         entry_index=i,
                         entry_price=entry,
+                        stop=stop,
+                        take_profit=tp,
                         crt_reclaimed=pending_reclaimed,
                         crt_swept=pending_crt_swept,
                         fvg_present=fvg_near is not None,
+                        liquidity_target_used=liq_used,
                         flags=flags,
                     )
                     if cfg.enable_scoring and detail is None:
@@ -824,7 +909,9 @@ def generate_signals(
                             sweep_index=pending.index,
                             risk_reward=cfg.risk_reward,
                             score=score,
-                            score_detail=detail,
+                            score_detail=detail if detail != "scoring_off" else None,
+                            score_quality=quality,
+                            tp_reason=tp_reason,
                         )
                     )
                     pending = None
@@ -904,7 +991,12 @@ def generate_signals(
                     awaiting_retrace = None
                     continue
                 try:
-                    tp = _rr_targets(sweep.side, entry, stop, cfg.risk_reward)
+                    tp, liq_used, tp_reason = _build_tp(
+                        side=sweep.side,
+                        entry=entry,
+                        stop=stop,
+                        asof_index=i,
+                    )
                 except ValueError:
                     awaiting_retrace = None
                     continue
@@ -917,15 +1009,18 @@ def generate_signals(
                 if not _passes_ict_pa_filters(flags):
                     awaiting_retrace = None
                     continue
-                score, detail = _score_signal(
+                score, detail, quality = _score_signal(
                     side=sweep.side,
                     sweep=sweep,
                     mss_index=mss_i,
                     entry_index=i,
                     entry_price=entry,
+                    stop=stop,
+                    take_profit=tp,
                     crt_reclaimed=crt_reclaimed_at_mss,
                     crt_swept=crt_swept_at_mss,
                     fvg_present=gap is not None,
+                    liquidity_target_used=liq_used,
                     flags=flags,
                 )
                 if cfg.enable_scoring and detail is None:
@@ -941,7 +1036,9 @@ def generate_signals(
                         sweep_index=sweep.index,
                         risk_reward=cfg.risk_reward,
                         score=score,
-                        score_detail=detail,
+                        score_detail=detail if detail != "scoring_off" else None,
+                        score_quality=quality,
+                        tp_reason=tp_reason,
                     )
                 )
                 awaiting_retrace = None

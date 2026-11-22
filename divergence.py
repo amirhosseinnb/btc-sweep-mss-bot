@@ -1,5 +1,9 @@
 """
-Regular RSI divergence detection for Phase 1.7 filters.
+RSI divergence detection for Javid Rulebook §8–9.
+
+Supports:
+  - Regular bullish / bearish (reversal confirmation)
+  - Hidden bullish / bearish (continuation confirmation)
 """
 
 from __future__ import annotations
@@ -60,13 +64,10 @@ def regular_divergence_flags(
     lookback: int = 40,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Boolean arrays aligned to `df`:
+    Regular divergence (reversal):
 
-    bullish[i] = True if a regular bullish divergence confirmed by bar i
-    bearish[i] = True if a regular bearish divergence confirmed by bar i
-
-    Confirmation is the right-side swing_n bar of the second price extremum,
-    so there is no look-ahead beyond that confirmation.
+    bullish[i] = price LL + RSI HL
+    bearish[i] = price HH + RSI LH
     """
     closes = df["close"].to_numpy(dtype=float)
     lows = df["low"].to_numpy(dtype=float)
@@ -76,36 +77,78 @@ def regular_divergence_flags(
     bull = np.zeros(len(df), dtype=bool)
     bear = np.zeros(len(df), dtype=bool)
 
-    # Extrema on raw series; confirmation index = extremum + swing_n
     low_ext = _local_extrema(lows, swing_n, "low")
     high_ext = _local_extrema(highs, swing_n, "high")
 
     for k in range(1, len(low_ext)):
         i1, i2 = low_ext[k - 1], low_ext[k]
         conf = i2 + swing_n
-        if conf >= len(df):
-            continue
-        if i2 - i1 > lookback:
+        if conf >= len(df) or i2 - i1 > lookback:
             continue
         r1, r2 = rsi[i1], rsi[i2]
         if not (np.isfinite(r1) and np.isfinite(r2)):
             continue
-        # Regular bullish: price lower-low, RSI higher-low
         if lows[i2] < lows[i1] and r2 > r1:
             bull[conf] = True
 
     for k in range(1, len(high_ext)):
         i1, i2 = high_ext[k - 1], high_ext[k]
         conf = i2 + swing_n
-        if conf >= len(df):
-            continue
-        if i2 - i1 > lookback:
+        if conf >= len(df) or i2 - i1 > lookback:
             continue
         r1, r2 = rsi[i1], rsi[i2]
         if not (np.isfinite(r1) and np.isfinite(r2)):
             continue
-        # Regular bearish: price higher-high, RSI lower-high
         if highs[i2] > highs[i1] and r2 < r1:
+            bear[conf] = True
+
+    return bull, bear
+
+
+def hidden_divergence_flags(
+    df: pd.DataFrame,
+    *,
+    rsi_period: int = 14,
+    swing_n: int = 3,
+    lookback: int = 40,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Hidden divergence (continuation):
+
+    bullish[i] = price HL + RSI LL
+    bearish[i] = price LH + RSI HH
+    """
+    closes = df["close"].to_numpy(dtype=float)
+    lows = df["low"].to_numpy(dtype=float)
+    highs = df["high"].to_numpy(dtype=float)
+    rsi = compute_rsi(closes, period=rsi_period)
+
+    bull = np.zeros(len(df), dtype=bool)
+    bear = np.zeros(len(df), dtype=bool)
+
+    low_ext = _local_extrema(lows, swing_n, "low")
+    high_ext = _local_extrema(highs, swing_n, "high")
+
+    for k in range(1, len(low_ext)):
+        i1, i2 = low_ext[k - 1], low_ext[k]
+        conf = i2 + swing_n
+        if conf >= len(df) or i2 - i1 > lookback:
+            continue
+        r1, r2 = rsi[i1], rsi[i2]
+        if not (np.isfinite(r1) and np.isfinite(r2)):
+            continue
+        if lows[i2] > lows[i1] and r2 < r1:
+            bull[conf] = True
+
+    for k in range(1, len(high_ext)):
+        i1, i2 = high_ext[k - 1], high_ext[k]
+        conf = i2 + swing_n
+        if conf >= len(df) or i2 - i1 > lookback:
+            continue
+        r1, r2 = rsi[i1], rsi[i2]
+        if not (np.isfinite(r1) and np.isfinite(r2)):
+            continue
+        if highs[i2] < highs[i1] and r2 > r1:
             bear[conf] = True
 
     return bull, bear

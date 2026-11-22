@@ -1,8 +1,17 @@
 """
-Explicit No-Trade gate for Phase 1.
+Explicit No-Trade gate for Phase 1 / Javid Rulebook §11 + §13.
 
 Centralizes reasons to skip a new entry beyond strategy signal filters:
-daily trade cap, post-loss cooldown, and optional risk circuit breakers.
+  - daily trade cap
+  - post-loss cooldown
+  - risk circuit breakers (daily loss / consecutive losses)
+
+Strategy-side no-trade (handled in generate_signals / scoring, not here):
+  - missing Sweep / Reclaim / Displacement / MSS
+  - mid-range / no edge (PD filter)
+  - R:R < 1:2
+  - score bands 0-11 (and optional Weak 12-15)
+  - HTF contradiction
 """
 
 from __future__ import annotations

@@ -59,10 +59,22 @@ def check_philosophy(
             violations.append("risk_reward < 2.0")
         if strategy.enable_scoring and strategy.min_score <= 0:
             notes.append("scoring enabled but min_score is 0 (no filter effect)")
+        if strategy.enable_scoring and strategy.min_score < 12:
+            notes.append("min_score < 12 — Rulebook No-Trade band can still pass via critical gates only")
+        if strategy.reject_weak_scores:
+            notes.append("reject_weak_scores ON — Weak (12-15) setups blocked")
+        if strategy.tp_mode != "fixed_rr":
+            notes.append(f"tp_mode={strategy.tp_mode} — liquidity/CRT objectives preferred")
         if strategy.require_session:
             notes.append("session filter ON — aligns with killzone philosophy")
         if strategy.require_htf_bias:
             notes.append("HTF bias ON — aligns with higher-timeframe philosophy")
+        if (
+            strategy.require_crt_reclaim
+            and strategy.require_displacement
+            and strategy.require_divergence
+        ):
+            notes.append("Golden CRT path filters ON (reclaim+displacement+divergence)")
 
     if backtest is not None:
         if backtest.risk_per_trade > 0.01 + 1e-12:

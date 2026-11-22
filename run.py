@@ -279,13 +279,24 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--enable-scoring",
         action="store_true",
-        help="Enable 24-point confluence scoring and min-score filter",
+        help="Enable Javid 24-point (12x0-2) confluence scoring",
     )
     p.add_argument(
         "--min-score",
         type=int,
         default=12,
         help="Minimum confluence score to take a trade (0-24, default 12)",
+    )
+    p.add_argument(
+        "--reject-weak-scores",
+        action="store_true",
+        help="Reject Weak band (12-15); keep Review/Good/A+ only",
+    )
+    p.add_argument(
+        "--tp-mode",
+        choices=("fixed_rr", "liquidity", "crt_opposite"),
+        default="fixed_rr",
+        help="TP objective: fixed R:R, opposite swing liquidity, or CRT boundary",
     )
     p.add_argument(
         "--require-order-block",
@@ -309,9 +320,9 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument(
         "--preset",
-        choices=("none", "best", "best_fvg", "full"),
+        choices=("none", "best", "best_fvg", "full", "javid"),
         default="none",
-        help="best=HTF+session; best_fvg=+FVG; full=HTF+session+CRT+div+scoring",
+        help="best|best_fvg|full|javid (full Rulebook gates + scoring bands)",
     )
     p.add_argument(
         "--export-trades",
@@ -342,6 +353,22 @@ def main() -> None:
         args.enable_scoring = True
         args.min_score = max(int(args.min_score), 14)
         args.manage_trades = True
+    elif args.preset == "javid":
+        # Javid Rulebook golden path as hard gates; PD/FVG preferred via scoring.
+        # Critical floor always: Sweep + MSS + R:R>=2 (enforced in strategy/scoring).
+        args.require_htf_bias = True
+        args.require_session = True
+        args.session_mode = "london_ny"
+        args.require_crt_sweep = True
+        args.require_crt_reclaim = True
+        args.require_displacement = True
+        args.require_divergence = True
+        args.enable_scoring = True
+        args.reject_weak_scores = True
+        args.min_score = max(int(args.min_score), 16)
+        args.tp_mode = "liquidity"
+        args.manage_trades = True
+        args.entry_mode = "mss_close"
 
     csv_path = ensure_sample_csv(args.csv) if args.csv == Path("data/sample_ohlcv.csv") else args.csv
     if not csv_path.exists():
@@ -365,6 +392,8 @@ def main() -> None:
         require_divergence=args.require_divergence,
         enable_scoring=bool(args.enable_scoring),
         min_score=int(args.min_score),
+        reject_weak_scores=bool(args.reject_weak_scores),
+        tp_mode=str(args.tp_mode),
         require_order_block=bool(args.require_order_block),
         require_pd_alignment=bool(args.require_pd_alignment),
         require_ote=bool(args.require_ote),
@@ -427,7 +456,8 @@ def main() -> None:
         f"max_bars={args.max_bars_sweep_mss} min_sweep_atr={args.min_sweep_atr}"
     )
     print(
-        f"Scoring        : enabled={args.enable_scoring} min_score={args.min_score}/24"
+        f"Scoring        : enabled={args.enable_scoring} min_score={args.min_score}/24 "
+        f"reject_weak={args.reject_weak_scores} tp_mode={args.tp_mode}"
     )
     print(
         f"ICT/PA         : OB={args.require_order_block} PD={args.require_pd_alignment} "

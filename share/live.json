@@ -3,52 +3,119 @@
   "mode": "read_only_paper",
   "connected_to_market": true,
   "orders_enabled": false,
+  "preset": "javid",
   "symbol": "BTCUSDT",
   "timeframe": "4h",
   "timezone": "America/New_York",
-  "updated_at_utc": "2026-11-22T17:51:19.997417+00:00",
-  "mark_price": 60826.77,
+  "updated_at_utc": "2026-11-22T21:30:41.988248+00:00",
+  "updated_at_gregorian": "2026-11-22 21:30",
+  "updated_at_jalali": "1405/09/01 21:30",
+  "mark_price": 60990.01,
   "last_closed_bar": "2026-11-22T11:00:00-05:00",
-  "last_close": 60826.77,
-  "bars_used": 2400,
-  "signals_total": 20,
+  "last_closed_bar_gregorian": "2026-11-22 11:00",
+  "last_closed_bar_jalali": "1405/09/01 11:00",
+  "last_closed_bar_label": "2026-11-22 11:00 · 1405/09/01 11:00",
+  "last_close": 60737.12,
+  "bars_used": 2399,
+  "signals_total": 4,
   "active_signal": null,
   "recent_signals": [
     {
-      "side": "long",
-      "entry": 79100.01,
-      "stop_loss": 75952.09,
-      "take_profit": 85395.85,
-      "bar_time": "2026-08-24T08:00:00-04:00"
-    },
-    {
-      "side": "long",
-      "entry": 81348.0,
-      "stop_loss": 76264.0,
-      "take_profit": 91516.0,
-      "bar_time": "2026-09-03T08:00:00-04:00"
-    },
-    {
-      "side": "long",
-      "entry": 77892.24,
-      "stop_loss": 76388.72,
-      "take_profit": 80899.28,
-      "bar_time": "2026-09-14T00:00:00-04:00"
+      "side": "short",
+      "entry": 77991.89,
+      "stop_loss": 81971.0,
+      "take_profit": 69388.0,
+      "risk_reward": 2.0,
+      "bar_time": "2026-10-29T16:00:00-04:00",
+      "bar_time_gregorian": "2026-10-29 16:00",
+      "bar_time_jalali": "1405/08/07 16:00",
+      "bar_time_label": "2026-10-29 16:00 · 1405/08/07 16:00",
+      "score": 17,
+      "score_detail": "17/24:review(htf2|ms2|kz0|crt2|sw1|div1|rc2|dp2|mss2|zo1|lt1|rr1)",
+      "score_quality": "review",
+      "score_quality_fa": "متوسط / بررسی",
+      "tp_reason": "liquidity_swing"
     },
     {
       "side": "long",
       "entry": 80725.6,
       "stop_loss": 75605.0,
-      "take_profit": 90966.8,
-      "bar_time": "2026-09-18T08:00:00-04:00"
+      "take_profit": 91165.65,
+      "risk_reward": 2.0,
+      "bar_time": "2026-09-18T08:00:00-04:00",
+      "bar_time_gregorian": "2026-09-18 08:00",
+      "bar_time_jalali": "1405/06/27 08:00",
+      "bar_time_label": "2026-09-18 08:00 · 1405/06/27 08:00",
+      "score": 20,
+      "score_detail": "20/24:good(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt1|rr1)",
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "tp_reason": "liquidity_swing"
     },
     {
       "side": "short",
-      "entry": 77991.89,
-      "stop_loss": 81971.0,
-      "take_profit": 70033.67,
-      "bar_time": "2026-10-29T16:00:00-04:00"
+      "entry": 62886.03,
+      "stop_loss": 64862.0,
+      "take_profit": 58934.09,
+      "risk_reward": 2.0,
+      "bar_time": "2026-06-23T00:00:00-04:00",
+      "bar_time_gregorian": "2026-06-23 00:00",
+      "bar_time_jalali": "1405/04/02 00:00",
+      "bar_time_label": "2026-06-23 00:00 · 1405/04/02 00:00",
+      "score": 19,
+      "score_detail": "19/24:good(htf2|ms2|kz0|crt2|sw2|div1|rc2|dp2|mss2|zo2|lt1|rr1)",
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "tp_reason": "fixed_rr_fallback"
+    },
+    {
+      "side": "short",
+      "entry": 84483.79,
+      "stop_loss": 90365.85,
+      "take_profit": 72719.67,
+      "risk_reward": 2.0,
+      "bar_time": "2025-12-18T11:00:00-05:00",
+      "bar_time_gregorian": "2025-12-18 11:00",
+      "bar_time_jalali": "1404/09/27 11:00",
+      "bar_time_label": "2025-12-18 11:00 · 1404/09/27 11:00",
+      "score": 20,
+      "score_detail": "20/24:good(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt1|rr1)",
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "tp_reason": "fixed_rr_fallback"
     }
   ],
-  "note_fa": "اتصال فقط برای خواندن قیمت و سیگنال آزمایشی است؛ سفارش واقعی ارسال نمی‌شود."
+  "score_board": {
+    "max": 24,
+    "bands": [
+      {
+        "range": "0-11",
+        "key": "no_trade",
+        "label_fa": "بدون معامله"
+      },
+      {
+        "range": "12-15",
+        "key": "weak",
+        "label_fa": "ضعیف"
+      },
+      {
+        "range": "16-18",
+        "key": "review",
+        "label_fa": "متوسط / بررسی"
+      },
+      {
+        "range": "19-21",
+        "key": "good",
+        "label_fa": "خوب"
+      },
+      {
+        "range": "22-24",
+        "key": "a_plus",
+        "label_fa": "عالی A+"
+      }
+    ],
+    "min_score": 16,
+    "reject_weak": true
+  },
+  "note_fa": "اتصال فقط برای خواندن قیمت و سیگنال آزمایشی است؛ سفارش واقعی ارسال نمی‌شود. امتیازها طبق Rulebook جاوید (۱۲×۰–۲)."
 }

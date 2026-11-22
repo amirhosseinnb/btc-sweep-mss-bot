@@ -1,8 +1,8 @@
 """
 Read-only BTC 4H paper signal runner (no live orders).
 
-Fetches Binance public klines, evaluates the `best` preset on *closed*
-candles only, and appends new signals to a CSV log.
+Fetches Binance public klines, evaluates the Javid Rulebook preset on *closed*
+candles only (override with --preset best|javid), and appends new signals to a CSV log.
 """
 
 from __future__ import annotations
@@ -15,9 +15,23 @@ from pathlib import Path
 
 import pandas as pd
 
-from core_strategy import DEFAULT_TIMEZONE, generate_signals, to_project_timezone
+from core_strategy import DEFAULT_TIMEZONE, StrategyConfig, generate_signals, to_project_timezone
 from download_data import TIMEFRAME_MS, fetch_klines, fetch_ticker_price, klines_to_df
+from rulebook import javid_strategy_config
 from validate import best_strategy_config
+
+
+PRESET_BUILDERS = {
+    "best": best_strategy_config,
+    "javid": javid_strategy_config,
+}
+
+
+def strategy_for_preset(name: str) -> StrategyConfig:
+    key = (name or "javid").lower()
+    if key not in PRESET_BUILDERS:
+        raise ValueError(f"Unknown paper preset: {name} (use best|javid)")
+    return PRESET_BUILDERS[key]()
 
 
 def fetch_closed_ohlcv(
@@ -87,6 +101,36 @@ def seconds_until_next_close(timeframe: str) -> int:
     return max(5, nxt - now + 2)  # +2s buffer after close
 
 
+def signal_to_row(
+    *,
+    sig,
+    last_bar_time: pd.Timestamp,
+    checked_at: str,
+    symbol: str,
+    timeframe: str,
+    mark: float,
+    preset: str,
+) -> dict:
+    return {
+        "signal_time": last_bar_time.isoformat(),
+        "checked_at_utc": checked_at,
+        "symbol": symbol.upper(),
+        "timeframe": timeframe,
+        "preset": preset,
+        "side": sig.side.value,
+        "entry": sig.entry,
+        "stop_loss": sig.stop_loss,
+        "take_profit": sig.take_profit,
+        "risk_reward": sig.risk_reward,
+        "score": sig.score,
+        "score_detail": sig.score_detail,
+        "score_quality": sig.score_quality,
+        "tp_reason": sig.tp_reason,
+        "mark_price": mark,
+        "status": "paper_signal_only",
+    }
+
+
 def evaluate_once(
     *,
     symbol: str,
@@ -94,9 +138,10 @@ def evaluate_once(
     days: int,
     log_path: Path,
     state_path: Path,
+    preset: str = "javid",
 ) -> dict:
     ohlcv = fetch_closed_ohlcv(symbol, timeframe, days)
-    cfg = best_strategy_config()
+    cfg = strategy_for_preset(preset)
     annotated, signals = generate_signals(ohlcv, cfg)
     mark = latest_mark_price(symbol)
 
@@ -108,6 +153,7 @@ def evaluate_once(
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "symbol": symbol.upper(),
         "timeframe": timeframe,
+        "preset": preset,
         "last_closed_bar": str(last_bar_time),
         "last_close": last_close,
         "mark_price": mark,
@@ -118,7 +164,7 @@ def evaluate_once(
 
     if not active:
         print(
-            f"[{snapshot['checked_at_utc']}] {symbol} {timeframe} | "
+            f"[{snapshot['checked_at_utc']}] {symbol} {timeframe} preset={preset} | "
             f"last_bar={last_bar_time} close={last_close:.2f} mark={mark:.2f} | NO new signal"
         )
     else:
@@ -128,27 +174,22 @@ def evaluate_once(
                 f"[{snapshot['checked_at_utc']}] Signal already logged for {last_bar_time}"
             )
         else:
-            row = {
-                "signal_time": last_bar_time.isoformat(),
-                "checked_at_utc": snapshot["checked_at_utc"],
-                "symbol": symbol.upper(),
-                "timeframe": timeframe,
-                "side": sig.side.value,
-                "entry": sig.entry,
-                "stop_loss": sig.stop_loss,
-                "take_profit": sig.take_profit,
-                "risk_reward": sig.risk_reward,
-                "score": sig.score,
-                "score_detail": sig.score_detail,
-                "mark_price": mark,
-                "status": "paper_signal_only",
-            }
+            row = signal_to_row(
+                sig=sig,
+                last_bar_time=last_bar_time,
+                checked_at=snapshot["checked_at_utc"],
+                symbol=symbol,
+                timeframe=timeframe,
+                mark=mark,
+                preset=preset,
+            )
             append_signal_log(log_path, row)
             snapshot["new_signal"] = True
             snapshot["signal"] = row
             print("=" * 60)
             print(" PAPER SIGNAL (no order sent)")
             print("=" * 60)
+            print(f"Preset : {preset}")
             print(f"Time   : {last_bar_time}")
             print(f"Side   : {sig.side.value.upper()}")
             print(f"Entry  : {sig.entry:.2f}")
@@ -156,6 +197,10 @@ def evaluate_once(
             print(f"TP     : {sig.take_profit:.2f}")
             if sig.score is not None:
                 print(f"Score  : {sig.score_detail or sig.score}")
+            if sig.score_quality:
+                print(f"Quality: {sig.score_quality}")
+            if sig.tp_reason:
+                print(f"TP mode: {sig.tp_reason}")
             print(f"Mark   : {mark:.2f}")
             print(f"Logged : {log_path}")
             print("=" * 60)
@@ -170,6 +215,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--symbol", default="BTCUSDT")
     p.add_argument("--timeframe", default="4h", choices=sorted(TIMEFRAME_MS))
     p.add_argument("--days", type=int, default=400, help="History window for indicators")
+    p.add_argument(
+        "--preset",
+        choices=sorted(PRESET_BUILDERS),
+        default="javid",
+        help="Strategy preset (default: javid Rulebook)",
+    )
     p.add_argument("--once", action="store_true", help="Run a single check and exit")
     p.add_argument(
         "--log",
@@ -190,7 +241,7 @@ def main() -> None:
     args = parse_args()
     print(
         f"Paper trader starting | {args.symbol} {args.timeframe} | "
-        f"read-only | timezone={DEFAULT_TIMEZONE}"
+        f"preset={args.preset} | read-only | timezone={DEFAULT_TIMEZONE}"
     )
     if args.once:
         evaluate_once(
@@ -199,6 +250,7 @@ def main() -> None:
             days=args.days,
             log_path=args.log,
             state_path=args.state,
+            preset=args.preset,
         )
         return
 
@@ -210,6 +262,7 @@ def main() -> None:
                 days=args.days,
                 log_path=args.log,
                 state_path=args.state,
+                preset=args.preset,
             )
         except Exception as exc:  # noqa: BLE001
             print(f"Error: {exc}")

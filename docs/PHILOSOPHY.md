@@ -29,8 +29,10 @@
 | ریسک ۱٪ | `BacktestConfig.risk_per_trade` در `backtester.py` |
 | بدون سفارش واقعی | `paper_trader.py` / `live.json` → `orders_enabled=false` |
 | No-Trade | `no_trade.py` + `risk.py` |
-| Confluence | `scoring.py` + فیلترهای ICT/PA |
+| Confluence | `scoring.py` (۱۲×۰–۲ Rulebook) + فیلترهای ICT/PA |
+| قانون طلایی | Sweep + MSS + R:R≥۲ در `scoring.passes_critical_gates` |
 | صحت‌سنجی فلسفه | `philosophy.check_philosophy()` در `run.py` |
+| چک‌لیست جاوید | `rulebook.py` · `docs/RULEBOOK.md` |
 
 ## تعریف عملی «آمادگی ورود»
 

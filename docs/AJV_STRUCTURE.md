@@ -77,7 +77,7 @@ MSS گاوی/خرسی پس از Sweep: کلوز بالای/زیر swing مخال
 
 **وضعیت:** پیاده  
 **کد:** `divergence.py`  
-`--require-divergence` · در preset `full` روشن است.
+Regular + Hidden RSI · `--require-divergence` · در `full` / `javid` روشن است.
 
 ---
 
@@ -107,7 +107,8 @@ Long: bullish sweep + MSS بالا · Short: bearish sweep + MSS پایین
 ## ۱۲) Stop Loss & Take Profit
 
 **وضعیت:** پیاده  
-SL پشت `sweep_extreme` · TP با R:R ≥ ۲ (`StrategyConfig.risk_reward`)
+SL پشت `sweep_extreme` · TP با R:R ≥ ۲  
+حالت‌های TP (`--tp-mode` / `targets.py`): `fixed_rr` · `liquidity` (سویینگ مقابل) · `crt_opposite`
 
 ---
 
@@ -123,22 +124,29 @@ SL پشت `sweep_extreme` · TP با R:R ≥ ۲ (`StrategyConfig.risk_reward`)
 
 ## ۱۴) 24-Point Scoring System
 
-**وضعیت:** پیاده  
-**کد:** `scoring.py`  
+**وضعیت:** پیاده — مطابق Rulebook جاوید (۱۲ × ۰–۲)  
+**کد:** `scoring.py` · `rulebook.py` · `docs/RULEBOOK.md`
 
 | بخش | سقف |
 |---|---|
-| Sweep | ۴ |
-| Structure / MSS (+CHOCH) | ۴ |
-| HTF Bias | ۳ |
-| Session | ۳ |
-| CRT | ۳ |
-| Divergence | ۳ |
-| ICT Zone (FVG/OB/OTE/PD) | ۲ |
-| Timing | ۲ |
+| HTF Bias | ۰–۲ |
+| Market Structure | ۰–۲ |
+| Key Zone (PD/OTE) | ۰–۲ |
+| CRT Range | ۰–۲ |
+| Liquidity Sweep | ۰–۲ |
+| Divergence (Regular/Hidden) | ۰–۲ |
+| Reclaim | ۰–۲ |
+| Displacement | ۰–۲ |
+| MSS/BOS | ۰–۲ |
+| FVG / Order Block | ۰–۲ |
+| Liquidity Target | ۰–۲ |
+| Risk-to-Reward | ۰–۲ |
 | **جمع** | **۲۴** |
 
-`--enable-scoring --min-score N`
+باندها: ۰–۱۱ No Trade · ۱۲–۱۵ Weak · ۱۶–۱۸ Review · ۱۹–۲۱ Good · ۲۲–۲۴ A+  
+قانون بحرانی: Sweep + MSS + R:R≥۲ — حتی با امتیاز بالا، بدون این‌ها ورود نیست.
+
+`--enable-scoring --min-score N --reject-weak-scores`
 
 ---
 
@@ -177,10 +185,12 @@ SL پشت `sweep_extreme` · TP با R:R ≥ ۲ (`StrategyConfig.risk_reward`)
 | `best` | HTF + session (baseline پایدار فاز ۱) |
 | `best_fvg` | همان + ورود FVG |
 | `full` | HTF + session + CRT reclaim + divergence + scoring(≥۱۴) + trade manage |
+| `javid` | Rulebook: CRT sweep/reclaim + displacement + div + scoring(≥۱۶، رد Weak) + TP نقدینگی + manage؛ PD/FVG از طریق امتیاز |
 
 ```bash
 python run.py --csv data/btcusdt_4h.csv --preset best
 python run.py --csv data/btcusdt_4h.csv --preset full
+python run.py --csv data/btcusdt_4h.csv --preset javid
 python validate.py
 ```
 
@@ -196,12 +206,14 @@ python validate.py
 | CRT | `crt.py` |
 | Divergence | `divergence.py` |
 | استراتژی | `core_strategy.py` |
-| امتیاز | `scoring.py` |
+| امتیاز Rulebook | `scoring.py` · `rulebook.py` |
+| اهداف TP / نقدینگی | `targets.py` |
 | No-Trade | `no_trade.py` |
 | مدیریت معامله | `trade_management.py` |
 | ریسک | `risk.py` |
 | بک‌تست | `backtester.py` · `run.py` · `validate.py` |
 | Paper | `paper_trader.py` |
+| Rulebook | `docs/RULEBOOK.md` · `docs/PHILOSOPHY.md` |
 | دموی وب | `docs/index.html` · `share/index.html` |
 
 ---
