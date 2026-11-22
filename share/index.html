@@ -848,6 +848,7 @@
           <div class="detail" id="signalDetail">در حال خواندن آخرین وضعیت از بازار…</div>
           <div class="score-line" id="signalScore">امتیاز: —</div>
           <div class="preset-chip" id="presetChip">Preset: قوانین کامل</div>
+          <div class="preset-chip" id="readinessChip" style="margin-top:10px">آمادگی فاز ۲: در حال سنجش</div>
         </div>
         <div class="term-metrics">
           <div class="metric"><span>قیمت زنده</span><b id="markPrice">—</b></div>
@@ -1028,6 +1029,12 @@
         </p>
       </div>
 
+      <h3 class="sec-title" style="font-size:1.35rem; margin-top:28px">گیت آمادگی ورود به فاز بعد</h3>
+      <p class="sec-lead" id="readinessLead">Train مدل ML نداریم؛ فقط شواهد Paper و Walk-Forward.</p>
+      <div class="done-list" id="readinessGates">
+        <div class="done-item"><i>…</i><p>در حال بارگذاری گیت‌های آمادگی…</p></div>
+      </div>
+
       <div class="split" style="margin-top:22px">
         <div class="block">
           <h4>در فاز ۱ انجام شد</h4>
@@ -1035,7 +1042,7 @@
             <li>هسته قوانین + امتیاز ۲۴تایی طبق منابع</li>
             <li>بک‌تست BTC / ETH / SOL</li>
             <li>Walk-Forward بیت‌کوین</li>
-            <li>Paper فقط‌خواندنی + مانیتور زنده</li>
+            <li>Paper فقط‌خواندنی + ژورنال + مانیتور زنده</li>
           </ul>
         </div>
         <div class="block">
@@ -1080,7 +1087,7 @@
         <div class="pipe">
           <div class="n">04</div>
           <h4>ورود و مدیریت</h4>
-          <p>امتیاز ۲۴تایی، SL/TP، ریسک ۱٪، و No-Trade.</p>
+          <p>امتیاز ۲۴تایی، SL/TP با R:R سخت‌تر، ریسک ۱٪، و No-Trade.</p>
         </div>
       </div>
       <div class="steps">
@@ -1475,10 +1482,37 @@
           return '<span>' + a + '</span>';
         }).join('');
         renderJavidCoverage(perfData.rulebook_coverage || []);
+        renderReadiness(perfData.readiness || null);
         renderMarkets(activePreset);
       } catch (e) {
         document.getElementById('perfMeta').textContent = 'گزارش عملکرد هنوز در دسترس نیست.';
       }
+    }
+
+    function renderReadiness(ready) {
+      const lead = document.getElementById('readinessLead');
+      const list = document.getElementById('readinessGates');
+      const chip = document.getElementById('readinessChip');
+      if (!ready) {
+        if (lead) lead.textContent = 'گیت آمادگی هنوز ساخته نشده.';
+        if (chip) chip.textContent = 'آمادگی فاز ۲: نامشخص';
+        return;
+      }
+      if (lead) lead.textContent = ready.verdict_fa || '';
+      if (chip) {
+        chip.textContent = ready.phase2_ready
+          ? 'آمادگی فاز ۲: تأیید شد'
+          : 'آمادگی فاز ۲: هنوز نه — Paper ادامه دارد';
+      }
+      if (!list) return;
+      list.innerHTML = (ready.gates || []).map(function (g) {
+        const mark = g.ok ? '✓' : '·';
+        const isRatio = g.id === 'paper_win_rate' || g.id === 'wf_javid';
+        const cur = isRatio ? fmtPct(g.current) : g.current;
+        const target = isRatio ? fmtPct(g.target) : g.target;
+        return '<div class="done-item"><i>' + mark + '</i><p><strong>' + g.title_fa +
+          '</strong> — اکنون: ' + cur + ' / هدف: ' + target + '</p></div>';
+      }).join('');
     }
 
     async function loadLive() {
@@ -1499,6 +1533,7 @@
         document.getElementById('systemMode').textContent = data.orders_enabled ? 'معامله واقعی' : 'فقط نمایش';
         document.getElementById('ordersBadge').textContent = data.orders_enabled ? 'سفارش روشن' : 'سفارش خاموش';
         renderScoreBoard(data);
+        if (data.readiness) renderReadiness(data.readiness);
         if (data.active_signal) {
           const s = data.active_signal;
           const sideFa = s.side === 'long' ? 'خرید' : 'فروش';

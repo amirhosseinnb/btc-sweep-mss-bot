@@ -21,7 +21,9 @@ from paper_trader import (
     strategy_for_preset,
 )
 from jalali import dual_date
+from paper_journal import OUTCOMES_PATH, READINESS_PATH
 from scoring import ScoreQuality, quality_label_fa
+import json as _json
 
 
 QUALITY_FA = {
@@ -75,7 +77,7 @@ def build_snapshot(
         signal_payload = _signal_public(sig, last_bar_time.isoformat())
         signal_payload["signal_time"] = last_bar_time.isoformat()
         log_path = Path("data/paper_signals.csv")
-        if not already_logged(log_path, last_bar_time):
+        if not already_logged(log_path, last_bar_time, symbol=symbol):
             append_signal_log(
                 log_path,
                 signal_to_row(
@@ -112,6 +114,13 @@ def build_snapshot(
     last_dual = dual_date(last_bar_time, with_time=True)
     updated_dual = dual_date(updated, with_time=True)
 
+    paper_outcomes = None
+    readiness = None
+    if OUTCOMES_PATH.exists():
+        paper_outcomes = _json.loads(OUTCOMES_PATH.read_text(encoding="utf-8"))
+    if READINESS_PATH.exists():
+        readiness = _json.loads(READINESS_PATH.read_text(encoding="utf-8"))
+
     return {
         "status": "online",
         "mode": "read_only_paper",
@@ -135,6 +144,9 @@ def build_snapshot(
         "active_signal": signal_payload,
         "recent_signals": recent,
         "score_board": score_board,
+        "risk_reward_min": cfg.risk_reward,
+        "paper_outcomes": paper_outcomes,
+        "readiness": readiness,
         "note_fa": "اتصال فقط برای خواندن قیمت و سیگنال آزمایشی است؛ سفارش واقعی ارسال نمی‌شود. امتیازها طبق قوانین و منابع (۱۲×۰–۲).",
     }
 

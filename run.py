@@ -355,7 +355,7 @@ def main() -> None:
         args.manage_trades = True
     elif args.preset == "javid":
         # AJV Rulebook golden path as hard gates; PD/FVG preferred via scoring.
-        # Critical floor always: Sweep + MSS + R:R>=2 (enforced in strategy/scoring).
+        # Critical floor always: Sweep + MSS + R:R>=2; javid hardens to 2.5 on evidence.
         args.require_htf_bias = True
         args.require_session = True
         args.session_mode = "london_ny"
@@ -366,6 +366,7 @@ def main() -> None:
         args.enable_scoring = True
         args.reject_weak_scores = True
         args.min_score = max(int(args.min_score), 16)
+        args.rr = max(float(args.rr), 2.5)
         args.tp_mode = "liquidity"
         args.manage_trades = True
         args.entry_mode = "mss_close"

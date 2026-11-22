@@ -85,8 +85,28 @@ def javid_strategy_config() -> StrategyConfig:
         enable_scoring=True,
         reject_weak_scores=True,
         min_score=16,
+        # Evidence on 4y BTC 4H: R:R 2.5 improves PF/PnL vs 2.0 without cutting trades.
+        risk_reward=2.5,
         tp_mode="liquidity",
         entry_mode="mss_close",
+    )
+
+
+def javid_backtest_config(equity: float = 10_000.0):
+    """Paper-discipline backtest knobs for the Rulebook preset."""
+    from backtester import BacktestConfig
+    from trade_management import TradeManageConfig
+
+    return BacktestConfig(
+        initial_equity=equity,
+        risk_per_trade=0.01,
+        fee_bps=4.0,
+        slippage_bps=2.0,
+        spread_bps=2.0,
+        enable_risk_guards=True,
+        max_trades_per_day=1,
+        cooldown_bars_after_loss=2,
+        trade_manage=TradeManageConfig(enable=True),
     )
 
 
@@ -98,13 +118,24 @@ def evaluate_score_gates(
 ) -> RulebookGateReport:
     missing: list[str] = []
     notes: list[str] = []
-    if not passes_critical_gates(breakdown):
+    if not passes_critical_gates(
+        breakdown,
+        require_reclaim=True,
+        require_displacement=True,
+        require_divergence=True,
+    ):
         if breakdown.sweep < 1:
             missing.append("Liquidity Sweep")
         if breakdown.mss < 1:
             missing.append("MSS/BOS")
         if breakdown.risk_reward < 1:
             missing.append("R:R >= 1:2")
+        if breakdown.reclaim < 1:
+            missing.append("Reclaim required")
+        if breakdown.displacement < 1:
+            missing.append("Displacement required")
+        if breakdown.divergence < 1:
+            missing.append("Divergence required")
     quality = score_quality(breakdown.total)
     if quality is ScoreQuality.NO_TRADE:
         missing.append("Score 0-11 No Trade band")

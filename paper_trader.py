@@ -78,7 +78,12 @@ def append_signal_log(path: Path, row: dict) -> None:
         frame.to_csv(path, index=False)
 
 
-def already_logged(path: Path, signal_time: pd.Timestamp) -> bool:
+def already_logged(
+    path: Path,
+    signal_time: pd.Timestamp,
+    *,
+    symbol: str | None = None,
+) -> bool:
     if not path.exists():
         return False
     prev = pd.read_csv(path)
@@ -90,7 +95,10 @@ def already_logged(path: Path, signal_time: pd.Timestamp) -> bool:
         target = target.tz_localize("UTC")
     else:
         target = target.tz_convert("UTC")
-    return bool((times == target).any())
+    mask = times == target
+    if symbol and "symbol" in prev.columns:
+        mask = mask & (prev["symbol"].astype(str).str.upper() == symbol.upper())
+    return bool(mask.any())
 
 
 def seconds_until_next_close(timeframe: str) -> int:
@@ -128,6 +136,8 @@ def signal_to_row(
         "tp_reason": sig.tp_reason,
         "mark_price": mark,
         "status": "paper_signal_only",
+        "source": "live_paper",
+        "outcome_status": "pending",
     }
 
 
@@ -139,6 +149,7 @@ def evaluate_once(
     log_path: Path,
     state_path: Path,
     preset: str = "javid",
+    checks_path: Path | None = None,
 ) -> dict:
     ohlcv = fetch_closed_ohlcv(symbol, timeframe, days)
     cfg = strategy_for_preset(preset)
@@ -148,9 +159,10 @@ def evaluate_once(
     last_bar_time = ohlcv.index[-1]
     last_close = float(ohlcv["close"].iloc[-1])
     active = [s for s in signals if s.index == len(ohlcv) - 1]
+    checked_at = datetime.now(timezone.utc).isoformat()
 
     snapshot = {
-        "checked_at_utc": datetime.now(timezone.utc).isoformat(),
+        "checked_at_utc": checked_at,
         "symbol": symbol.upper(),
         "timeframe": timeframe,
         "preset": preset,
@@ -160,6 +172,8 @@ def evaluate_once(
         "n_bars": len(ohlcv),
         "n_signals_total": len(signals),
         "new_signal": False,
+        "min_score": cfg.min_score,
+        "risk_reward": cfg.risk_reward,
     }
 
     if not active:
@@ -169,7 +183,7 @@ def evaluate_once(
         )
     else:
         sig = active[0]
-        if already_logged(log_path, last_bar_time):
+        if already_logged(log_path, last_bar_time, symbol=symbol):
             print(
                 f"[{snapshot['checked_at_utc']}] Signal already logged for {last_bar_time}"
             )
@@ -205,6 +219,24 @@ def evaluate_once(
             print(f"Logged : {log_path}")
             print("=" * 60)
 
+    if checks_path is not None:
+        from paper_journal import append_check_log
+
+        append_check_log(
+            checks_path,
+            {
+                "checked_at_utc": checked_at,
+                "symbol": symbol.upper(),
+                "timeframe": timeframe,
+                "preset": preset,
+                "last_closed_bar": last_bar_time.isoformat(),
+                "last_close": last_close,
+                "mark_price": mark,
+                "n_signals_total": len(signals),
+                "new_signal": bool(snapshot["new_signal"]),
+            },
+        )
+
     state_path.parent.mkdir(parents=True, exist_ok=True)
     state_path.write_text(json.dumps(snapshot, indent=2, default=str), encoding="utf-8")
     return snapshot
@@ -223,6 +255,11 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument("--once", action="store_true", help="Run a single check and exit")
     p.add_argument(
+        "--multi",
+        action="store_true",
+        help="Check BTC+ETH+SOL once (journal + outcomes)",
+    )
+    p.add_argument(
         "--log",
         type=Path,
         default=Path("data/paper_signals.csv"),
@@ -234,6 +271,12 @@ def parse_args() -> argparse.Namespace:
         default=Path("data/paper_state.json"),
         help="Latest status JSON",
     )
+    p.add_argument(
+        "--checks",
+        type=Path,
+        default=Path("data/paper_checks.csv"),
+        help="Append-only check audit log",
+    )
     return p.parse_args()
 
 
@@ -243,6 +286,23 @@ def main() -> None:
         f"Paper trader starting | {args.symbol} {args.timeframe} | "
         f"preset={args.preset} | read-only | timezone={DEFAULT_TIMEZONE}"
     )
+    if args.multi:
+        from paper_journal import run_multi_symbol_check, update_signal_outcomes
+
+        run_multi_symbol_check(
+            timeframe=args.timeframe,
+            days=args.days,
+            preset=args.preset,
+            signals_path=args.log,
+            checks_path=args.checks,
+        )
+        summary = update_signal_outcomes(days=args.days)
+        print(
+            f"Journal outcomes | closed={summary['n_closed']} "
+            f"open={summary['n_open']} WR={summary['win_rate']:.1%}"
+        )
+        return
+
     if args.once:
         evaluate_once(
             symbol=args.symbol,
@@ -251,6 +311,7 @@ def main() -> None:
             log_path=args.log,
             state_path=args.state,
             preset=args.preset,
+            checks_path=args.checks,
         )
         return
 
@@ -263,6 +324,7 @@ def main() -> None:
                 log_path=args.log,
                 state_path=args.state,
                 preset=args.preset,
+                checks_path=args.checks,
             )
         except Exception as exc:  # noqa: BLE001
             print(f"Error: {exc}")

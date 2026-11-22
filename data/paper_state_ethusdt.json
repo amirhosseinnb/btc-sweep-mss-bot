@@ -1,0 +1,14 @@
+{
+  "checked_at_utc": "2026-11-22T21:53:26.884004+00:00",
+  "symbol": "ETHUSDT",
+  "timeframe": "4h",
+  "preset": "javid",
+  "last_closed_bar": "2026-11-22 11:00:00-05:00",
+  "last_close": 1715.72,
+  "mark_price": 1721.91,
+  "n_bars": 2399,
+  "n_signals_total": 4,
+  "new_signal": false,
+  "min_score": 16,
+  "risk_reward": 2.5
+}

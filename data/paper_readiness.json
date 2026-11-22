@@ -1,0 +1,49 @@
+{
+  "updated_at": {
+    "gregorian": "2026-11-22 21:53",
+    "jalali": "1405/09/01 21:53",
+    "label": "2026-11-22 21:53 · 1405/09/01 21:53"
+  },
+  "phase2_ready": false,
+  "verdict_fa": "هنوز برای فاز بعد آماده نیست — جمع‌آوری شواهد Paper ادامه دارد",
+  "gates": [
+    {
+      "id": "paper_sample",
+      "title_fa": "حداقل 30 معاملهٔ Paper بسته‌شده",
+      "current": 12,
+      "target": 30,
+      "ok": false
+    },
+    {
+      "id": "paper_win_rate",
+      "title_fa": "Win-rate Paper ≥ 55%",
+      "current": 0.3333,
+      "target": 0.55,
+      "ok": false
+    },
+    {
+      "id": "btc_javid_pf",
+      "title_fa": "Profit Factor قوانین کامل BTC ≥ 1.5",
+      "current": 2.5165,
+      "target": 1.5,
+      "ok": true
+    },
+    {
+      "id": "wf_javid",
+      "title_fa": "نسبت فولد مثبت WF ≥ 50%",
+      "current": 0.3125,
+      "target": 0.5,
+      "ok": false
+    }
+  ],
+  "paper": {
+    "updated_at_utc": "2026-11-22T21:53:53.866964+00:00",
+    "n_signals": 12,
+    "n_closed": 12,
+    "n_open": 0,
+    "n_wins": 4,
+    "win_rate": 0.3333333333333333,
+    "avg_pnl_r": 0.16799654102604392
+  },
+  "note_fa": "Train مدل ML انجام نمی‌شود؛ آمادگی فقط با شواهد قانون‌محور و Paper سنجیده می‌شود."
+}

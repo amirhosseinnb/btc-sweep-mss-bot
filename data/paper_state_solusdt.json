@@ -1,0 +1,14 @@
+{
+  "checked_at_utc": "2026-11-22T21:53:34.159258+00:00",
+  "symbol": "SOLUSDT",
+  "timeframe": "4h",
+  "preset": "javid",
+  "last_closed_bar": "2026-11-22 11:00:00-05:00",
+  "last_close": 70.32,
+  "mark_price": 70.48,
+  "n_bars": 2399,
+  "n_signals_total": 4,
+  "new_signal": false,
+  "min_score": 16,
+  "risk_reward": 2.5
+}

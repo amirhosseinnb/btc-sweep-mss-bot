@@ -138,9 +138,23 @@ def score_quality(total: int) -> ScoreQuality:
     return ScoreQuality.A_PLUS
 
 
-def passes_critical_gates(breakdown: ScoreBreakdown) -> bool:
-    """Rulebook golden floor: Sweep + MSS/BOS + R:R >= 1:2."""
-    return breakdown.sweep >= 1 and breakdown.mss >= 1 and breakdown.risk_reward >= 1
+def passes_critical_gates(
+    breakdown: ScoreBreakdown,
+    *,
+    require_reclaim: bool = False,
+    require_displacement: bool = False,
+    require_divergence: bool = False,
+) -> bool:
+    """Rulebook golden floor: Sweep + MSS/BOS + R:R >= 1:2 (+ optional hardenings)."""
+    if not (breakdown.sweep >= 1 and breakdown.mss >= 1 and breakdown.risk_reward >= 1):
+        return False
+    if require_reclaim and breakdown.reclaim < 1:
+        return False
+    if require_displacement and breakdown.displacement < 1:
+        return False
+    if require_divergence and breakdown.divergence < 1:
+        return False
+    return True
 
 
 def score_setup(ctx: SetupScoreContext) -> ScoreBreakdown:
@@ -274,10 +288,18 @@ def passes_min_score(
     min_score: int,
     *,
     reject_weak: bool = False,
+    require_reclaim: bool = False,
+    require_displacement: bool = False,
+    require_divergence: bool = False,
 ) -> bool:
     if min_score < 0 or min_score > MAX_SCORE:
         raise ValueError(f"min_score must be in [0, {MAX_SCORE}]")
-    if not passes_critical_gates(breakdown):
+    if not passes_critical_gates(
+        breakdown,
+        require_reclaim=require_reclaim,
+        require_displacement=require_displacement,
+        require_divergence=require_divergence,
+    ):
         return False
     quality = score_quality(breakdown.total)
     if quality is ScoreQuality.NO_TRADE:

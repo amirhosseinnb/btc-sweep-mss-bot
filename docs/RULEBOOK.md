@@ -47,7 +47,7 @@ Sweep به‌تنهایی ورود نیست.
 | ۱۹–۲۱ | Good |
 | ۲۲–۲۴ | A+ |
 
-Preset `javid`: `min_score=16` + `reject_weak_scores` + فیلترهای CRT sweep/reclaim + Displacement + Divergence + `tp_mode=liquidity`.  
+Preset `javid`: `min_score=16` + `reject_weak_scores` + فیلترهای CRT sweep/reclaim + Displacement + Divergence + `risk_reward=2.5` + `tp_mode=liquidity` + سقف ۱ معامله/روز و کول‌داون ۲ بار.  
 PD و FVG به‌صورت امتیاز Key Zone / FVG-OB ترجیح داده می‌شوند (نه همیشه hard-reject، تا نمونهٔ بک‌تست صفر نشود).
 
 ## No-Trade

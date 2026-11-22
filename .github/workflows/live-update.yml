@@ -11,6 +11,7 @@ on:
       - "update_live_site.py"
       - "download_data.py"
       - "paper_trader.py"
+      - "paper_journal.py"
       - "build_performance_json.py"
       - "scoring.py"
       - "rulebook.py"
@@ -48,24 +49,38 @@ jobs:
       - name: Download market history (read-only)
         run: |
           mkdir -p data
-          python download_data.py --symbol BTCUSDT --timeframe 4h --days 730
-          python download_data.py --symbol ETHUSDT --timeframe 4h --days 730
-          python download_data.py --symbol SOLUSDT --timeframe 4h --days 400
+          python download_data.py --symbol BTCUSDT --timeframe 4h --days 1460
+          python download_data.py --symbol ETHUSDT --timeframe 4h --days 1460
+          python download_data.py --symbol SOLUSDT --timeframe 4h --days 1460
+
+      - name: Paper journal (multi-symbol + outcomes)
+        run: |
+          python paper_journal.py --check --resolve --days 400 --preset javid
+          # Seed once if journal is still empty (first deploy / cold start).
+          if [ ! -f data/paper_signals.csv ] || [ ! -s data/paper_signals.csv ]; then
+            python paper_journal.py --seed --resolve --days 400 --preset javid
+          fi
 
       - name: Refresh live snapshot
         run: python update_live_site.py
 
-      - name: Rebuild performance report
+      - name: Rebuild performance + readiness report
         run: python build_performance_json.py
 
       - name: Commit and push snapshots
         run: |
           git config user.name "ajv-live"
           git config user.email "ajv-live@users.noreply.github.com"
-          git add docs/live.json share/live.json docs/performance.json share/performance.json
+          git add \
+            docs/live.json share/live.json \
+            docs/performance.json share/performance.json \
+            docs/paper_readiness.json share/paper_readiness.json \
+            data/paper_signals.csv data/paper_checks.csv \
+            data/paper_outcomes.json data/paper_readiness.json \
+            data/paper_state.json data/paper_state_*.json || true
           if git diff --staged --quiet; then
             echo "No changes to publish"
             exit 0
           fi
-          git commit -m "chore: refresh read-only live market + performance snapshot"
+          git commit -m "chore: refresh paper journal + live market + performance"
           git push origin HEAD:main

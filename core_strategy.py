@@ -779,6 +779,9 @@ def generate_signals(
             breakdown,
             cfg.min_score,
             reject_weak=cfg.reject_weak_scores,
+            require_reclaim=cfg.require_crt_reclaim,
+            require_displacement=cfg.require_displacement,
+            require_divergence=cfg.require_divergence,
         ):
             return breakdown.total, None, quality
         return breakdown.total, format_score(breakdown), quality

@@ -15,10 +15,14 @@ data/*usdt*.csv
 data/btc_*.csv
 data/eth_*.csv
 data/sol_*.csv
-data/paper_signals.csv
-data/paper_state.json
 data/validation/
 data/trades.csv
 
-# Keep tiny sample dataset
+# Keep tiny sample dataset + paper journal (forward-test evidence)
 !data/sample_ohlcv.csv
+!data/paper_signals.csv
+!data/paper_checks.csv
+!data/paper_outcomes.json
+!data/paper_readiness.json
+!data/paper_state.json
+!data/paper_state_*.json

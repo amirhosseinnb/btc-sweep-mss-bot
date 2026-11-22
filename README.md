@@ -64,13 +64,15 @@ python run.py --csv data/btcusdt_4h.csv --preset full
 python run.py --csv data/btcusdt_4h.csv --preset javid
 python validate.py
 python paper_trader.py --once
-python paper_trader.py --once --preset javid
+python paper_trader.py --multi
+python paper_journal.py --seed --resolve --days 400
 python update_live_site.py
 python build_performance_json.py
 python make_share_report.py
 ```
 
-Paper و دموی زنده به‌طور پیش‌فرض روی preset **`javid`** (قوانین کامل + امتیاز ۲۴تایی) اجرا می‌شوند.  
+Paper و دموی زنده به‌طور پیش‌فرض روی preset **`javid`** (قوانین کامل + امتیاز ۲۴تایی + R:R≥۲٫۵) اجرا می‌شوند.  
+`paper_journal.py` ژورنال سیگنال/نتیجه و گیت آمادگی فاز ۲ را می‌سازد — **Train مدل ML نداریم**.  
 `make_share_report.py` فقط `performance.json` را تازه می‌کند و HTML سایت را بازنویسی نمی‌کند.
 
 ### Presetها

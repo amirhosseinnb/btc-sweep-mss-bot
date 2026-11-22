@@ -1,0 +1,4 @@
+checked_at_utc,symbol,timeframe,preset,last_closed_bar,last_close,mark_price,n_signals_total,new_signal
+2026-11-22T21:53:19.659696+00:00,BTCUSDT,4h,javid,2026-11-22T11:00:00-05:00,60737.12,60964.25,4,False
+2026-11-22T21:53:26.884004+00:00,ETHUSDT,4h,javid,2026-11-22T11:00:00-05:00,1715.72,1721.91,4,False
+2026-11-22T21:53:34.159258+00:00,SOLUSDT,4h,javid,2026-11-22T11:00:00-05:00,70.32,70.48,4,False
