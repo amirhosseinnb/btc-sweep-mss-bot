@@ -1,5 +1,11 @@
 {
+  "generated_at": {
+    "gregorian": "2026-11-22 21:42",
+    "jalali": "1405/09/01 21:42",
+    "label": "2026-11-22 21:42 · 1405/09/01 21:42"
+  },
   "generated_note_fa": "گزارش بک‌تست آفلاین با کارمزد/اسلیپیج/ریسک؛ سفارش واقعی نیست.",
+  "phase1_status": "complete_read_only",
   "assumptions_fa": [
     "سرمایه شروع: ۱۰٬۰۰۰ USDT",
     "ریسک هر معامله: ۱٪",
@@ -104,6 +110,7 @@
     }
   ],
   "walk_forward_btc_best": {
+    "preset": "best",
     "fold_days": 90,
     "positive_folds": 4,
     "total_folds": 8,
@@ -262,6 +269,166 @@
       }
     ]
   },
+  "walk_forward_btc_javid": {
+    "preset": "javid",
+    "fold_days": 90,
+    "positive_folds": 3,
+    "total_folds": 8,
+    "folds": [
+      {
+        "start": {
+          "gregorian": "2024-11-10",
+          "jalali": "1403/08/20",
+          "label": "2024-11-10 · 1403/08/20"
+        },
+        "end": {
+          "gregorian": "2025-02-08",
+          "jalali": "1403/11/20",
+          "label": "2025-02-08 · 1403/11/20"
+        },
+        "bars": 540,
+        "trades": 0,
+        "win_rate": 0.0,
+        "pnl": 0.0,
+        "max_drawdown": 0.0,
+        "profit_factor": 0.0,
+        "final_equity": 10000.0
+      },
+      {
+        "start": {
+          "gregorian": "2025-02-08",
+          "jalali": "1403/11/20",
+          "label": "2025-02-08 · 1403/11/20"
+        },
+        "end": {
+          "gregorian": "2025-05-09",
+          "jalali": "1404/02/19",
+          "label": "2025-05-09 · 1404/02/19"
+        },
+        "bars": 540,
+        "trades": 2,
+        "win_rate": 1.0,
+        "pnl": 197.992632822337,
+        "max_drawdown": 0.00015632763557145972,
+        "profit_factor": null,
+        "final_equity": 10196.358207020734
+      },
+      {
+        "start": {
+          "gregorian": "2025-05-09",
+          "jalali": "1404/02/19",
+          "label": "2025-05-09 · 1404/02/19"
+        },
+        "end": {
+          "gregorian": "2025-08-07",
+          "jalali": "1404/05/16",
+          "label": "2025-08-07 · 1404/05/16"
+        },
+        "bars": 540,
+        "trades": 0,
+        "win_rate": 0.0,
+        "pnl": 0.0,
+        "max_drawdown": 0.0,
+        "profit_factor": 0.0,
+        "final_equity": 10000.0
+      },
+      {
+        "start": {
+          "gregorian": "2025-08-07",
+          "jalali": "1404/05/16",
+          "label": "2025-08-07 · 1404/05/16"
+        },
+        "end": {
+          "gregorian": "2025-11-05",
+          "jalali": "1404/08/14",
+          "label": "2025-11-05 · 1404/08/14"
+        },
+        "bars": 540,
+        "trades": 0,
+        "win_rate": 0.0,
+        "pnl": 0.0,
+        "max_drawdown": 0.0,
+        "profit_factor": 0.0,
+        "final_equity": 10000.0
+      },
+      {
+        "start": {
+          "gregorian": "2025-11-05",
+          "jalali": "1404/08/14",
+          "label": "2025-11-05 · 1404/08/14"
+        },
+        "end": {
+          "gregorian": "2026-02-03",
+          "jalali": "1404/11/14",
+          "label": "2026-02-03 · 1404/11/14"
+        },
+        "bars": 540,
+        "trades": 1,
+        "win_rate": 0.0,
+        "pnl": -101.50648031305349,
+        "max_drawdown": 0.010208082634055426,
+        "profit_factor": 0.0,
+        "final_equity": 9897.919173659446
+      },
+      {
+        "start": {
+          "gregorian": "2026-02-03",
+          "jalali": "1404/11/14",
+          "label": "2026-02-03 · 1404/11/14"
+        },
+        "end": {
+          "gregorian": "2026-05-04",
+          "jalali": "1405/02/14",
+          "label": "2026-05-04 · 1405/02/14"
+        },
+        "bars": 540,
+        "trades": 0,
+        "win_rate": 0.0,
+        "pnl": 0.0,
+        "max_drawdown": 0.0,
+        "profit_factor": 0.0,
+        "final_equity": 10000.0
+      },
+      {
+        "start": {
+          "gregorian": "2026-05-04",
+          "jalali": "1405/02/14",
+          "label": "2026-05-04 · 1405/02/14"
+        },
+        "end": {
+          "gregorian": "2026-08-02",
+          "jalali": "1405/05/11",
+          "label": "2026-08-02 · 1405/05/11"
+        },
+        "bars": 540,
+        "trades": 1,
+        "win_rate": 1.0,
+        "pnl": 147.87752674287555,
+        "max_drawdown": 0.0001272633981103354,
+        "profit_factor": null,
+        "final_equity": 10146.604892761772
+      },
+      {
+        "start": {
+          "gregorian": "2026-08-02",
+          "jalali": "1405/05/11",
+          "label": "2026-08-02 · 1405/05/11"
+        },
+        "end": {
+          "gregorian": "2026-10-31",
+          "jalali": "1405/08/09",
+          "label": "2026-10-31 · 1405/08/09"
+        },
+        "bars": 540,
+        "trades": 2,
+        "win_rate": 1.0,
+        "pnl": 56.474999323960446,
+        "max_drawdown": 0.00013328847150028507,
+        "profit_factor": null,
+        "final_equity": 10055.05663836151
+      }
+    ]
+  },
   "rulebook_coverage": [
     {
       "id": "philosophy",
@@ -343,9 +510,15 @@
     },
     {
       "id": "paper",
-      "title_fa": "Paper فقط‌خواندنی (preset قوانین کامل)",
+      "title_fa": "Paper فقط‌خواندنی (قوانین کامل)",
       "status": "done",
       "code": "paper_trader.py"
+    },
+    {
+      "id": "report",
+      "title_fa": "گزارش بازارها + شمسی در UI",
+      "status": "done",
+      "code": "performance.json"
     },
     {
       "id": "live_orders",

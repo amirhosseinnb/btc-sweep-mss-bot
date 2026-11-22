@@ -62,6 +62,10 @@ python run.py --csv data/btcusdt_4h.csv --preset full
 python validate.py
 ```
 
-## خارج از فاز ۱
+## وضعیت فاز ۱
 
-FastAPI / Next.js / PostgreSQL / سفارش واقعی صرافی عمداً در فاز ۱ پیاده نشده‌اند (همان مسیر Backtest → Paper → Demo → Live).
+پوشش اجرایی قوانین، بک‌تست، Walk-Forward، Paper فقط‌خواندنی، و گزارش UI کامل است.
+
+## خارج از فاز ۱ (عمدی)
+
+FastAPI / Next.js / PostgreSQL / سفارش واقعی صرافی — مسیر بعدی فقط بعد از پایداری Paper: Demo/Testnet → Live.

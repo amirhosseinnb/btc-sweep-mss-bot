@@ -1,21 +1,20 @@
 """
 Build docs/performance.json (+ share/) for the public UI market report.
-Runs best + javid presets where data exists.
+Runs best + full-rulebook presets where data exists.
 """
 
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
-
-import pandas as pd
 
 from backtester import BacktestConfig, Backtester
 from jalali import dual_date
 from rulebook import javid_strategy_config
 from run import load_ohlcv
 from trade_management import TradeManageConfig
-from validate import best_strategy_config, walk_forward_folds
+from validate import best_backtest_config, best_strategy_config, walk_forward_folds
 
 
 def _pf(v: float) -> float | None:
@@ -24,29 +23,26 @@ def _pf(v: float) -> float | None:
     return float(v)
 
 
+def _javid_backtest() -> BacktestConfig:
+    return BacktestConfig(
+        initial_equity=10_000.0,
+        risk_per_trade=0.01,
+        fee_bps=4.0,
+        slippage_bps=2.0,
+        spread_bps=2.0,
+        enable_risk_guards=True,
+        trade_manage=TradeManageConfig(enable=True),
+    )
+
+
 def _run(csv_path: Path, preset: str) -> dict:
     df = load_ohlcv(csv_path)
     if preset == "javid":
         cfg = javid_strategy_config()
-        bt = BacktestConfig(
-            initial_equity=10_000.0,
-            risk_per_trade=0.01,
-            fee_bps=4.0,
-            slippage_bps=2.0,
-            spread_bps=2.0,
-            enable_risk_guards=True,
-            trade_manage=TradeManageConfig(enable=True),
-        )
+        bt = _javid_backtest()
     else:
         cfg = best_strategy_config()
-        bt = BacktestConfig(
-            initial_equity=10_000.0,
-            risk_per_trade=0.01,
-            fee_bps=4.0,
-            slippage_bps=2.0,
-            spread_bps=2.0,
-            enable_risk_guards=True,
-        )
+        bt = best_backtest_config()
     m = Backtester(cfg, bt).run(df).metrics
     start = dual_date(df.index[0])
     end = dual_date(df.index[-1])
@@ -69,11 +65,19 @@ def _run(csv_path: Path, preset: str) -> dict:
     }
 
 
-def _wf(csv_path: Path) -> list[dict]:
+def _wf_pack(csv_path: Path, *, preset: str) -> dict:
     df = load_ohlcv(csv_path)
-    folds = walk_forward_folds(df)
+    if preset == "javid":
+        folds_df = walk_forward_folds(
+            df,
+            strategy=javid_strategy_config(),
+            backtest=_javid_backtest(),
+        )
+    else:
+        folds_df = walk_forward_folds(df)
+
     rows: list[dict] = []
-    for _, r in folds.iterrows():
+    for _, r in folds_df.iterrows():
         pf = r["profit_factor"]
         rows.append(
             {
@@ -88,7 +92,14 @@ def _wf(csv_path: Path) -> list[dict]:
                 "final_equity": float(r["final_equity"]),
             }
         )
-    return rows
+    pos = sum(1 for r in rows if r["pnl"] > 0)
+    return {
+        "preset": preset,
+        "fold_days": 90,
+        "positive_folds": pos,
+        "total_folds": len(rows),
+        "folds": rows,
+    }
 
 
 def build() -> dict:
@@ -105,11 +116,19 @@ def build() -> dict:
         if path.name.startswith("btc"):
             assets_javid.append(_run(path, "javid"))
 
-    wf = _wf(Path("data/btcusdt_4h.csv")) if Path("data/btcusdt_4h.csv").exists() else []
-    pos = sum(1 for r in wf if r["pnl"] > 0)
+    btc = Path("data/btcusdt_4h.csv")
+    wf_best = _wf_pack(btc, preset="best") if btc.exists() else {
+        "preset": "best", "fold_days": 90, "positive_folds": 0, "total_folds": 0, "folds": []
+    }
+    wf_javid = _wf_pack(btc, preset="javid") if btc.exists() else {
+        "preset": "javid", "fold_days": 90, "positive_folds": 0, "total_folds": 0, "folds": []
+    }
 
+    now = datetime.now(timezone.utc)
     return {
+        "generated_at": dual_date(now, with_time=True),
         "generated_note_fa": "گزارش بک‌تست آفلاین با کارمزد/اسلیپیج/ریسک؛ سفارش واقعی نیست.",
+        "phase1_status": "complete_read_only",
         "assumptions_fa": [
             "سرمایه شروع: ۱۰٬۰۰۰ USDT",
             "ریسک هر معامله: ۱٪",
@@ -119,12 +138,8 @@ def build() -> dict:
         ],
         "markets_best": assets_best,
         "markets_javid": assets_javid,
-        "walk_forward_btc_best": {
-            "fold_days": 90,
-            "positive_folds": pos,
-            "total_folds": len(wf),
-            "folds": wf,
-        },
+        "walk_forward_btc_best": wf_best,
+        "walk_forward_btc_javid": wf_javid,
         "rulebook_coverage": [
             {"id": "philosophy", "title_fa": "فلسفه قانون‌محور", "status": "done", "code": "philosophy.py"},
             {"id": "price_action", "title_fa": "Price Action (BOS/CHOCH)", "status": "done", "code": "price_action.py"},
@@ -139,7 +154,8 @@ def build() -> dict:
             {"id": "no_trade", "title_fa": "No-Trade Gate", "status": "done", "code": "no_trade.py"},
             {"id": "manage", "title_fa": "Trade Management", "status": "done", "code": "trade_management.py"},
             {"id": "backtest", "title_fa": "Backtest + Walk-Forward", "status": "done", "code": "backtester.py / validate.py"},
-            {"id": "paper", "title_fa": "Paper فقط‌خواندنی (preset قوانین کامل)", "status": "done", "code": "paper_trader.py"},
+            {"id": "paper", "title_fa": "Paper فقط‌خواندنی (قوانین کامل)", "status": "done", "code": "paper_trader.py"},
+            {"id": "report", "title_fa": "گزارش بازارها + شمسی در UI", "status": "done", "code": "performance.json"},
             {"id": "live_orders", "title_fa": "سفارش واقعی صرافی", "status": "phase2", "code": "عمداً خاموش تا پایداری"},
         ],
     }
@@ -154,7 +170,8 @@ def main() -> None:
     print(
         f"performance.json written | best_markets={len(payload['markets_best'])} "
         f"| javid={len(payload['markets_javid'])} "
-        f"| wf_folds={payload['walk_forward_btc_best']['total_folds']}"
+        f"| wf_best={payload['walk_forward_btc_best']['total_folds']} "
+        f"| wf_javid={payload['walk_forward_btc_javid']['total_folds']}"
     )
 
 

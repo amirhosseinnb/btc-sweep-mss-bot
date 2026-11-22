@@ -66,10 +66,12 @@ python validate.py
 python paper_trader.py --once
 python paper_trader.py --once --preset javid
 python update_live_site.py
+python build_performance_json.py
 python make_share_report.py
 ```
 
-Paper و دموی زنده به‌طور پیش‌فرض روی preset **`javid`** (Rulebook + امتیاز ۲۴تایی) اجرا می‌شوند.
+Paper و دموی زنده به‌طور پیش‌فرض روی preset **`javid`** (قوانین کامل + امتیاز ۲۴تایی) اجرا می‌شوند.  
+`make_share_report.py` فقط `performance.json` را تازه می‌کند و HTML سایت را بازنویسی نمی‌کند.
 
 ### Presetها
 

@@ -5,13 +5,19 @@ on:
     # Every 2 hours, offset from :00 to reduce GitHub schedule drops.
     - cron: "17 */2 * * *"
   workflow_dispatch:
-  # Re-register / keep schedule healthy when workflow file itself changes.
   push:
     paths:
       - ".github/workflows/live-update.yml"
       - "update_live_site.py"
       - "download_data.py"
       - "paper_trader.py"
+      - "build_performance_json.py"
+      - "scoring.py"
+      - "rulebook.py"
+      - "core_strategy.py"
+      - "validate.py"
+      - "targets.py"
+      - "jalali.py"
 
 permissions:
   contents: write
@@ -23,7 +29,7 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,17 +45,27 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Download market history (read-only)
+        run: |
+          mkdir -p data
+          python download_data.py --symbol BTCUSDT --timeframe 4h --days 730
+          python download_data.py --symbol ETHUSDT --timeframe 4h --days 730
+          python download_data.py --symbol SOLUSDT --timeframe 4h --days 400
+
       - name: Refresh live snapshot
         run: python update_live_site.py
 
-      - name: Commit and push live.json
+      - name: Rebuild performance report
+        run: python build_performance_json.py
+
+      - name: Commit and push snapshots
         run: |
           git config user.name "ajv-live"
           git config user.email "ajv-live@users.noreply.github.com"
-          git add docs/live.json share/live.json
+          git add docs/live.json share/live.json docs/performance.json share/performance.json
           if git diff --staged --quiet; then
             echo "No changes to publish"
             exit 0
           fi
-          git commit -m "chore: refresh read-only live market snapshot"
+          git commit -m "chore: refresh read-only live market + performance snapshot"
           git push origin HEAD:main

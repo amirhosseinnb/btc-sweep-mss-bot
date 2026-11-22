@@ -39,8 +39,14 @@ def best_backtest_config(equity: float = 10_000.0) -> BacktestConfig:
     )
 
 
-def run_full(df: pd.DataFrame) -> dict[str, float]:
-    return Backtester(best_strategy_config(), best_backtest_config()).run(df).metrics
+def run_full(
+    df: pd.DataFrame,
+    strategy: StrategyConfig | None = None,
+    backtest: BacktestConfig | None = None,
+) -> dict[str, float]:
+    cfg = strategy or best_strategy_config()
+    bt = backtest or best_backtest_config()
+    return Backtester(cfg, bt).run(df).metrics
 
 
 def walk_forward_folds(
@@ -49,6 +55,8 @@ def walk_forward_folds(
     oos_days: int = 90,
     step_days: int = 90,
     min_bars: int = 200,
+    strategy: StrategyConfig | None = None,
+    backtest: BacktestConfig | None = None,
 ) -> pd.DataFrame:
     """
     Rolling OOS windows on New York timestamps.
@@ -73,7 +81,7 @@ def walk_forward_folds(
 
         slice_df = df[(df.index >= oos_start) & (df.index < oos_end)]
         if len(slice_df) >= min_bars:
-            m = run_full(slice_df)
+            m = run_full(slice_df, strategy=strategy, backtest=backtest)
             rows.append(
                 {
                     "oos_start": oos_start,

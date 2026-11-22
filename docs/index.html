@@ -1059,28 +1059,28 @@
         <p>اگر تازه واردی و می‌خواهی منطق کار را بفهمی، این بخش برای توست. از نتایج فاز ۱ جداست.</p>
       </div>
 
-      <h3 class="sec-title" style="font-size:1.35rem">چک‌لیست ۴ مرحله‌ای ورود</h3>
-      <p class="sec-lead">اگر حتی یک مرحله برقرار نباشد، سیستم وارد معامله نمی‌شود.</p>
+      <h3 class="sec-title" style="font-size:1.35rem">زنجیره ورود طبق منابع و قوانین</h3>
+      <p class="sec-lead">اگر حلقهٔ بحرانی (Sweep + MSS + R:R≥۲) نباشد، ورود انجام نمی‌شود.</p>
       <div class="pipeline" style="margin-bottom:18px">
         <div class="pipe">
           <div class="n">01</div>
-          <h4>تله قیمت</h4>
-          <p>قیمت یک لحظه از سقف یا کف مهم رد می‌شود و سریع برمی‌گردد.</p>
+          <h4>Context</h4>
+          <p>جهت HTF، سشن، و ناحیه Premium/Discount.</p>
         </div>
         <div class="pipe">
           <div class="n">02</div>
-          <h4>تأیید جهت</h4>
-          <p>ساختار چارت می‌شکند؛ احتمال عوض شدن جهت بالاتر می‌رود.</p>
+          <h4>Sweep + CRT</h4>
+          <p>شکار نقدینگی و reclaim به داخل رنج.</p>
         </div>
         <div class="pipe">
           <div class="n">03</div>
-          <h4>ورود کنترل‌شده</h4>
-          <p>حد ضرر مشخص؛ هدف سود حدود ۲ برابر ریسک؛ حجم با ۱٪ حساب.</p>
+          <h4>تأیید</h4>
+          <p>Displacement، MSS/BOS، و در صورت نیاز Divergence.</p>
         </div>
         <div class="pipe">
           <div class="n">04</div>
-          <h4>فیلتر نهایی</h4>
-          <p>فقط اگر جهت روزانه و ساعت بازار مناسب باشد.</p>
+          <h4>ورود و مدیریت</h4>
+          <p>امتیاز ۲۴تایی، SL/TP، ریسک ۱٪، و No-Trade.</p>
         </div>
       </div>
       <div class="steps">
@@ -1088,28 +1088,28 @@
           <div class="step-no">۱</div>
           <div>
             <h4>شکار نقدینگی</h4>
-            <p>گاهی بازار برای فعال‌کردن سفارش‌های پشت یک سقف/کف، یک لحظه از آن رد می‌شود و برمی‌گردد. سیستم دنبال همین حرکت است.</p>
+            <p>قیمت برای جمع سفارش‌ها از سقف/کف مهم رد می‌شود و برمی‌گردد. Sweep به‌تنهایی ورود نیست.</p>
           </div>
         </div>
         <div class="step">
           <div class="step-no">۲</div>
           <div>
-            <h4>تأیید تغییر جهت</h4>
-            <p>برگشت به‌تنهایی کافی نیست؛ باید ساختار قبلی چارت هم بشکند.</p>
+            <h4>Reclaim + Displacement + MSS</h4>
+            <p>بازگشت به رنج، حرکت پرقدرت، و شکست ساختار باید قانون‌مند دیده شود.</p>
           </div>
         </div>
         <div class="step">
           <div class="step-no">۳</div>
           <div>
-            <h4>ورود با سقف ضرر</h4>
-            <p>حد ضرر پشت همان نقطه گذاشته می‌شود تا اگر اشتباه بود، ضرر بزرگ نشود.</p>
+            <h4>امتیاز و No-Trade</h4>
+            <p>چک‌لیست ۲۴تایی + فیلتر ریسک/سشن/کول‌داون؛ امتیاز ضعیف حذف می‌شود.</p>
           </div>
         </div>
         <div class="step">
           <div class="step-no">۴</div>
           <div>
-            <h4>فیلتر کیفیت</h4>
-            <p>اگر جهت روزانه مخالف باشد یا چند ضرر پشت‌سرهم خورده باشد، دست نگه می‌دارد.</p>
+            <h4>هدف و مدیریت</h4>
+            <p>حداقل R:R برابر ۲، ترجیحاً هدف نقدینگی مقابل، و مدیریت معاملهٔ ازپیش‌تعریف‌شده.</p>
           </div>
         </div>
       </div>
@@ -1322,7 +1322,10 @@
         '<div class="score-band"><b>حداقل</b> · ' + (board.min_score != null ? board.min_score : '—') +
         (board.reject_weak ? ' · Weak رد می‌شود' : '') + '</div>';
 
-      presetEl.textContent = 'Preset: ' + (data.preset || 'javid') +
+      const presetLabel = (data.preset === 'javid' || !data.preset)
+        ? 'قوانین کامل'
+        : data.preset;
+      presetEl.textContent = 'Preset: ' + presetLabel +
         ' · سیگنال‌های کل: ' + (data.signals_total != null ? data.signals_total : '—');
 
       const recent = data.recent_signals || [];
@@ -1372,8 +1375,15 @@
       const table = document.getElementById('perfTableBody');
       const meta = document.getElementById('perfMeta');
 
+      const gen = (perfData.generated_at && perfData.generated_at.label)
+        ? perfData.generated_at.label
+        : '';
+      const presetLabel = preset === 'javid' ? 'قوانین کامل' : 'پایه (best)';
       meta.textContent = (perfData.generated_note_fa || '') +
-        ' · نمایش: preset ' + preset;
+        (gen ? (' · تولید: ' + gen) : '') +
+        ' · نمایش: ' + presetLabel;
+
+      renderWalkForward(preset);
 
       if (!rows.length) {
         kpis.innerHTML = '';
@@ -1424,15 +1434,24 @@
       }).join('');
     }
 
-    function renderWalkForward(wf) {
+    function renderWalkForward(preset) {
       const body = document.getElementById('wfTableBody');
       const lead = document.getElementById('wfLead');
+      if (!perfData) {
+        body.innerHTML = '<tr><td colspan="6">داده‌ای نیست</td></tr>';
+        return;
+      }
+      const wf = preset === 'javid'
+        ? (perfData.walk_forward_btc_javid || perfData.walk_forward_btc_best)
+        : perfData.walk_forward_btc_best;
       if (!wf) {
         body.innerHTML = '<tr><td colspan="6">داده‌ای نیست</td></tr>';
         return;
       }
+      const label = preset === 'javid' ? 'قوانین کامل' : 'پایه (best)';
       lead.textContent = 'تکه‌های حدود ' + wf.fold_days +
-        ' روزه · ' + wf.positive_folds + ' از ' + wf.total_folds + ' تکه مثبت (preset best).';
+        ' روزه · ' + wf.positive_folds + ' از ' + wf.total_folds +
+        ' تکه مثبت · preset ' + label + '.';
       body.innerHTML = (wf.folds || []).map(function (f) {
         const cls = f.pnl >= 0 ? 'up' : 'down';
         return '<tr>' +
@@ -1457,7 +1476,6 @@
         }).join('');
         renderJavidCoverage(perfData.rulebook_coverage || []);
         renderMarkets(activePreset);
-        renderWalkForward(perfData.walk_forward_btc_best);
       } catch (e) {
         document.getElementById('perfMeta').textContent = 'گزارش عملکرد هنوز در دسترس نیست.';
       }
