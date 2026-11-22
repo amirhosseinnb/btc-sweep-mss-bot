@@ -78,7 +78,7 @@ Paper و دموی زنده به‌طور پیش‌فرض روی preset **`javid`
 | `best` | HTF + session — baseline پایدار |
 | `best_fvg` | همان + ورود از FVG |
 | `full` | CRT reclaim + divergence + scoring + trade manage |
-| `javid` | Rulebook جاوید: CRT + displacement + div + امتیاز ≥۱۶ (رد Weak) + TP نقدینگی |
+| `javid` | قوانین و منابع: CRT + displacement + div + امتیاز ≥۱۶ (رد Weak) + TP نقدینگی |
 
 جزئیات قوانین: [`docs/RULEBOOK.md`](docs/RULEBOOK.md)
 

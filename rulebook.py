@@ -1,5 +1,5 @@
 """
-Javid Rulebook — executable checklist helpers (educational / research).
+AJV Rulebook — executable checklist helpers (educational / research).
 
 Mirrors docs in `javid/` and `docs/RULEBOOK.md` so the golden path and
 no-trade list stay inspectable from code.
@@ -72,7 +72,7 @@ class RulebookGateReport:
 
 
 def javid_strategy_config() -> StrategyConfig:
-    """Canonical config for the Javid Rulebook preset (golden path gates)."""
+    """Canonical config for the AJV Rulebook preset (golden path gates)."""
     return StrategyConfig(
         require_htf_bias=True,
         require_session=True,

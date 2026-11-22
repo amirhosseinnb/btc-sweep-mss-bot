@@ -1,6 +1,6 @@
-# AJV / Javid Rulebook (executable)
+# AJV Rulebook (executable)
 
-منبع: پوشهٔ `javid/` + اسناد Word جاوید.  
+منبع: اسناد Rulebook و منابع معاملاتی پروژه.  
 این سند نگاشت قوانین به کد فعلی است.
 
 ## فلسفه

@@ -354,7 +354,7 @@ def main() -> None:
         args.min_score = max(int(args.min_score), 14)
         args.manage_trades = True
     elif args.preset == "javid":
-        # Javid Rulebook golden path as hard gates; PD/FVG preferred via scoring.
+        # AJV Rulebook golden path as hard gates; PD/FVG preferred via scoring.
         # Critical floor always: Sweep + MSS + R:R>=2 (enforced in strategy/scoring).
         args.require_htf_bias = True
         args.require_session = True

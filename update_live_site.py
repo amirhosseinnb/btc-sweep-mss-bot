@@ -2,7 +2,7 @@
 Refresh read-only live market snapshot for the public report page.
 
 Writes docs/live.json (+ share/live.json) used by the GitHub Pages UI.
-Uses the Javid Rulebook preset by default. Does NOT place any exchange orders.
+Uses the AJV Rulebook preset by default. Does NOT place any exchange orders.
 """
 
 from __future__ import annotations
@@ -135,7 +135,7 @@ def build_snapshot(
         "active_signal": signal_payload,
         "recent_signals": recent,
         "score_board": score_board,
-        "note_fa": "اتصال فقط برای خواندن قیمت و سیگنال آزمایشی است؛ سفارش واقعی ارسال نمی‌شود. امتیازها طبق Rulebook جاوید (۱۲×۰–۲).",
+        "note_fa": "اتصال فقط برای خواندن قیمت و سیگنال آزمایشی است؛ سفارش واقعی ارسال نمی‌شود. امتیازها طبق قوانین و منابع (۱۲×۰–۲).",
     }
 
 

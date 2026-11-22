@@ -1,7 +1,7 @@
 """
 Read-only BTC 4H paper signal runner (no live orders).
 
-Fetches Binance public klines, evaluates the Javid Rulebook preset on *closed*
+Fetches Binance public klines, evaluates the AJV Rulebook preset on *closed*
 candles only (override with --preset best|javid), and appends new signals to a CSV log.
 """
 

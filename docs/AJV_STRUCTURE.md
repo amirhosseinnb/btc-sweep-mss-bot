@@ -124,7 +124,7 @@ SL پشت `sweep_extreme` · TP با R:R ≥ ۲
 
 ## ۱۴) 24-Point Scoring System
 
-**وضعیت:** پیاده — مطابق Rulebook جاوید (۱۲ × ۰–۲)  
+**وضعیت:** پیاده — مطابق قوانین و منابع (۱۲ × ۰–۲)  
 **کد:** `scoring.py` · `rulebook.py` · `docs/RULEBOOK.md`
 
 | بخش | سقف |

@@ -139,7 +139,7 @@ def build() -> dict:
             {"id": "no_trade", "title_fa": "No-Trade Gate", "status": "done", "code": "no_trade.py"},
             {"id": "manage", "title_fa": "Trade Management", "status": "done", "code": "trade_management.py"},
             {"id": "backtest", "title_fa": "Backtest + Walk-Forward", "status": "done", "code": "backtester.py / validate.py"},
-            {"id": "paper", "title_fa": "Paper فقط‌خواندنی (preset javid)", "status": "done", "code": "paper_trader.py"},
+            {"id": "paper", "title_fa": "Paper فقط‌خواندنی (preset قوانین کامل)", "status": "done", "code": "paper_trader.py"},
             {"id": "live_orders", "title_fa": "سفارش واقعی صرافی", "status": "phase2", "code": "عمداً خاموش تا پایداری"},
         ],
     }

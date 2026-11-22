@@ -101,7 +101,7 @@ class StrategyConfig:
     divergence_lookback: int = 40
     fvg_lookback_bars: int = 20
     max_bars_mss_to_fvg: int = 20
-    # Javid Rulebook 24-point scoring (12 × 0–2).
+    # AJV Rulebook 24-point scoring (12 × 0–2).
     enable_scoring: bool = False
     min_score: int = 12
     reject_weak_scores: bool = False  # reject 12–15 (Weak band)

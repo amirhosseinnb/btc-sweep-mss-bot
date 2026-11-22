@@ -1,5 +1,5 @@
 """
-Javid Rulebook 24-point confluence scoring (12 categories × 0–2).
+AJV Rulebook 24-point confluence scoring (12 categories × 0–2).
 
 Categories (max 24):
   HTF Bias            0-2

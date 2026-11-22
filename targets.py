@@ -1,5 +1,5 @@
 """
-Take-profit / liquidity-target helpers (Javid Rulebook §6–7, §12).
+Take-profit / liquidity-target helpers (AJV Rulebook §6–7, §12).
 
 Priority options:
   - opposite swing liquidity (Buy-side for longs / Sell-side for shorts)

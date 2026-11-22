@@ -32,7 +32,7 @@
 | Confluence | `scoring.py` (۱۲×۰–۲ Rulebook) + فیلترهای ICT/PA |
 | قانون طلایی | Sweep + MSS + R:R≥۲ در `scoring.passes_critical_gates` |
 | صحت‌سنجی فلسفه | `philosophy.check_philosophy()` در `run.py` |
-| چک‌لیست جاوید | `rulebook.py` · `docs/RULEBOOK.md` |
+| چک‌لیست قوانین | `rulebook.py` · `docs/RULEBOOK.md` |
 
 ## تعریف عملی «آمادگی ورود»
 

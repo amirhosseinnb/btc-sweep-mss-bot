@@ -1,5 +1,5 @@
 """
-Explicit No-Trade gate for Phase 1 / Javid Rulebook §11 + §13.
+Explicit No-Trade gate for Phase 1 / AJV Rulebook §11 + §13.
 
 Centralizes reasons to skip a new entry beyond strategy signal filters:
   - daily trade cap

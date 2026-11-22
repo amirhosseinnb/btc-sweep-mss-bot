@@ -1,5 +1,5 @@
 """
-RSI divergence detection for Javid Rulebook §8–9.
+RSI divergence detection for AJV Rulebook §8–9.
 
 Supports:
   - Regular bullish / bearish (reversal confirmation)
