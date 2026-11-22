@@ -578,6 +578,27 @@
       color: var(--muted); font-size: 0.82rem;
     }
     footer .brand-en { color: var(--text); font-weight: 600; }
+    .update-corner {
+      position: fixed; left: 14px; bottom: 14px; z-index: 40;
+      max-width: min(260px, calc(100vw - 28px));
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: rgba(7, 9, 13, 0.88);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      font-size: 0.75rem; color: var(--muted);
+      direction: rtl; text-align: right;
+    }
+    .update-corner .label {
+      display: block; margin-bottom: 4px; font-size: 0.7rem;
+      letter-spacing: 0.04em; color: var(--accent);
+      font-family: "Sora", sans-serif;
+    }
+    .update-corner .dual-date .g { font-size: 0.78rem; }
+    .update-corner .dual-date .j { font-size: 0.76rem; }
+    @media (max-width: 560px) {
+      .update-corner { left: 10px; bottom: 10px; padding: 8px 10px; }
+    }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(18px); }
@@ -755,13 +776,13 @@
           <b id="updatedAt">—</b>
         </div>
         <div class="refresh-item">
-          <span>مانده تا آپدیت بعدی خودکار</span>
+          <span>مانده تا آپدیت بعدی (۴ ساعته)</span>
           <b id="nextCountdown">—</b>
         </div>
         <p class="refresh-note">
           دکمه «به‌روزرسانی قیمت الان» قیمت لحظه‌ای را از منابع عمومی می‌گیرد
           (اگر بایننس در دسترس نباشد، از CoinGecko / Coinbase / Kraken استفاده می‌شود).
-          آپدیت کامل سیگنال‌ها همچنان حدوداً هر ۲ ساعت از سرور می‌آید.
+          با هر آپدیت دستی موفق، شمارندهٔ ۴ ساعته از نو شروع می‌شود.
         </p>
       </div>
       <div class="term-foot">
@@ -1151,6 +1172,11 @@
     </footer>
   </div>
 
+  <aside class="update-corner" id="projectUpdateCorner" aria-label="آخرین آپدیت پروژه">
+    <span class="label">آخرین آپدیت پروژه</span>
+    <div id="projectUpdateDate">—</div>
+  </aside>
+
   <script>
     const PRICE_SOURCES = [
       {
@@ -1177,6 +1203,43 @@
     let priceState = { value: null, at: 0, source: '—' };
     let perfData = null;
     let activePreset = 'best';
+    const COUNTDOWN_MS = 4 * 60 * 60 * 1000; // 4 hours
+    const COUNTDOWN_KEY = 'ajv_countdown_ends_at';
+    let countdownEndsAt = null;
+
+    function setProjectUpdateDate(isoOrMs) {
+      const el = document.getElementById('projectUpdateDate');
+      if (!el) return;
+      const iso = typeof isoOrMs === 'number' ? new Date(isoOrMs).toISOString() : isoOrMs;
+      const dual = dualFromIso(iso);
+      el.innerHTML = dualHtml(dual.g, dual.j);
+    }
+
+    function readStoredCountdown() {
+      try {
+        const raw = localStorage.getItem(COUNTDOWN_KEY);
+        const n = raw ? Number(raw) : NaN;
+        if (Number.isFinite(n) && n > Date.now()) return n;
+      } catch (e) {}
+      return null;
+    }
+
+    function resetCountdown(fromMs) {
+      const base = fromMs == null ? Date.now() : fromMs;
+      countdownEndsAt = base + COUNTDOWN_MS;
+      try { localStorage.setItem(COUNTDOWN_KEY, String(countdownEndsAt)); } catch (e) {}
+      tickCountdown();
+    }
+
+    function ensureCountdown(fromMs) {
+      if (countdownEndsAt && countdownEndsAt > Date.now()) return;
+      const stored = readStoredCountdown();
+      if (stored) {
+        countdownEndsAt = stored;
+        return;
+      }
+      resetCountdown(fromMs == null ? Date.now() : fromMs);
+    }
 
     function fmtPrice(v) {
       return Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' USDT';
@@ -1232,22 +1295,6 @@
       document.getElementById('updatedAt').innerHTML = dualHtml(dual.g, dual.j);
     }
 
-    function getNextScheduledUpdate(now) {
-      const t = new Date(now.getTime());
-      t.setUTCSeconds(0, 0);
-      t.setUTCMilliseconds(0);
-      t.setUTCMinutes(17);
-      if (t <= now) {
-        t.setUTCHours(t.getUTCHours() + 1);
-        t.setUTCMinutes(17);
-      }
-      while (t.getUTCHours() % 2 !== 0) {
-        t.setUTCHours(t.getUTCHours() + 1);
-        t.setUTCMinutes(17);
-      }
-      return t;
-    }
-
     function fmtCountdown(ms) {
       if (ms < 0) ms = 0;
       const total = Math.floor(ms / 1000);
@@ -1259,10 +1306,16 @@
 
     function tickCountdown() {
       const el = document.getElementById('nextCountdown');
-      const next = getNextScheduledUpdate(new Date());
-      el.textContent = fmtCountdown(next - Date.now());
-      const dual = dualFromIso(next.toISOString());
-      el.title = 'آپدیت بعدی حدوداً: ' + dual.g + ' · ' + dual.j;
+      if (!countdownEndsAt) ensureCountdown(Date.now());
+      const remain = countdownEndsAt - Date.now();
+      if (remain <= 0) {
+        el.textContent = '00:00:00';
+        el.title = 'زمان آپدیت بعدی رسیده — می‌توانید دوباره رفرش کنید';
+        return;
+      }
+      el.textContent = fmtCountdown(remain);
+      const dual = dualFromIso(new Date(countdownEndsAt).toISOString());
+      el.title = 'پایان شمارنده ۴ ساعته: ' + dual.g + ' · ' + dual.j;
     }
 
     function qualityFa(key, fallback) {
@@ -1441,6 +1494,8 @@
         chip.innerHTML = '<i></i> آنلاین · وصل به بازار';
         const serverAt = new Date(data.updated_at_utc).getTime();
         setPrice(Number(data.mark_price), serverAt, 'سرور · خودکار');
+        setProjectUpdateDate(data.updated_at_utc || serverAt);
+        ensureCountdown(serverAt);
         document.getElementById('lastClose').textContent = fmtPrice(data.last_close);
         document.getElementById('systemMode').textContent = data.orders_enabled ? 'معامله واقعی' : 'فقط نمایش';
         document.getElementById('ordersBadge').textContent = data.orders_enabled ? 'سفارش روشن' : 'سفارش خاموش';
@@ -1493,7 +1548,10 @@
           }
         }
         if (price == null) throw lastErr || new Error('price fetch failed');
-        setPrice(price, Date.now(), sourceName + ' · دستی');
+        const nowMs = Date.now();
+        setPrice(price, nowMs, sourceName + ' · دستی');
+        setProjectUpdateDate(nowMs);
+        resetCountdown(nowMs);
         document.getElementById('statusChip').innerHTML = '<i></i> آنلاین · قیمت دستی تازه‌شد';
       } catch (err) {
         document.getElementById('priceSource').textContent = 'خطا در رفرش';
@@ -1510,6 +1568,7 @@
         renderMarkets(btn.getAttribute('data-preset'));
       });
     });
+    countdownEndsAt = readStoredCountdown();
     loadLive();
     loadPerformance();
     tickCountdown();
