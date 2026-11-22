@@ -975,8 +975,8 @@
         </table>
       </div>
 
-      <h3 class="sec-title" style="font-size:1.25rem; margin-top:28px">پایداری بیت‌کوین (Walk-Forward)</h3>
-      <p class="sec-lead" id="wfLead">تکه‌های حدود ۹۰ روزه برای سنجش پایداری.</p>
+      <h3 class="sec-title" id="validation" style="font-size:1.25rem; margin-top:28px">پایداری نتیجه روی بیت‌کوین</h3>
+      <p class="sec-lead" id="wfLead">تکه‌های حدود ۹۰ روزه با تاریخ میلادی و شمسی، برای سنجش پایداری خارج از یک دورهٔ خوش‌شانس.</p>
       <div class="table-shell">
         <table>
           <thead>
@@ -989,7 +989,7 @@
           </tbody>
         </table>
       </div>
-      <div class="callout">این عددها آزمایش روی گذشته‌اند، نه سود واقعی حساب صرافی.</div>
+      <div class="callout">این عددها آزمایش روی گذشته‌اند، نه سود واقعی حساب صرافی. منبع زنده: <span class="mono">performance.json</span>.</div>
     </section>
 
     <section class="chapter" id="phase1">
@@ -1019,151 +1019,32 @@
         <div class="done-item"><i>✓</i><p><strong>مانیتور زنده فقط‌خواندنی:</strong> قیمت و سیگنال آزمایشی روی همین صفحه، بدون سفارش واقعی</p></div>
       </div>
 
-      <h3 class="sec-title" id="results" style="font-size:1.35rem; margin-top:28px">نتایج آزمایشی</h3>
-      <p class="sec-lead">
-        فرض مشترک همه تست‌ها: شروع با ۱۰٬۰۰۰ تتر · چارت ۴ ساعته · با احتساب هزینه معامله.
-        بازه بیت‌کوین: 2024-11-10 → 2026-11-10.
-      </p>
-      <div class="kpi-strip">
-        <div class="kpi"><span>BTC · نتیجه اصلی</span><b class="up">+1,068</b></div>
-        <div class="kpi"><span>ETH · بررسی مقایسه‌ای</span><b class="down">-450</b></div>
-        <div class="kpi"><span>SOL · بررسی مقایسه‌ای</span><b class="up">+199</b></div>
-        <div class="kpi"><span>BTC · سرمایه نهایی فرضی</span><b>11,044</b></div>
-      </div>
-      <div class="result-cards">
-        
-        <article class="result-card featured">
-          <div class="result-top">
-            <strong>بیت‌کوین</strong>
-            <span>تمرکز اصلی فاز ۱</span>
-          </div>
-          <div class="result-pnl up">+1,068 USDT</div>
-          <div class="result-grid">
-            <div><span>درصد برد</span><b>50%</b></div>
-            <div><span>تعداد معامله</span><b>22</b></div>
-            <div><span>قدرت سود</span><b>1.91</b></div>
-            <div><span>بیشترین افت</span><b>2.1%</b></div>
-          </div>
-        </article>
-        
-        <article class="result-card">
-          <div class="result-top">
-            <strong>اتریوم</strong>
-            <span>بررسی مقایسه‌ای روی ارز مهم دیگر</span>
-          </div>
-          <div class="result-pnl down">-450 USDT</div>
-          <div class="result-grid">
-            <div><span>درصد برد</span><b>27%</b></div>
-            <div><span>تعداد معامله</span><b>22</b></div>
-            <div><span>قدرت سود</span><b>0.72</b></div>
-            <div><span>بیشترین افت</span><b>6.4%</b></div>
-          </div>
-        </article>
-        
-        <article class="result-card">
-          <div class="result-top">
-            <strong>سولانا</strong>
-            <span>بررسی مقایسه‌ای روی ارز مهم دیگر</span>
-          </div>
-          <div class="result-pnl up">+199 USDT</div>
-          <div class="result-grid">
-            <div><span>درصد برد</span><b>42%</b></div>
-            <div><span>تعداد معامله</span><b>12</b></div>
-            <div><span>قدرت سود</span><b>1.29</b></div>
-            <div><span>بیشترین افت</span><b>5.0%</b></div>
-          </div>
-        </article>
-        
-      </div>
-      <div class="prose">
+      <div class="prose" style="margin-top:22px">
         <p>
-          جمع‌بندی فاز ۱: روی <strong>بیت‌کوین</strong> نتیجه امیدوارکننده‌تر بوده
-          (حدود +1,068 سود آزمایشی، درصد برد حدود 50%، قدرت سود 1.91).
-          روی <strong>اتریوم</strong> و <strong>سولانا</strong> هم بررسی کرده‌ایم تا فقط به یک ارز وابسته نباشیم؛
-          ولی نتیجه روی همه یکسان نیست. فعلاً بیت‌کوین بهتر از بقیه جواب داده.
+          عددهای کامل بازارها، تاریخ میلادی/شمسی، و جدول پایداری بیت‌کوین
+          در بخش <a href="#markets">گزارش بازارها</a> به‌روز از
+          <span class="mono">performance.json</span> خوانده می‌شوند —
+          اینجا دیگر جدول تکراری نگه نمی‌داریم تا نسخهٔ قدیمی نماند.
         </p>
-        <div class="callout">
-          مهم: این عددها آزمایش روی گذشته‌اند، نه سود واقعی در حساب صرافی.
-        </div>
-      </div>
-
-      <h3 class="sec-title" id="validation" style="font-size:1.35rem; margin-top:28px">پایداری نتیجه روی بیت‌کوین</h3>
-      <p class="sec-lead">
-        تاریخ را تکه‌تکه کرده‌ایم (حدود ۹۰ روزه) تا ببینیم نتیجه فقط شانس یک دوره نبوده.
-        فعلاً 4 از 8 تکه مثبت شده.
-      </p>
-      <div class="table-shell">
-        <table>
-          <thead>
-            <tr><th>بازه زمانی</th><th>تعداد معامله</th><th>درصد برد</th><th>سود/زیان</th><th>قدرت سود</th></tr>
-          </thead>
-          <tbody>
-            <tr><td class='mono'>2024-11-10 → 2025-02-08</td><td>4</td><td>25.0%</td><td class='down'>-112.31</td><td class='mono'>0.63</td></tr><tr><td class='mono'>2025-02-08 → 2025-05-09</td><td>3</td><td>66.7%</td><td class='up'>+293.79</td><td class='mono'>3.83</td></tr><tr><td class='mono'>2025-05-09 → 2025-08-07</td><td>3</td><td>33.3%</td><td class='down'>-27.39</td><td class='mono'>0.87</td></tr><tr><td class='mono'>2025-08-07 → 2025-11-05</td><td>2</td><td>0.0%</td><td class='down'>-207.68</td><td class='mono'>0.00</td></tr><tr><td class='mono'>2025-11-05 → 2026-02-03</td><td>4</td><td>75.0%</td><td class='up'>+498.49</td><td class='mono'>5.82</td></tr><tr><td class='mono'>2026-02-03 → 2026-05-04</td><td>1</td><td>100.0%</td><td class='up'>+197.43</td><td class='mono'>∞</td></tr><tr><td class='mono'>2026-05-04 → 2026-08-02</td><td>4</td><td>50.0%</td><td class='up'>+252.58</td><td class='mono'>2.75</td></tr><tr><td class='mono'>2026-08-02 → 2026-10-31</td><td>3</td><td>0.0%</td><td class='down'>-269.59</td><td class='mono'>0.00</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3 class="sec-title" style="font-size:1.35rem; margin-top:28px">جزئیات عددی همه ارزها</h3>
-      <div class="table-shell">
-        <table>
-          <thead>
-            <tr>
-              <th>ارز</th><th>سود/زیان</th><th>درصد برد</th><th>تعداد معامله</th><th>قدرت سود</th><th>بیشترین افت</th><th>سرمایه نهایی</th>
-            </tr>
-          </thead>
-          <tbody>
-            
-        <tr class="featured">
-          <td><strong>بیت‌کوین</strong><span class="muted"> (BTC)</span></td>
-          <td class="mono up">+1,067.84</td>
-          <td class="mono">50.0%</td>
-          <td class="mono">22</td>
-          <td class="mono">1.91</td>
-          <td class="mono">2.12%</td>
-          <td class="mono">11,044</td>
-        </tr>
-        
-        <tr class="">
-          <td><strong>اتریوم</strong><span class="muted"> (ETH)</span></td>
-          <td class="mono down">-450.04</td>
-          <td class="mono">27.3%</td>
-          <td class="mono">22</td>
-          <td class="mono">0.72</td>
-          <td class="mono">6.42%</td>
-          <td class="mono">9,534</td>
-        </tr>
-        
-        <tr class="">
-          <td><strong>سولانا</strong><span class="muted"> (SOL)</span></td>
-          <td class="mono up">+199.45</td>
-          <td class="mono">41.7%</td>
-          <td class="mono">12</td>
-          <td class="mono">1.29</td>
-          <td class="mono">5.01%</td>
-          <td class="mono">10,190</td>
-        </tr>
-        
-          </tbody>
-        </table>
       </div>
 
       <div class="split" style="margin-top:22px">
         <div class="block">
           <h4>در فاز ۱ انجام شد</h4>
           <ul>
-            <li>ساخت هسته قوانین و بک‌تست</li>
-            <li>بررسی BTC + ETH + SOL</li>
-            <li>ریسک و هزینه معامله</li>
-            <li>مانیتور زنده فقط‌خواندنی</li>
+            <li>هسته قوانین + امتیاز ۲۴تایی طبق منابع</li>
+            <li>بک‌تست BTC / ETH / SOL</li>
+            <li>Walk-Forward بیت‌کوین</li>
+            <li>Paper فقط‌خواندنی + مانیتور زنده</li>
           </ul>
         </div>
         <div class="block">
-          <h4>عمداً انجام نشد</h4>
+          <h4>عمداً هنوز نه</h4>
           <ul>
-            <li>خرید و فروش واقعی</li>
+            <li>سفارش واقعی صرافی</li>
             <li>تضمین سود</li>
-            <li>ادعای آماده‌بودن برای همه ارزها</li>
-            <li>محصول نهایی کاربرپسند کامل</li>
+            <li>اپ کامل FastAPI / داشبورد ترید</li>
+            <li>ادعا برای همه ارزها و تایم‌فریم‌ها</li>
           </ul>
         </div>
       </div>

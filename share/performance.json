@@ -343,7 +343,7 @@
     },
     {
       "id": "paper",
-      "title_fa": "Paper فقط‌خواندنی (preset javid)",
+      "title_fa": "Paper فقط‌خواندنی (preset قوانین کامل)",
       "status": "done",
       "code": "paper_trader.py"
     },
