@@ -7,15 +7,15 @@
   "symbol": "BTCUSDT",
   "timeframe": "4h",
   "timezone": "America/New_York",
-  "updated_at_utc": "2026-11-23T20:17:44.499681+00:00",
-  "updated_at_gregorian": "2026-11-23 20:17",
-  "updated_at_jalali": "1405/09/02 20:17",
-  "mark_price": 61406.22,
-  "last_closed_bar": "2026-11-23T15:00:00-05:00",
-  "last_closed_bar_gregorian": "2026-11-23 15:00",
-  "last_closed_bar_jalali": "1405/09/02 15:00",
-  "last_closed_bar_label": "2026-11-23 15:00 · 1405/09/02 15:00",
-  "last_close": 61432.31,
+  "updated_at_utc": "2026-11-24T04:52:28.168835+00:00",
+  "updated_at_gregorian": "2026-11-24 04:52",
+  "updated_at_jalali": "1405/09/03 04:52",
+  "mark_price": 60404.05,
+  "last_closed_bar": "2026-11-23T23:00:00-05:00",
+  "last_closed_bar_gregorian": "2026-11-23 23:00",
+  "last_closed_bar_jalali": "1405/09/02 23:00",
+  "last_closed_bar_label": "2026-11-23 23:00 · 1405/09/02 23:00",
+  "last_close": 60404.05,
   "bars_used": 2400,
   "signals_total": 4,
   "active_signal": null,
@@ -119,7 +119,7 @@
   },
   "risk_reward_min": 2.5,
   "paper_outcomes": {
-    "updated_at_utc": "2026-11-23T20:17:41.148467+00:00",
+    "updated_at_utc": "2026-11-24T04:52:24.921814+00:00",
     "n_signals": 12,
     "n_closed": 12,
     "n_open": 0,
@@ -129,9 +129,9 @@
   },
   "readiness": {
     "updated_at": {
-      "gregorian": "2026-11-23 07:44",
-      "jalali": "1405/09/02 07:44",
-      "label": "2026-11-23 07:44 · 1405/09/02 07:44"
+      "gregorian": "2026-11-23 20:17",
+      "jalali": "1405/09/02 20:17",
+      "label": "2026-11-23 20:17 · 1405/09/02 20:17"
     },
     "phase2_ready": false,
     "verdict_fa": "هنوز برای فاز بعد آماده نیست — جمع‌آوری شواهد Paper ادامه دارد",
@@ -166,7 +166,7 @@
       }
     ],
     "paper": {
-      "updated_at_utc": "2026-11-23T07:44:41.587578+00:00",
+      "updated_at_utc": "2026-11-23T20:17:48.417533+00:00",
       "n_signals": 12,
       "n_closed": 12,
       "n_open": 0,
