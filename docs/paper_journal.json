@@ -1419,8 +1419,8 @@
   ],
   "calendar": {
     "jy": 1405,
-    "jm": 9,
-    "title_fa": "آذر 1405",
+    "jm": 8,
+    "title_fa": "آبان 1405",
     "days_in_month": 30,
     "days": [
       {
@@ -1473,11 +1473,24 @@
       },
       {
         "day": 7,
-        "n": 0,
-        "wins": 0,
+        "n": 2,
+        "wins": 2,
         "losses": 0,
         "open": 0,
-        "signals": []
+        "signals": [
+          {
+            "symbol": "BTCUSDT",
+            "side_fa": "فروش",
+            "score": 19,
+            "result_fa": "برد"
+          },
+          {
+            "symbol": "SOLUSDT",
+            "side_fa": "فروش",
+            "score": 21,
+            "result_fa": "برد"
+          }
+        ]
       },
       {
         "day": 8,
@@ -1665,8 +1678,8 @@
       }
     ],
     "totals": {
-      "n": 0,
-      "wins": 0,
+      "n": 2,
+      "wins": 2,
       "losses": 0
     }
   },

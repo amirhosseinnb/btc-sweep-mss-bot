@@ -1,8 +1,8 @@
 {
   "generated_at": {
-    "gregorian": "2026-11-27 20:09",
-    "jalali": "1405/09/06 20:09",
-    "label": "2026-11-27 20:09 · 1405/09/06 20:09"
+    "gregorian": "2026-11-27 20:11",
+    "jalali": "1405/09/06 20:11",
+    "label": "2026-11-27 20:11 · 1405/09/06 20:11"
   },
   "generated_note_fa": "گزارش بک‌تست آفلاین با کارمزد/اسلیپیج/ریسک؛ سفارش واقعی نیست.",
   "phase1_status": "complete_read_only",
@@ -6098,7 +6098,7 @@
     ]
   },
   "paper_outcomes": {
-    "updated_at_utc": "2026-11-27T20:09:32.238400+00:00",
+    "updated_at_utc": "2026-11-27T20:11:38.948790+00:00",
     "n_signals": 12,
     "n_closed": 12,
     "n_open": 0,
@@ -7527,8 +7527,8 @@
     ],
     "calendar": {
       "jy": 1405,
-      "jm": 9,
-      "title_fa": "آذر 1405",
+      "jm": 8,
+      "title_fa": "آبان 1405",
       "days_in_month": 30,
       "days": [
         {
@@ -7581,11 +7581,24 @@
         },
         {
           "day": 7,
-          "n": 0,
-          "wins": 0,
+          "n": 2,
+          "wins": 2,
           "losses": 0,
           "open": 0,
-          "signals": []
+          "signals": [
+            {
+              "symbol": "BTCUSDT",
+              "side_fa": "فروش",
+              "score": 19,
+              "result_fa": "برد"
+            },
+            {
+              "symbol": "SOLUSDT",
+              "side_fa": "فروش",
+              "score": 21,
+              "result_fa": "برد"
+            }
+          ]
         },
         {
           "day": 8,
@@ -7773,8 +7786,8 @@
         }
       ],
       "totals": {
-        "n": 0,
-        "wins": 0,
+        "n": 2,
+        "wins": 2,
         "losses": 0
       }
     },
@@ -7782,9 +7795,9 @@
   },
   "readiness": {
     "updated_at": {
-      "gregorian": "2026-11-27 20:09",
-      "jalali": "1405/09/06 20:09",
-      "label": "2026-11-27 20:09 · 1405/09/06 20:09"
+      "gregorian": "2026-11-27 20:11",
+      "jalali": "1405/09/06 20:11",
+      "label": "2026-11-27 20:11 · 1405/09/06 20:11"
     },
     "phase2_ready": false,
     "progress_overall": 0.6578,
@@ -7825,7 +7838,7 @@
       }
     ],
     "paper": {
-      "updated_at_utc": "2026-11-27T20:09:32.238400+00:00",
+      "updated_at_utc": "2026-11-27T20:11:38.948790+00:00",
       "n_signals": 12,
       "n_closed": 12,
       "n_open": 0,

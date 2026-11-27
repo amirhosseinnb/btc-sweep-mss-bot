@@ -239,7 +239,7 @@ def jalali_month_calendar(rows: list[dict], *, now: Optional[pd.Timestamp] = Non
             break
     if not has_current and rows:
         for r in rows:
-            parsed = _parse_j((r.get("signal_time") or {}).get("jalali") || "")
+            parsed = _parse_j((r.get("signal_time") or {}).get("jalali") or "")
             if parsed:
                 jy, jm = parsed[0], parsed[1]
                 break
