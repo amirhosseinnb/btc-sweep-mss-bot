@@ -7,16 +7,16 @@
   "symbol": "BTCUSDT",
   "timeframe": "4h",
   "timezone": "America/New_York",
-  "updated_at_utc": "2026-11-27T20:02:29.568425+00:00",
-  "updated_at_gregorian": "2026-11-27 20:02",
-  "updated_at_jalali": "1405/09/06 20:02",
-  "mark_price": 59840.01,
-  "last_closed_bar": "2026-11-27T11:00:00-05:00",
-  "last_closed_bar_gregorian": "2026-11-27 11:00",
-  "last_closed_bar_jalali": "1405/09/06 11:00",
-  "last_closed_bar_label": "2026-11-27 11:00 · 1405/09/06 11:00",
-  "last_close": 59910.33,
-  "bars_used": 2399,
+  "updated_at_utc": "2026-11-27T20:03:26.122291+00:00",
+  "updated_at_gregorian": "2026-11-27 20:03",
+  "updated_at_jalali": "1405/09/06 20:03",
+  "mark_price": 59850.97,
+  "last_closed_bar": "2026-11-27T15:00:00-05:00",
+  "last_closed_bar_gregorian": "2026-11-27 15:00",
+  "last_closed_bar_jalali": "1405/09/06 15:00",
+  "last_closed_bar_label": "2026-11-27 15:00 · 1405/09/06 15:00",
+  "last_close": 59850.97,
+  "bars_used": 2400,
   "signals_total": 4,
   "active_signal": null,
   "recent_signals": [
@@ -89,14 +89,13 @@
     "status": "no_trade",
     "status_fa": "بدون معامله",
     "bar_time": {
-      "gregorian": "2026-11-27 11:00",
-      "jalali": "1405/09/06 11:00",
-      "label": "2026-11-27 11:00 · 1405/09/06 11:00"
+      "gregorian": "2026-11-27 15:00",
+      "jalali": "1405/09/06 15:00",
+      "label": "2026-11-27 15:00 · 1405/09/06 15:00"
     },
     "reasons_fa": [
       "MSS/BOS در 16 کندل اخیر برقرار نیست",
-      "Divergence در پنجرهٔ اخیر برقرار نیست",
-      "ستاپ خام روی preset پایه دیده شد، ولی فیلترهای قوانین کامل (CRT/امتیاز/Divergence) آن را رد کردند"
+      "Divergence در پنجرهٔ اخیر برقرار نیست"
     ],
     "checks": [
       {
@@ -163,7 +162,7 @@
   },
   "risk_reward_min": 2.5,
   "paper_outcomes": {
-    "updated_at_utc": "2026-11-27T20:02:18.046970+00:00",
+    "updated_at_utc": "2026-11-27T20:03:22.428187+00:00",
     "n_signals": 12,
     "n_closed": 12,
     "n_open": 0,
