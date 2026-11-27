@@ -1,10 +1,12 @@
 {
   "updated_at": {
-    "gregorian": "2026-11-27 16:44",
-    "jalali": "1405/09/06 16:44",
-    "label": "2026-11-27 16:44 · 1405/09/06 16:44"
+    "gregorian": "2026-11-27 20:01",
+    "jalali": "1405/09/06 20:01",
+    "label": "2026-11-27 20:01 · 1405/09/06 20:01"
   },
   "phase2_ready": false,
+  "progress_overall": 0.6578,
+  "progress_pct": 66,
   "verdict_fa": "هنوز برای فاز بعد آماده نیست — جمع‌آوری شواهد Paper ادامه دارد",
   "gates": [
     {
@@ -12,32 +14,36 @@
       "title_fa": "حداقل 30 معاملهٔ Paper بسته‌شده",
       "current": 12,
       "target": 30,
-      "ok": false
+      "ok": false,
+      "progress": 0.4
     },
     {
       "id": "paper_win_rate",
       "title_fa": "Win-rate Paper ≥ 55%",
       "current": 0.3333,
       "target": 0.55,
-      "ok": false
+      "ok": false,
+      "progress": 0.606060606060606
     },
     {
       "id": "btc_javid_pf",
       "title_fa": "Profit Factor قوانین کامل BTC ≥ 1.5",
       "current": 2.5165,
       "target": 1.5,
-      "ok": true
+      "ok": true,
+      "progress": 1.0
     },
     {
       "id": "wf_javid",
       "title_fa": "نسبت فولد مثبت WF ≥ 50%",
       "current": 0.3125,
       "target": 0.5,
-      "ok": false
+      "ok": false,
+      "progress": 0.625
     }
   ],
   "paper": {
-    "updated_at_utc": "2026-11-27T16:44:21.593428+00:00",
+    "updated_at_utc": "2026-11-27T20:01:15.493807+00:00",
     "n_signals": 12,
     "n_closed": 12,
     "n_open": 0,

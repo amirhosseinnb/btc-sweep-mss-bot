@@ -12,6 +12,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from core_strategy import generate_signals
+from jalali import dual_date
+from live_diagnostics import diagnose_no_trade, paper_journal_rows, paper_journal_summary
+from paper_journal import OUTCOMES_PATH, READINESS_PATH
 from paper_trader import (
     already_logged,
     append_signal_log,
@@ -20,10 +23,7 @@ from paper_trader import (
     signal_to_row,
     strategy_for_preset,
 )
-from jalali import dual_date
-from paper_journal import OUTCOMES_PATH, READINESS_PATH
 from scoring import ScoreQuality, quality_label_fa
-import json as _json
 
 
 QUALITY_FA = {
@@ -95,7 +95,7 @@ def build_snapshot(
         _signal_public(s, ohlcv.index[s.index].isoformat())
         for s in signals[-8:]
     ]
-    recent.reverse()  # newest first for the UI
+    recent.reverse()
 
     score_board = {
         "max": 24,
@@ -110,6 +110,13 @@ def build_snapshot(
         "reject_weak": cfg.reject_weak_scores,
     }
 
+    no_trade = diagnose_no_trade(ohlcv, cfg)
+    journal_rows = paper_journal_rows(limit=40)
+    journal = {
+        "summary": paper_journal_summary(journal_rows),
+        "rows": journal_rows,
+    }
+
     updated = datetime.now(timezone.utc)
     last_dual = dual_date(last_bar_time, with_time=True)
     updated_dual = dual_date(updated, with_time=True)
@@ -117,9 +124,9 @@ def build_snapshot(
     paper_outcomes = None
     readiness = None
     if OUTCOMES_PATH.exists():
-        paper_outcomes = _json.loads(OUTCOMES_PATH.read_text(encoding="utf-8"))
+        paper_outcomes = json.loads(OUTCOMES_PATH.read_text(encoding="utf-8"))
     if READINESS_PATH.exists():
-        readiness = _json.loads(READINESS_PATH.read_text(encoding="utf-8"))
+        readiness = json.loads(READINESS_PATH.read_text(encoding="utf-8"))
 
     return {
         "status": "online",
@@ -143,9 +150,11 @@ def build_snapshot(
         "signals_total": len(signals),
         "active_signal": signal_payload,
         "recent_signals": recent,
+        "no_trade": no_trade,
         "score_board": score_board,
         "risk_reward_min": cfg.risk_reward,
         "paper_outcomes": paper_outcomes,
+        "paper_journal": journal,
         "readiness": readiness,
         "note_fa": "اتصال فقط برای خواندن قیمت و سیگنال آزمایشی است؛ سفارش واقعی ارسال نمی‌شود. امتیازها طبق قوانین و منابع (۱۲×۰–۲).",
     }
@@ -162,11 +171,13 @@ def write_snapshot(snapshot: dict) -> None:
 def main() -> None:
     snapshot = build_snapshot(preset="javid")
     write_snapshot(snapshot)
+    nt = snapshot.get("no_trade") or {}
     print(
         f"Live snapshot updated | preset={snapshot['preset']} | "
         f"{snapshot['symbol']} mark={snapshot['mark_price']} "
         f"| signals={snapshot['signals_total']} "
-        f"| active={bool(snapshot['active_signal'])} | {snapshot['updated_at_utc']}"
+        f"| active={bool(snapshot['active_signal'])} "
+        f"| no_trade={nt.get('status')} | {snapshot['updated_at_utc']}"
     )
 
 

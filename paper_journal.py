@@ -265,6 +265,11 @@ def build_readiness(
     closed = int(paper_outcomes.get("n_closed") or 0)
     paper_wr = float(paper_outcomes.get("win_rate") or 0.0)
 
+    def _progress(current: float, target: float) -> float:
+        if target <= 0:
+            return 1.0
+        return float(min(1.0, max(0.0, current / target)))
+
     checks = [
         {
             "id": "paper_sample",
@@ -272,6 +277,7 @@ def build_readiness(
             "current": closed,
             "target": gates["min_closed_paper_trades"],
             "ok": closed >= gates["min_closed_paper_trades"],
+            "progress": _progress(closed, gates["min_closed_paper_trades"]),
         },
         {
             "id": "paper_win_rate",
@@ -279,6 +285,7 @@ def build_readiness(
             "current": round(paper_wr, 4),
             "target": gates["min_paper_win_rate"],
             "ok": closed > 0 and paper_wr >= gates["min_paper_win_rate"],
+            "progress": _progress(paper_wr, gates["min_paper_win_rate"]) if closed > 0 else 0.0,
         },
         {
             "id": "btc_javid_pf",
@@ -286,6 +293,7 @@ def build_readiness(
             "current": round(btc_pf, 4),
             "target": gates["min_btc_javid_profit_factor"],
             "ok": btc_pf >= gates["min_btc_javid_profit_factor"],
+            "progress": _progress(btc_pf, gates["min_btc_javid_profit_factor"]),
         },
         {
             "id": "wf_javid",
@@ -293,13 +301,17 @@ def build_readiness(
             "current": round(wf_ratio, 4),
             "target": gates["min_wf_javid_positive_ratio"],
             "ok": wf_ratio >= gates["min_wf_javid_positive_ratio"],
+            "progress": _progress(wf_ratio, gates["min_wf_javid_positive_ratio"]),
         },
     ]
     ready = all(c["ok"] for c in checks)
+    progress_overall = sum(float(c["progress"]) for c in checks) / len(checks)
     now = dual_date(datetime.now(timezone.utc), with_time=True)
     payload = {
         "updated_at": now,
         "phase2_ready": ready,
+        "progress_overall": round(progress_overall, 4),
+        "progress_pct": int(round(progress_overall * 100)),
         "verdict_fa": (
             "آمادگی Demo/Testnet تأیید شد"
             if ready

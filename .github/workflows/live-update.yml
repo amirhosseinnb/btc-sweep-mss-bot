@@ -12,6 +12,7 @@ on:
       - "download_data.py"
       - "paper_trader.py"
       - "paper_journal.py"
+      - "live_diagnostics.py"
       - "build_performance_json.py"
       - "scoring.py"
       - "rulebook.py"
@@ -75,6 +76,7 @@ jobs:
             docs/live.json share/live.json \
             docs/performance.json share/performance.json \
             docs/paper_readiness.json share/paper_readiness.json \
+            docs/paper_journal.json share/paper_journal.json \
             data/paper_signals.csv data/paper_checks.csv \
             data/paper_outcomes.json data/paper_readiness.json \
             data/paper_state.json data/paper_state_*.json || true

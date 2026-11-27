@@ -11,6 +11,12 @@ from pathlib import Path
 
 from backtester import Backtester
 from jalali import dual_date
+from live_diagnostics import (
+    downsample_equity,
+    market_warning,
+    paper_journal_rows,
+    paper_journal_summary,
+)
 from paper_journal import READINESS_PATH, build_readiness, update_signal_outcomes
 from rulebook import javid_backtest_config, javid_strategy_config
 from run import load_ohlcv
@@ -23,7 +29,7 @@ def _pf(v: float) -> float | None:
     return float(v)
 
 
-def _run(csv_path: Path, preset: str) -> dict:
+def _run(csv_path: Path, preset: str) -> tuple[dict, object]:
     df = load_ohlcv(csv_path)
     if preset == "javid":
         cfg = javid_strategy_config()
@@ -31,10 +37,11 @@ def _run(csv_path: Path, preset: str) -> dict:
     else:
         cfg = best_strategy_config()
         bt = best_backtest_config()
-    m = Backtester(cfg, bt).run(df).metrics
+    result = Backtester(cfg, bt).run(df)
+    m = result.metrics
     start = dual_date(df.index[0])
     end = dual_date(df.index[-1])
-    return {
+    row = {
         "symbol": csv_path.stem.replace("usdt_4h", "").upper() + "USDT",
         "name": csv_path.stem.replace("usdt_4h", "").upper(),
         "name_fa": {"BTC": "بیت‌کوین", "ETH": "اتریوم", "SOL": "سولانا"}.get(
@@ -51,6 +58,13 @@ def _run(csv_path: Path, preset: str) -> dict:
         "profit_factor": _pf(float(m["profit_factor"])),
         "final_equity": float(m["final_equity"]),
     }
+    warn = market_warning(row) if preset == "javid" else None
+    if warn:
+        row["warning_fa"] = warn
+        row["caution"] = True
+    else:
+        row["caution"] = False
+    return row, result
 
 
 def _wf_pack(csv_path: Path, *, preset: str) -> dict:
@@ -93,6 +107,8 @@ def _wf_pack(csv_path: Path, *, preset: str) -> dict:
 def build() -> dict:
     assets_best = []
     assets_javid = []
+    equity_curves: dict[str, dict] = {"best": {}, "javid": {}}
+
     for path in [
         Path("data/btcusdt_4h.csv"),
         Path("data/ethusdt_4h.csv"),
@@ -100,8 +116,13 @@ def build() -> dict:
     ]:
         if not path.exists():
             continue
-        assets_best.append(_run(path, "best"))
-        assets_javid.append(_run(path, "javid"))
+        best_row, best_res = _run(path, "best")
+        javid_row, javid_res = _run(path, "javid")
+        assets_best.append(best_row)
+        assets_javid.append(javid_row)
+        name = best_row["name"]
+        equity_curves["best"][name] = downsample_equity(best_res.equity_curve)
+        equity_curves["javid"][name] = downsample_equity(javid_res.equity_curve)
 
     btc = Path("data/btcusdt_4h.csv")
     wf_best = _wf_pack(btc, preset="best") if btc.exists() else {
@@ -111,7 +132,6 @@ def build() -> dict:
         "preset": "javid", "fold_days": 90, "positive_folds": 0, "total_folds": 0, "folds": []
     }
 
-    # Prefer existing journal outcomes; if empty, still emit zeros.
     if Path("data/paper_signals.csv").exists():
         paper = update_signal_outcomes(days=400)
     elif Path("data/paper_outcomes.json").exists():
@@ -126,6 +146,13 @@ def build() -> dict:
             "win_rate": 0.0,
             "avg_pnl_r": 0.0,
         }
+
+    journal_rows = paper_journal_rows(limit=50)
+    journal = {
+        "summary": paper_journal_summary(journal_rows),
+        "rows": journal_rows,
+        "note_fa": "ژورنال Paper؛ seed تاریخی از بک‌فیل جدا برچسب خورده. سفارش واقعی نیست.",
+    }
 
     readiness = build_readiness(
         paper_outcomes=paper,
@@ -149,9 +176,11 @@ def build() -> dict:
         ],
         "markets_best": assets_best,
         "markets_javid": assets_javid,
+        "equity_curves": equity_curves,
         "walk_forward_btc_best": wf_best,
         "walk_forward_btc_javid": wf_javid,
         "paper_outcomes": paper,
+        "paper_journal": journal,
         "readiness": readiness,
         "rulebook_coverage": [
             {"id": "philosophy", "title_fa": "فلسفه قانون‌محور", "status": "done", "code": "philosophy.py"},
@@ -182,16 +211,19 @@ def main() -> None:
         folder.mkdir(parents=True, exist_ok=True)
         (folder / "performance.json").write_text(text, encoding="utf-8")
     if READINESS_PATH.exists():
-        # Already written by build_readiness; also mirror under docs for Pages.
         readiness_text = READINESS_PATH.read_text(encoding="utf-8")
         for folder in (Path("docs"), Path("share")):
             (folder / "paper_readiness.json").write_text(readiness_text, encoding="utf-8")
+    # Mirror journal for direct fetch if needed
+    journal_text = json.dumps(payload["paper_journal"], ensure_ascii=False, indent=2)
+    for folder in (Path("docs"), Path("share")):
+        (folder / "paper_journal.json").write_text(journal_text, encoding="utf-8")
     print(
         f"performance.json written | best_markets={len(payload['markets_best'])} "
         f"| javid={len(payload['markets_javid'])} "
-        f"| wf_best={payload['walk_forward_btc_best']['total_folds']} "
-        f"| wf_javid={payload['walk_forward_btc_javid']['total_folds']} "
-        f"| phase2_ready={payload['readiness']['phase2_ready']}"
+        f"| journal={payload['paper_journal']['summary']['n_rows']} "
+        f"| phase2_ready={payload['readiness']['phase2_ready']} "
+        f"| progress={payload['readiness'].get('progress_pct', 0)}%"
     )
 
 

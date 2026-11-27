@@ -721,6 +721,78 @@
       .rules-grid { grid-template-columns: 1fr; }
     }
 
+    .no-trade-box {
+      margin-top: 16px; padding: 14px 16px;
+      border: 1px solid var(--line); background: rgba(255,255,255,0.025);
+    }
+    .no-trade-box h4 { margin: 0 0 8px; font-size: 0.95rem; }
+    .no-trade-box ul { margin: 0; padding-right: 18px; color: var(--muted); }
+    .no-trade-box li { margin: 4px 0; }
+    .check-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .check-pill {
+      font-size: 0.78rem; padding: 4px 10px; border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .check-pill.ok { border-color: rgba(61,214,140,0.45); color: var(--up); }
+    .check-pill.bad { border-color: rgba(255,107,107,0.4); color: var(--down); }
+
+    .progress-wrap { margin: 10px 0 18px; }
+    .progress-meta {
+      display: flex; justify-content: space-between; gap: 12px;
+      font-size: 0.85rem; color: var(--muted); margin-bottom: 6px;
+    }
+    .progress-track {
+      height: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), #2aa8a2);
+      transition: width 0.6s ease;
+    }
+    .gate-row { margin-bottom: 12px; }
+    .gate-row .gate-top {
+      display: flex; justify-content: space-between; gap: 10px;
+      font-size: 0.88rem; margin-bottom: 4px;
+    }
+    .gate-row .gate-top b.ok { color: var(--up); }
+    .gate-row .gate-top b.wait { color: var(--accent-2); }
+    .gate-mini { height: 6px; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .gate-mini > i { display: block; height: 100%; background: var(--accent); width: 0%; }
+
+    .warn-banner {
+      margin: 12px 0 0; padding: 10px 12px;
+      border: 1px solid rgba(240,180,41,0.35);
+      background: rgba(240,180,41,0.08);
+      color: #f5d78a; font-size: 0.88rem;
+    }
+    .result-card.caution { border-color: rgba(240,180,41,0.35); }
+
+    .equity-panel { margin-top: 22px; }
+    .equity-panel svg { width: 100%; height: 220px; display: block; }
+    .equity-legend {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      font-size: 0.8rem; color: var(--muted); margin-top: 8px;
+    }
+    .equity-legend span::before {
+      content: ""; display: inline-block; width: 12px; height: 3px;
+      margin-left: 6px; vertical-align: middle; background: var(--accent);
+    }
+    .equity-legend .dd::before { background: var(--down); }
+
+    .journal-kpis {
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px;
+      margin: 12px 0 16px;
+    }
+    .journal-kpis .kpi {
+      padding: 12px; border: 1px solid var(--line); background: rgba(255,255,255,0.02);
+    }
+    .journal-kpis .kpi span { display: block; color: var(--muted); font-size: 0.78rem; }
+    .journal-kpis .kpi b { font-size: 1.15rem; }
+    @media (max-width: 900px) {
+      .journal-kpis { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
   </style>
 </head>
 <body>
@@ -772,7 +844,7 @@
       <a class="hub-card" href="#markets">
         <div class="n">02</div>
         <strong>گزارش بازارها</strong>
-        <p>BTC / ETH / SOL با تاریخ شمسی و Walk-Forward</p>
+        <p>BTC / ETH / SOL، ژورنال Paper، نمودار و Walk-Forward</p>
       </a>
       <a class="hub-card" href="#rules">
         <div class="n">03</div>
@@ -857,6 +929,12 @@
           <div class="metric"><span>حالت سیستم</span><b id="systemMode">فقط نمایش</b></div>
         </div>
       </div>
+      <div class="no-trade-box" id="noTradeBox">
+        <h4>چرا الان No-Trade؟</h4>
+        <p class="muted" id="noTradeLead">در حال بررسی آخرین کندل بسته‌شده…</p>
+        <ul id="noTradeReasons"></ul>
+        <div class="check-pills" id="noTradeChecks"></div>
+      </div>
       <div class="score-board" id="scoreBoard">
         <h3>داشبورد امتیاز ۲۴تایی طبق قوانین</h3>
         <div class="score-bands" id="scoreBands"></div>
@@ -873,6 +951,23 @@
           </thead>
           <tbody id="recentSignalsBody">
             <tr><td colspan="6">در حال بارگذاری سیگنال‌های اخیر…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sec-title" style="font-size:1.2rem; margin-top:28px">ژورنال Paper</h3>
+      <p class="sec-lead">سیگنال‌های ثبت‌شده با نتیجهٔ فرضی SL/TP — بدون سفارش واقعی.</p>
+      <div class="journal-kpis" id="journalKpis"></div>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>زمان</th><th>نماد</th><th>سمت</th><th>ورود</th>
+              <th>امتیاز</th><th>نتیجه</th><th>R</th><th>منبع</th>
+            </tr>
+          </thead>
+          <tbody id="journalBody">
+            <tr><td colspan="8">در حال بارگذاری ژورنال…</td></tr>
           </tbody>
         </table>
       </div>
@@ -959,7 +1054,18 @@
       </div>
 
       <div class="kpi-strip" id="perfKpis"></div>
+      <div id="marketWarnings"></div>
       <div class="result-cards" id="perfCards"></div>
+
+      <div class="equity-panel">
+        <h3 class="sec-title" style="font-size:1.25rem; margin-top:8px">منحنی سرمایه و افت (BTC)</h3>
+        <p class="sec-lead" id="equityLead">نمودار بک‌تست آفلاین بیت‌کوین برای preset فعال.</p>
+        <svg id="equityChart" viewBox="0 0 800 220" role="img" aria-label="منحنی سرمایه"></svg>
+        <div class="equity-legend">
+          <span>سرمایه</span>
+          <span class="dd">افت از قله</span>
+        </div>
+      </div>
 
       <h3 class="sec-title" style="font-size:1.25rem; margin-top:28px">جزئیات عددی</h3>
       <div class="table-shell">
@@ -1031,8 +1137,15 @@
 
       <h3 class="sec-title" style="font-size:1.35rem; margin-top:28px">گیت آمادگی ورود به فاز بعد</h3>
       <p class="sec-lead" id="readinessLead">Train مدل ML نداریم؛ فقط شواهد Paper و Walk-Forward.</p>
-      <div class="done-list" id="readinessGates">
-        <div class="done-item"><i>…</i><p>در حال بارگذاری گیت‌های آمادگی…</p></div>
+      <div class="progress-wrap" id="readinessProgressWrap">
+        <div class="progress-meta">
+          <span>پیشرفت کلی آمادگی</span>
+          <b id="readinessPct">—</b>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="readinessFill"></div></div>
+      </div>
+      <div id="readinessGates">
+        <div class="gate-row muted">در حال بارگذاری گیت‌های آمادگی…</div>
       </div>
 
       <div class="split" style="margin-top:22px">
@@ -1391,6 +1504,16 @@
         ' · نمایش: ' + presetLabel;
 
       renderWalkForward(preset);
+      renderEquity(preset);
+
+      const warnBox = document.getElementById('marketWarnings');
+      if (warnBox) {
+        const warns = rows.filter(function (r) { return r.warning_fa; });
+        warnBox.innerHTML = warns.map(function (r) {
+          return '<div class="warn-banner"><strong>' + r.name_fa + ':</strong> ' +
+            r.warning_fa + '</div>';
+        }).join('');
+      }
 
       if (!rows.length) {
         kpis.innerHTML = '';
@@ -1408,9 +1531,10 @@
 
       cards.innerHTML = rows.map(function (r) {
         const featured = r.name === 'BTC' ? ' featured' : '';
+        const caution = r.caution ? ' caution' : '';
         const cls = r.pnl >= 0 ? 'up' : 'down';
-        const note = r.name === 'BTC' ? 'تمرکز اصلی' : 'بررسی مقایسه‌ای';
-        return '<article class="result-card' + featured + '">' +
+        const note = r.name === 'BTC' ? 'تمرکز اصلی' : (r.caution ? 'هشدار مقایسه‌ای' : 'بررسی مقایسه‌ای');
+        return '<article class="result-card' + featured + caution + '">' +
           '<div class="result-top"><strong>' + r.name_fa + '</strong><span>' + note +
           ' · ' + r.preset + '</span></div>' +
           '<div class="result-pnl ' + cls + '">' + (r.pnl >= 0 ? '+' : '') +
@@ -1421,6 +1545,7 @@
           '<div><span>قدرت سود</span><b>' + (r.profit_factor == null ? '∞' : fmtNum(r.profit_factor, 2)) + '</b></div>' +
           '<div><span>بیشترین افت</span><b>' + fmtPct(r.max_drawdown) + '</b></div>' +
           '</div>' +
+          (r.warning_fa ? ('<div class="warn-banner">' + r.warning_fa + '</div>') : '') +
           '<div class="preset-chip" style="margin-top:12px">' +
           dualHtml(r.start.gregorian + ' → ' + r.end.gregorian, r.start.jalali + ' → ' + r.end.jalali) +
           '</div></article>';
@@ -1483,6 +1608,7 @@
         }).join('');
         renderJavidCoverage(perfData.rulebook_coverage || []);
         renderReadiness(perfData.readiness || null);
+        renderJournal(perfData.paper_journal || null);
         renderMarkets(activePreset);
       } catch (e) {
         document.getElementById('perfMeta').textContent = 'گزارش عملکرد هنوز در دسترس نیست.';
@@ -1493,26 +1619,145 @@
       const lead = document.getElementById('readinessLead');
       const list = document.getElementById('readinessGates');
       const chip = document.getElementById('readinessChip');
+      const pctEl = document.getElementById('readinessPct');
+      const fill = document.getElementById('readinessFill');
       if (!ready) {
         if (lead) lead.textContent = 'گیت آمادگی هنوز ساخته نشده.';
         if (chip) chip.textContent = 'آمادگی فاز ۲: نامشخص';
         return;
       }
       if (lead) lead.textContent = ready.verdict_fa || '';
+      const pct = ready.progress_pct != null
+        ? ready.progress_pct
+        : Math.round((ready.progress_overall || 0) * 100);
+      if (pctEl) pctEl.textContent = pct + '٪';
+      if (fill) fill.style.width = pct + '%';
       if (chip) {
         chip.textContent = ready.phase2_ready
-          ? 'آمادگی فاز ۲: تأیید شد'
-          : 'آمادگی فاز ۲: هنوز نه — Paper ادامه دارد';
+          ? 'آمادگی فاز ۲: تأیید شد · ' + pct + '٪'
+          : 'آمادگی فاز ۲: ' + pct + '٪ — هنوز نه';
       }
       if (!list) return;
       list.innerHTML = (ready.gates || []).map(function (g) {
-        const mark = g.ok ? '✓' : '·';
         const isRatio = g.id === 'paper_win_rate' || g.id === 'wf_javid';
         const cur = isRatio ? fmtPct(g.current) : g.current;
         const target = isRatio ? fmtPct(g.target) : g.target;
-        return '<div class="done-item"><i>' + mark + '</i><p><strong>' + g.title_fa +
-          '</strong> — اکنون: ' + cur + ' / هدف: ' + target + '</p></div>';
+        const p = Math.round((g.progress != null ? g.progress : (g.ok ? 1 : 0)) * 100);
+        return '<div class="gate-row"><div class="gate-top"><span>' + g.title_fa +
+          '</span><b class="' + (g.ok ? 'ok' : 'wait') + '">' + cur + ' / ' + target +
+          '</b></div><div class="gate-mini"><i style="width:' + p + '%"></i></div></div>';
       }).join('');
+    }
+
+    function renderNoTrade(nt) {
+      const lead = document.getElementById('noTradeLead');
+      const list = document.getElementById('noTradeReasons');
+      const pills = document.getElementById('noTradeChecks');
+      if (!nt) {
+        if (lead) lead.textContent = 'دادهٔ تشخیص No-Trade نیست.';
+        return;
+      }
+      if (nt.status === 'signal') {
+        if (lead) lead.textContent = 'الان سیگنال فعال است — No-Trade نیست.';
+        if (list) list.innerHTML = '';
+        if (pills) pills.innerHTML = '';
+        return;
+      }
+      if (lead) {
+        lead.textContent = (nt.status_fa || 'بدون معامله') +
+          (nt.bar_time && nt.bar_time.label ? ' · کندل: ' + nt.bar_time.label : '');
+      }
+      if (list) {
+        list.innerHTML = (nt.reasons_fa || []).map(function (r) {
+          return '<li>' + r + '</li>';
+        }).join('');
+      }
+      if (pills) {
+        pills.innerHTML = (nt.checks || []).map(function (c) {
+          return '<span class="check-pill ' + (c.ok ? 'ok' : 'bad') + '">' +
+            (c.ok ? '✓ ' : '✗ ') + c.label_fa + '</span>';
+        }).join('');
+      }
+    }
+
+    function renderJournal(journal) {
+      const kpis = document.getElementById('journalKpis');
+      const body = document.getElementById('journalBody');
+      if (!journal) {
+        if (body) body.innerHTML = '<tr><td colspan="8">ژورنال خالی است</td></tr>';
+        return;
+      }
+      const s = journal.summary || {};
+      if (kpis) {
+        kpis.innerHTML =
+          '<div class="kpi"><span>کل ردیف</span><b>' + (s.n_rows || 0) + '</b></div>' +
+          '<div class="kpi"><span>بسته‌شده</span><b>' + (s.n_closed || 0) + '</b></div>' +
+          '<div class="kpi"><span>برد Paper</span><b>' + fmtPct(s.win_rate || 0) + '</b></div>' +
+          '<div class="kpi"><span>میانگین R</span><b class="mono">' +
+          fmtNum(s.avg_pnl_r || 0, 2) + '</b></div>';
+      }
+      const rows = journal.rows || [];
+      if (!body) return;
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="8">هنوز سیگنالی در ژورنال نیست</td></tr>';
+        return;
+      }
+      body.innerHTML = rows.map(function (r) {
+        const g = (r.signal_time && r.signal_time.gregorian) || '—';
+        const j = (r.signal_time && r.signal_time.jalali) || '';
+        const cls = r.win === true ? 'up' : (r.win === false ? 'down' : '');
+        const rTxt = r.pnl_r == null ? '—' : ((r.pnl_r >= 0 ? '+' : '') + fmtNum(r.pnl_r, 2));
+        return '<tr>' +
+          '<td>' + dualHtml(g, j) + '</td>' +
+          '<td class="mono">' + (r.symbol || '—') + '</td>' +
+          '<td>' + (r.side_fa || r.side || '—') + '</td>' +
+          '<td class="mono">' + (r.entry != null ? r.entry : '—') + '</td>' +
+          '<td class="mono">' + (r.score != null ? (r.score + '/24') : '—') + '</td>' +
+          '<td class="' + cls + '">' + (r.result_fa || '—') + '</td>' +
+          '<td class="mono ' + cls + '">' + rTxt + '</td>' +
+          '<td>' + (r.source_fa || r.source || '—') + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    function renderEquity(preset) {
+      const svg = document.getElementById('equityChart');
+      const lead = document.getElementById('equityLead');
+      if (!svg || !perfData) return;
+      const pack = (perfData.equity_curves || {})[preset] || {};
+      const series = pack.BTC || [];
+      if (lead) {
+        lead.textContent = series.length
+          ? ('منحنی سرمایه بیت‌کوین · preset ' + (preset === 'javid' ? 'قوانین کامل' : 'پایه'))
+          : 'برای این preset هنوز منحنی سرمایه نیست.';
+      }
+      if (!series.length) {
+        svg.innerHTML = '';
+        return;
+      }
+      const w = 800, h = 220, pad = 18;
+      const eqs = series.map(function (p) { return p.equity; });
+      const dds = series.map(function (p) { return p.drawdown; });
+      const minE = Math.min.apply(null, eqs);
+      const maxE = Math.max.apply(null, eqs);
+      const maxD = Math.max.apply(null, dds.concat([0.01]));
+      function x(i) { return pad + (i / (series.length - 1 || 1)) * (w - pad * 2); }
+      function yE(v) {
+        const span = (maxE - minE) || 1;
+        return h - pad - ((v - minE) / span) * (h - pad * 2);
+      }
+      function yD(v) {
+        return pad + (v / maxD) * (h - pad * 2) * 0.45;
+      }
+      const eqPath = series.map(function (p, i) {
+        return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + yE(p.equity).toFixed(1);
+      }).join(' ');
+      const ddPath = series.map(function (p, i) {
+        return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + yD(p.drawdown).toFixed(1);
+      }).join(' ');
+      svg.innerHTML =
+        '<path d="' + eqPath + '" fill="none" stroke="#3fd0c9" stroke-width="2.2" />' +
+        '<path d="' + ddPath + '" fill="none" stroke="#ff6b6b" stroke-width="1.4" opacity="0.85" />';
     }
 
     async function loadLive() {
@@ -1534,6 +1779,8 @@
         document.getElementById('ordersBadge').textContent = data.orders_enabled ? 'سفارش روشن' : 'سفارش خاموش';
         renderScoreBoard(data);
         if (data.readiness) renderReadiness(data.readiness);
+        if (data.paper_journal) renderJournal(data.paper_journal);
+        renderNoTrade(data.no_trade || null);
         if (data.active_signal) {
           const s = data.active_signal;
           const sideFa = s.side === 'long' ? 'خرید' : 'فروش';
@@ -1547,7 +1794,10 @@
         } else {
           state.className = 'state wait';
           state.textContent = 'الان سیگنال فعالی نیست';
-          detail.textContent = 'سیستم آنلاین است و منتظر شرایط بعدی می‌ماند';
+          const reasons = (data.no_trade && data.no_trade.reasons_fa) || [];
+          detail.textContent = reasons.length
+            ? ('No-Trade: ' + reasons[0])
+            : 'سیستم آنلاین است و منتظر شرایط بعدی می‌ماند';
           scoreEl.textContent = 'امتیاز: — (بدون سیگنال فعال)';
         }
       } catch (e) {

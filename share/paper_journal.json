@@ -1,0 +1,374 @@
+{
+  "summary": {
+    "n_rows": 12,
+    "n_closed": 12,
+    "n_wins": 4,
+    "win_rate": 0.3333333333333333,
+    "n_live": 0,
+    "n_seed": 12,
+    "avg_pnl_r": 0.167996541026044
+  },
+  "rows": [
+    {
+      "signal_time": {
+        "gregorian": "2026-10-29 20:00",
+        "jalali": "1405/08/07 20:00",
+        "label": "2026-10-29 20:00 · 1405/08/07 20:00"
+      },
+      "symbol": "BTCUSDT",
+      "side": "short",
+      "side_fa": "فروش",
+      "entry": 77991.89,
+      "stop_loss": 81971.0,
+      "take_profit": 68000.0,
+      "score": 19,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "19/24:good(htf2|ms2|kz0|crt2|sw1|div1|rc2|dp2|mss2|zo1|lt2|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "برد",
+      "exit_reason": "take_profit",
+      "exit_time": {
+        "gregorian": "2026-11-13 04:00",
+        "jalali": "1405/08/22 04:00",
+        "label": "2026-11-13 04:00 · 1405/08/22 04:00"
+      },
+      "pnl_r": 2.51108665002978,
+      "win": true,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2026-10-29 20:00",
+        "jalali": "1405/08/07 20:00",
+        "label": "2026-10-29 20:00 · 1405/08/07 20:00"
+      },
+      "symbol": "SOLUSDT",
+      "side": "short",
+      "side_fa": "فروش",
+      "entry": 95.64,
+      "stop_loss": 103.85,
+      "take_profit": 75.1,
+      "score": 21,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "21/24:good(htf2|ms2|kz0|crt2|sw2|div1|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "برد",
+      "exit_reason": "take_profit",
+      "exit_time": {
+        "gregorian": "2026-11-14 00:00",
+        "jalali": "1405/08/23 00:00",
+        "label": "2026-11-14 00:00 · 1405/08/23 00:00"
+      },
+      "pnl_r": 2.501827040194887,
+      "win": true,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2026-09-18 12:00",
+        "jalali": "1405/06/27 12:00",
+        "label": "2026-09-18 12:00 · 1405/06/27 12:00"
+      },
+      "symbol": "BTCUSDT",
+      "side": "long",
+      "side_fa": "خرید",
+      "entry": 80725.6,
+      "stop_loss": 75605.0,
+      "take_profit": 93555.0,
+      "score": 22,
+      "score_quality": "a_plus",
+      "score_quality_fa": "عالی A+",
+      "score_detail": "22/24:a_plus(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "باخت",
+      "exit_reason": "stop_loss",
+      "exit_time": {
+        "gregorian": "2026-11-05 12:00",
+        "jalali": "1405/08/14 12:00",
+        "label": "2026-11-05 12:00 · 1405/08/14 12:00"
+      },
+      "pnl_r": -1.0,
+      "win": false,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2026-09-11 12:00",
+        "jalali": "1405/06/20 12:00",
+        "label": "2026-09-11 12:00 · 1405/06/20 12:00"
+      },
+      "symbol": "ETHUSDT",
+      "side": "long",
+      "side_fa": "خرید",
+      "entry": 2559.42,
+      "stop_loss": 2432.91,
+      "take_profit": 2951.21,
+      "score": 20,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "20/24:good(htf2|ms2|kz0|crt2|sw1|div2|rc2|dp2|mss2|zo1|lt2|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "باخت",
+      "exit_reason": "stop_loss",
+      "exit_time": {
+        "gregorian": "2026-09-15 12:00",
+        "jalali": "1405/06/24 12:00",
+        "label": "2026-09-15 12:00 · 1405/06/24 12:00"
+      },
+      "pnl_r": -1.0,
+      "win": false,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2026-08-01 16:00",
+        "jalali": "1405/05/10 16:00",
+        "label": "2026-08-01 16:00 · 1405/05/10 16:00"
+      },
+      "symbol": "SOLUSDT",
+      "side": "short",
+      "side_fa": "فروش",
+      "entry": 71.27,
+      "stop_loss": 75.29,
+      "take_profit": 60.13,
+      "score": 22,
+      "score_quality": "a_plus",
+      "score_quality_fa": "عالی A+",
+      "score_detail": "22/24:a_plus(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "باخت",
+      "exit_reason": "stop_loss",
+      "exit_time": {
+        "gregorian": "2026-08-08 08:00",
+        "jalali": "1405/05/17 08:00",
+        "label": "2026-08-08 08:00 · 1405/05/17 08:00"
+      },
+      "pnl_r": -1.0,
+      "win": false,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2026-06-23 04:00",
+        "jalali": "1405/04/02 04:00",
+        "label": "2026-06-23 04:00 · 1405/04/02 04:00"
+      },
+      "symbol": "BTCUSDT",
+      "side": "short",
+      "side_fa": "فروش",
+      "entry": 62886.03,
+      "stop_loss": 64862.0,
+      "take_profit": 57946.11,
+      "score": 20,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "20/24:good(htf2|ms2|kz0|crt2|sw2|div1|rc2|dp2|mss2|zo2|lt1|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "برد",
+      "exit_reason": "take_profit",
+      "exit_time": {
+        "gregorian": "2026-07-01 00:00",
+        "jalali": "1405/04/10 00:00",
+        "label": "2026-07-01 00:00 · 1405/04/10 00:00"
+      },
+      "pnl_r": 2.4999999999999964,
+      "win": true,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2026-06-23 04:00",
+        "jalali": "1405/04/02 04:00",
+        "label": "2026-06-23 04:00 · 1405/04/02 04:00"
+      },
+      "symbol": "ETHUSDT",
+      "side": "short",
+      "side_fa": "فروش",
+      "entry": 1683.01,
+      "stop_loss": 1779.9,
+      "take_profit": 1440.79,
+      "score": 20,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "20/24:good(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt1|rr1)",
+      "outcome_status": "closed",
+      "result_fa": "باخت",
+      "exit_reason": "stop_loss",
+      "exit_time": {
+        "gregorian": "2026-07-04 12:00",
+        "jalali": "1405/04/13 12:00",
+        "label": "2026-07-04 12:00 · 1405/04/13 12:00"
+      },
+      "pnl_r": -1.0,
+      "win": false,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2026-05-23 04:00",
+        "jalali": "1405/03/02 04:00",
+        "label": "2026-05-23 04:00 · 1405/03/02 04:00"
+      },
+      "symbol": "SOLUSDT",
+      "side": "short",
+      "side_fa": "فروش",
+      "entry": 82.25,
+      "stop_loss": 87.27,
+      "take_profit": 67.5,
+      "score": 21,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "21/24:good(htf2|ms2|kz0|crt2|sw2|div1|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "باخت",
+      "exit_reason": "stop_loss",
+      "exit_time": {
+        "gregorian": "2026-05-23 20:00",
+        "jalali": "1405/03/02 20:00",
+        "label": "2026-05-23 20:00 · 1405/03/02 20:00"
+      },
+      "pnl_r": -1.0,
+      "win": false,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2026-05-22 16:00",
+        "jalali": "1405/03/01 16:00",
+        "label": "2026-05-22 16:00 · 1405/03/01 16:00"
+      },
+      "symbol": "ETHUSDT",
+      "side": "short",
+      "side_fa": "فروش",
+      "entry": 2065.54,
+      "stop_loss": 2157.5,
+      "take_profit": 1835.36,
+      "score": 19,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "19/24:good(htf2|ms2|kz0|crt2|sw1|div1|rc2|dp2|mss2|zo1|lt2|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "برد",
+      "exit_reason": "take_profit",
+      "exit_time": {
+        "gregorian": "2026-06-03 00:00",
+        "jalali": "1405/03/13 00:00",
+        "label": "2026-06-03 00:00 · 1405/03/13 00:00"
+      },
+      "pnl_r": 2.503044802087864,
+      "win": true,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2026-04-17 12:00",
+        "jalali": "1405/01/28 12:00",
+        "label": "2026-04-17 12:00 · 1405/01/28 12:00"
+      },
+      "symbol": "ETHUSDT",
+      "side": "long",
+      "side_fa": "خرید",
+      "entry": 2441.96,
+      "stop_loss": 2285.1,
+      "take_profit": 2951.21,
+      "score": 21,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "21/24:good(htf2|ms2|kz0|crt2|sw2|div1|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "باخت",
+      "exit_reason": "stop_loss",
+      "exit_time": {
+        "gregorian": "2026-04-19 20:00",
+        "jalali": "1405/01/30 20:00",
+        "label": "2026-04-19 20:00 · 1405/01/30 20:00"
+      },
+      "pnl_r": -1.0,
+      "win": false,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2025-12-18 16:00",
+        "jalali": "1404/09/27 16:00",
+        "label": "2025-12-18 16:00 · 1404/09/27 16:00"
+      },
+      "symbol": "BTCUSDT",
+      "side": "short",
+      "side_fa": "فروش",
+      "entry": 84483.79,
+      "stop_loss": 90365.85,
+      "take_profit": 69778.64,
+      "score": 21,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "21/24:good(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt1|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "باخت",
+      "exit_reason": "stop_loss",
+      "exit_time": {
+        "gregorian": "2025-12-22 12:00",
+        "jalali": "1404/10/01 12:00",
+        "label": "2025-12-22 12:00 · 1404/10/01 12:00"
+      },
+      "pnl_r": -1.0,
+      "win": false,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    },
+    {
+      "signal_time": {
+        "gregorian": "2025-11-30 20:00",
+        "jalali": "1404/09/09 20:00",
+        "label": "2025-11-30 20:00 · 1404/09/09 20:00"
+      },
+      "symbol": "SOLUSDT",
+      "side": "short",
+      "side_fa": "فروش",
+      "entry": 133.48,
+      "stop_loss": 139.82,
+      "take_profit": 117.63,
+      "score": 19,
+      "score_quality": "good",
+      "score_quality_fa": "خوب",
+      "score_detail": "19/24:good(htf2|ms1|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo1|lt1|rr2)",
+      "outcome_status": "closed",
+      "result_fa": "باخت",
+      "exit_reason": "stop_loss",
+      "exit_time": {
+        "gregorian": "2025-12-02 12:00",
+        "jalali": "1404/09/11 12:00",
+        "label": "2025-12-02 12:00 · 1404/09/11 12:00"
+      },
+      "pnl_r": -1.0,
+      "win": false,
+      "source": "historical_seed",
+      "source_fa": "بک‌فیل",
+      "preset": "javid"
+    }
+  ],
+  "note_fa": "ژورنال Paper؛ seed تاریخی از بک‌فیل جدا برچسب خورده. سفارش واقعی نیست."
+}
