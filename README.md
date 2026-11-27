@@ -73,7 +73,25 @@ python make_share_report.py
 
 Paper و دموی زنده به‌طور پیش‌فرض روی preset **`javid`** (قوانین کامل + امتیاز ۲۴تایی + R:R≥۲٫۵) اجرا می‌شوند.  
 `paper_journal.py` ژورنال سیگنال/نتیجه و گیت آمادگی فاز ۲ را می‌سازد — **Train مدل ML نداریم**.  
-هشدار تلگرام اختیاری است: در GitHub Secrets مقدارهای `TELEGRAM_BOT_TOKEN` و `TELEGRAM_CHAT_ID` را بگذار؛ فقط سیگنال تازه با امتیاز ≥۱۹ پیام می‌دهد.  
+هشدار تلگرام اختیاری (گروه مشترک تیم):
+
+1. با [@BotFather](https://t.me/BotFather) یک بات بساز و `TELEGRAM_BOT_TOKEN` بگیر  
+2. بات را به گروه AJV اضافه کن (اجازهٔ ارسال پیام بده)  
+3. در گروه یک پیام بفرست / بات را منشن کن  
+4. Chat ID گروه را پیدا کن:
+   ```bash
+   set TELEGRAM_BOT_TOKEN=...
+   python notify_telegram.py --discover
+   ```
+5. تست محلی:
+   ```bash
+   set TELEGRAM_CHAT_ID=-100...
+   python notify_telegram.py --test
+   ```
+6. همان دو مقدار را در GitHub → Settings → Secrets → Actions بگذار:
+   `TELEGRAM_BOT_TOKEN` و `TELEGRAM_CHAT_ID`  
+فقط سیگنال تازه با امتیاز ≥۱۹ به گروه می‌رود.
+
 `make_share_report.py` فقط `performance.json` را تازه می‌کند و HTML سایت را بازنویسی نمی‌کند.
 
 ### Presetها
