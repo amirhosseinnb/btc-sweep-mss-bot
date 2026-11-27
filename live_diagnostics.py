@@ -10,9 +10,9 @@ from typing import Optional
 import pandas as pd
 
 from core_strategy import StrategyConfig, generate_signals
-from jalali import dual_date
+from jalali import dual_date, gregorian_to_jalali
 from paper_journal import SIGNALS_PATH, load_signal_log
-from scoring import ScoreQuality, quality_label_fa
+from scoring import ScoreQuality, parse_score_detail, quality_label_fa
 
 
 def diagnose_no_trade(
@@ -149,6 +149,7 @@ def paper_journal_rows(
             "historical_seed": "بک‌فیل",
         }.get(source, source)
 
+        detail = None if pd.isna(r.get("score_detail")) else str(r.get("score_detail"))
         rows.append(
             {
                 "signal_time": when,
@@ -165,7 +166,8 @@ def paper_journal_rows(
                     if quality_s in {q.value for q in ScoreQuality}
                     else None
                 ),
-                "score_detail": None if pd.isna(r.get("score_detail")) else str(r.get("score_detail")),
+                "score_detail": detail,
+                "score_parts": parse_score_detail(detail),
                 "outcome_status": outcome,
                 "result_fa": result_fa,
                 "exit_reason": None if pd.isna(r.get("exit_reason")) else str(r.get("exit_reason")),
@@ -180,23 +182,130 @@ def paper_journal_rows(
     return rows
 
 
-def paper_journal_summary(rows: list[dict]) -> dict:
+def _bucket_stats(rows: list[dict]) -> dict:
     closed = [r for r in rows if r.get("outcome_status") == "closed"]
     wins = [r for r in closed if r.get("win") is True]
-    live = [r for r in rows if r.get("source") == "live_paper"]
-    seed = [r for r in rows if r.get("source") == "historical_seed"]
     return {
         "n_rows": len(rows),
         "n_closed": len(closed),
         "n_wins": len(wins),
         "win_rate": (len(wins) / len(closed)) if closed else 0.0,
-        "n_live": len(live),
-        "n_seed": len(seed),
         "avg_pnl_r": (
             sum(float(r["pnl_r"]) for r in closed if r.get("pnl_r") is not None) / len(closed)
             if closed
             else 0.0
         ),
+    }
+
+
+def paper_journal_summary(rows: list[dict]) -> dict:
+    live = [r for r in rows if r.get("source") == "live_paper"]
+    seed = [r for r in rows if r.get("source") == "historical_seed"]
+    overall = _bucket_stats(rows)
+    return {
+        **overall,
+        "n_live": len(live),
+        "n_seed": len(seed),
+        "live": _bucket_stats(live),
+        "seed": _bucket_stats(seed),
+        "note_fa": "آمار live از مانیتور واقعی جدا از بک‌فیل تاریخی است.",
+    }
+
+
+def jalali_month_calendar(rows: list[dict], *, now: Optional[pd.Timestamp] = None) -> dict:
+    """Build a Jalali month heatmap of paper signals (wins/losses/open)."""
+    ts = now or pd.Timestamp.now(tz="UTC")
+    if isinstance(ts, pd.Timestamp):
+        gy, gm, gd = int(ts.year), int(ts.month), int(ts.day)
+    else:
+        gy, gm, gd = ts.year, ts.month, ts.day
+    jy, jm, _jd = gregorian_to_jalali(gy, gm, gd)
+
+    # If current Jalali month is empty, fall back to newest signal's month.
+    def _parse_j(label: str) -> Optional[tuple[int, int, int]]:
+        parts = str(label).split(" ")[0].split("/")
+        if len(parts) < 3:
+            return None
+        try:
+            return int(parts[0]), int(parts[1]), int(parts[2])
+        except ValueError:
+            return None
+
+    has_current = False
+    for r in rows:
+        parsed = _parse_j((r.get("signal_time") or {}).get("jalali") or "")
+        if parsed and parsed[0] == jy and parsed[1] == jm:
+            has_current = True
+            break
+    if not has_current and rows:
+        for r in rows:
+            parsed = _parse_j((r.get("signal_time") or {}).get("jalali") || "")
+            if parsed:
+                jy, jm = parsed[0], parsed[1]
+                break
+
+    # Days in Jalali month
+    if jm <= 6:
+        days_in_month = 31
+    elif jm <= 11:
+        days_in_month = 30
+    else:
+        # Esfand: 29 or 30 — use 30 and allow empty trailing
+        days_in_month = 30
+
+    month_names = {
+        1: "فروردین", 2: "اردیبهشت", 3: "خرداد", 4: "تیر",
+        5: "مرداد", 6: "شهریور", 7: "مهر", 8: "آبان",
+        9: "آذر", 10: "دی", 11: "بهمن", 12: "اسفند",
+    }
+
+    by_day: dict[int, dict] = {
+        d: {"day": d, "n": 0, "wins": 0, "losses": 0, "open": 0, "signals": []}
+        for d in range(1, days_in_month + 1)
+    }
+
+    for r in rows:
+        label = (r.get("signal_time") or {}).get("jalali") or ""
+        # expected: YYYY/MM/DD ...
+        parts = str(label).split(" ")[0].split("/")
+        if len(parts) < 3:
+            continue
+        try:
+            ry, rm, rd = int(parts[0]), int(parts[1]), int(parts[2])
+        except ValueError:
+            continue
+        if ry != jy or rm != jm:
+            continue
+        if rd not in by_day:
+            continue
+        cell = by_day[rd]
+        cell["n"] += 1
+        if r.get("win") is True:
+            cell["wins"] += 1
+        elif r.get("win") is False:
+            cell["losses"] += 1
+        else:
+            cell["open"] += 1
+        cell["signals"].append(
+            {
+                "symbol": r.get("symbol"),
+                "side_fa": r.get("side_fa"),
+                "score": r.get("score"),
+                "result_fa": r.get("result_fa"),
+            }
+        )
+
+    return {
+        "jy": jy,
+        "jm": jm,
+        "title_fa": f"{month_names.get(jm, str(jm))} {jy}",
+        "days_in_month": days_in_month,
+        "days": [by_day[d] for d in range(1, days_in_month + 1)],
+        "totals": {
+            "n": sum(c["n"] for c in by_day.values()),
+            "wins": sum(c["wins"] for c in by_day.values()),
+            "losses": sum(c["losses"] for c in by_day.values()),
+        },
     }
 
 

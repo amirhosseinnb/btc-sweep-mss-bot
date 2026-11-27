@@ -26,3 +26,4 @@ data/trades.csv
 !data/paper_readiness.json
 !data/paper_state.json
 !data/paper_state_*.json
+!data/telegram_notified.json

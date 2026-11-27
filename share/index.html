@@ -793,6 +793,61 @@
       .journal-kpis { grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
 
+    .score-factors {
+      display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px 14px;
+      margin-top: 12px;
+    }
+    .score-factor { font-size: 0.82rem; }
+    .score-factor .top {
+      display: flex; justify-content: space-between; gap: 8px; margin-bottom: 3px;
+      color: var(--muted);
+    }
+    .score-factor .bar {
+      height: 6px; background: rgba(255,255,255,0.06); overflow: hidden;
+    }
+    .score-factor .bar > i {
+      display: block; height: 100%; background: var(--accent); width: 0%;
+    }
+    @media (max-width: 700px) {
+      .score-factors { grid-template-columns: 1fr; }
+    }
+
+    .journal-filters {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; align-items: center;
+    }
+    .journal-filters select, .journal-filters button {
+      background: rgba(255,255,255,0.04); color: var(--text);
+      border: 1px solid var(--line); padding: 7px 10px; font-family: inherit;
+    }
+    .journal-filters button.active {
+      border-color: rgba(63,208,201,0.45); color: var(--accent);
+    }
+    .split-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;
+    }
+    .split-stats .box {
+      border: 1px solid var(--line); padding: 12px; background: rgba(255,255,255,0.02);
+    }
+    .split-stats .box h4 { margin: 0 0 6px; font-size: 0.9rem; }
+    @media (max-width: 700px) {
+      .split-stats { grid-template-columns: 1fr; }
+    }
+
+    .jalali-cal {
+      display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 6px;
+      margin-top: 10px;
+    }
+    .jalali-cal .day {
+      min-height: 54px; border: 1px solid var(--line);
+      background: rgba(255,255,255,0.02); padding: 6px;
+      font-size: 0.75rem;
+    }
+    .jalali-cal .day.has { border-color: rgba(63,208,201,0.35); }
+    .jalali-cal .day.win { box-shadow: inset 0 0 0 1px rgba(61,214,140,0.35); }
+    .jalali-cal .day.loss { box-shadow: inset 0 0 0 1px rgba(255,107,107,0.35); }
+    .jalali-cal .day .n { color: var(--muted); }
+    .jalali-cal .day b { display: block; margin-top: 4px; }
+
   </style>
 </head>
 <body>
@@ -938,6 +993,11 @@
       <div class="score-board" id="scoreBoard">
         <h3>داشبورد امتیاز ۲۴تایی طبق قوانین</h3>
         <div class="score-bands" id="scoreBands"></div>
+        <div id="scoreBreakdownBox">
+          <h4 style="margin:14px 0 6px; font-size:0.95rem">تجزیهٔ ۱۲ فاکتور</h4>
+          <p class="muted" id="scoreBreakdownLead">در حال بارگذاری…</p>
+          <div class="score-factors" id="scoreFactors"></div>
+        </div>
         <table class="recent-signals" id="recentSignalsTable">
           <thead>
             <tr>
@@ -956,8 +1016,27 @@
       </div>
 
       <h3 class="sec-title" style="font-size:1.2rem; margin-top:28px">ژورنال Paper</h3>
-      <p class="sec-lead">سیگنال‌های ثبت‌شده با نتیجهٔ فرضی SL/TP — بدون سفارش واقعی.</p>
+      <p class="sec-lead">سیگنال‌های ثبت‌شده با نتیجهٔ فرضی SL/TP — آمار live و seed جدا.</p>
+      <div class="split-stats" id="journalSplitStats"></div>
       <div class="journal-kpis" id="journalKpis"></div>
+      <div class="journal-filters" id="journalFilters">
+        <select id="fltSource" aria-label="منبع">
+          <option value="all">همه منابع</option>
+          <option value="live_paper">فقط زنده</option>
+          <option value="historical_seed">فقط بک‌فیل</option>
+        </select>
+        <select id="fltSymbol" aria-label="نماد">
+          <option value="all">همه نمادها</option>
+        </select>
+        <select id="fltQuality" aria-label="کیفیت">
+          <option value="all">همه کیفیت‌ها</option>
+          <option value="a_plus">A+</option>
+          <option value="good">خوب</option>
+          <option value="review">متوسط</option>
+          <option value="weak">ضعیف</option>
+        </select>
+        <button type="button" id="fltWins" data-on="0">فقط بردها</button>
+      </div>
       <div class="table-shell">
         <table>
           <thead>
@@ -971,6 +1050,9 @@
           </tbody>
         </table>
       </div>
+      <h4 style="margin:22px 0 6px; font-size:1rem" id="calTitle">تقویم شمسی سیگنال‌ها</h4>
+      <p class="sec-lead" id="calLead">روزهای دارای سیگنال Paper در ماه جاری.</p>
+      <div class="jalali-cal" id="jalaliCal"></div>
       <div class="refresh-strip">
         <div class="refresh-item">
           <span>ساعت آخرین به‌روزرسانی</span>
@@ -1680,44 +1762,157 @@
       }
     }
 
+    let journalCache = null;
+    let journalFilter = { source: 'all', symbol: 'all', quality: 'all', winsOnly: false };
+
+    function renderScoreBreakdown(sb) {
+      const lead = document.getElementById('scoreBreakdownLead');
+      const box = document.getElementById('scoreFactors');
+      if (!box) return;
+      if (!sb || !(sb.parts || []).length) {
+        if (lead) lead.textContent = 'برای نمایش تجزیه، هنوز سیگنال امتیازدار نیست.';
+        box.innerHTML = '';
+        return;
+      }
+      if (lead) {
+        lead.textContent = (sb.source === 'active' ? 'سیگنال فعال' : 'آخرین سیگنال اخیر') +
+          (sb.score != null ? (' · ' + sb.score + '/24') : '') +
+          (sb.bar_time_label ? (' · ' + sb.bar_time_label) : '');
+      }
+      box.innerHTML = sb.parts.map(function (p) {
+        const pct = Math.round((p.pct || 0) * 100);
+        return '<div class="score-factor"><div class="top"><span>' + p.label_fa +
+          '</span><b class="mono">' + p.score + '/' + p.max + '</b></div>' +
+          '<div class="bar"><i style="width:' + pct + '%"></i></div></div>';
+      }).join('');
+    }
+
+    function renderCalendar(cal) {
+      const title = document.getElementById('calTitle');
+      const lead = document.getElementById('calLead');
+      const grid = document.getElementById('jalaliCal');
+      if (!grid) return;
+      if (!cal) {
+        if (lead) lead.textContent = 'تقویم هنوز آماده نیست.';
+        grid.innerHTML = '';
+        return;
+      }
+      if (title) title.textContent = 'تقویم شمسی · ' + (cal.title_fa || '');
+      if (lead) {
+        const t = cal.totals || {};
+        lead.textContent = 'این ماه: ' + (t.n || 0) + ' سیگنال · برد ' +
+          (t.wins || 0) + ' · باخت ' + (t.losses || 0);
+      }
+      grid.innerHTML = (cal.days || []).map(function (d) {
+        let cls = 'day';
+        if (d.n > 0) cls += ' has';
+        if (d.wins > 0 && d.losses === 0) cls += ' win';
+        if (d.losses > 0 && d.wins === 0) cls += ' loss';
+        return '<div class="' + cls + '"><span class="n">' + d.day +
+          '</span><b>' + (d.n ? (d.n + ' سیگنال') : '—') + '</b></div>';
+      }).join('');
+    }
+
+    function filteredJournalRows(rows) {
+      return (rows || []).filter(function (r) {
+        if (journalFilter.source !== 'all' && r.source !== journalFilter.source) return false;
+        if (journalFilter.symbol !== 'all' && r.symbol !== journalFilter.symbol) return false;
+        if (journalFilter.quality !== 'all' && r.score_quality !== journalFilter.quality) return false;
+        if (journalFilter.winsOnly && r.win !== true) return false;
+        return true;
+      });
+    }
+
     function renderJournal(journal) {
+      journalCache = journal || null;
       const kpis = document.getElementById('journalKpis');
+      const split = document.getElementById('journalSplitStats');
       const body = document.getElementById('journalBody');
+      const symSel = document.getElementById('fltSymbol');
       if (!journal) {
         if (body) body.innerHTML = '<tr><td colspan="8">ژورنال خالی است</td></tr>';
         return;
       }
       const s = journal.summary || {};
+      const live = s.live || {};
+      const seed = s.seed || {};
+      if (split) {
+        split.innerHTML =
+          '<div class="box"><h4>زنده (live)</h4><div class="muted">ردیف ' + (live.n_rows || 0) +
+          ' · بسته ' + (live.n_closed || 0) + ' · برد ' + fmtPct(live.win_rate || 0) +
+          '</div></div>' +
+          '<div class="box"><h4>بک‌فیل (seed)</h4><div class="muted">ردیف ' + (seed.n_rows || 0) +
+          ' · بسته ' + (seed.n_closed || 0) + ' · برد ' + fmtPct(seed.win_rate || 0) +
+          '</div></div>';
+      }
       if (kpis) {
         kpis.innerHTML =
           '<div class="kpi"><span>کل ردیف</span><b>' + (s.n_rows || 0) + '</b></div>' +
           '<div class="kpi"><span>بسته‌شده</span><b>' + (s.n_closed || 0) + '</b></div>' +
-          '<div class="kpi"><span>برد Paper</span><b>' + fmtPct(s.win_rate || 0) + '</b></div>' +
+          '<div class="kpi"><span>برد کل</span><b>' + fmtPct(s.win_rate || 0) + '</b></div>' +
           '<div class="kpi"><span>میانگین R</span><b class="mono">' +
           fmtNum(s.avg_pnl_r || 0, 2) + '</b></div>';
       }
-      const rows = journal.rows || [];
+      if (symSel && symSel.options.length <= 1) {
+        const syms = {};
+        (journal.rows || []).forEach(function (r) {
+          if (r.symbol) syms[r.symbol] = true;
+        });
+        Object.keys(syms).sort().forEach(function (sym) {
+          const opt = document.createElement('option');
+          opt.value = sym; opt.textContent = sym;
+          symSel.appendChild(opt);
+        });
+      }
+      const rows = filteredJournalRows(journal.rows || []);
       if (!body) return;
       if (!rows.length) {
-        body.innerHTML = '<tr><td colspan="8">هنوز سیگنالی در ژورنال نیست</td></tr>';
-        return;
+        body.innerHTML = '<tr><td colspan="8">با این فیلتر موردی نیست</td></tr>';
+      } else {
+        body.innerHTML = rows.map(function (r) {
+          const g = (r.signal_time && r.signal_time.gregorian) || '—';
+          const j = (r.signal_time && r.signal_time.jalali) || '';
+          const cls = r.win === true ? 'up' : (r.win === false ? 'down' : '');
+          const rTxt = r.pnl_r == null ? '—' : ((r.pnl_r >= 0 ? '+' : '') + fmtNum(r.pnl_r, 2));
+          return '<tr>' +
+            '<td>' + dualHtml(g, j) + '</td>' +
+            '<td class="mono">' + (r.symbol || '—') + '</td>' +
+            '<td>' + (r.side_fa || r.side || '—') + '</td>' +
+            '<td class="mono">' + (r.entry != null ? r.entry : '—') + '</td>' +
+            '<td class="mono">' + (r.score != null ? (r.score + '/24') : '—') + '</td>' +
+            '<td class="' + cls + '">' + (r.result_fa || '—') + '</td>' +
+            '<td class="mono ' + cls + '">' + rTxt + '</td>' +
+            '<td>' + (r.source_fa || r.source || '—') + '</td>' +
+            '</tr>';
+        }).join('');
       }
-      body.innerHTML = rows.map(function (r) {
-        const g = (r.signal_time && r.signal_time.gregorian) || '—';
-        const j = (r.signal_time && r.signal_time.jalali) || '';
-        const cls = r.win === true ? 'up' : (r.win === false ? 'down' : '');
-        const rTxt = r.pnl_r == null ? '—' : ((r.pnl_r >= 0 ? '+' : '') + fmtNum(r.pnl_r, 2));
-        return '<tr>' +
-          '<td>' + dualHtml(g, j) + '</td>' +
-          '<td class="mono">' + (r.symbol || '—') + '</td>' +
-          '<td>' + (r.side_fa || r.side || '—') + '</td>' +
-          '<td class="mono">' + (r.entry != null ? r.entry : '—') + '</td>' +
-          '<td class="mono">' + (r.score != null ? (r.score + '/24') : '—') + '</td>' +
-          '<td class="' + cls + '">' + (r.result_fa || '—') + '</td>' +
-          '<td class="mono ' + cls + '">' + rTxt + '</td>' +
-          '<td>' + (r.source_fa || r.source || '—') + '</td>' +
-          '</tr>';
-      }).join('');
+      renderCalendar(journal.calendar || null);
+    }
+
+    function wireJournalFilters() {
+      const src = document.getElementById('fltSource');
+      const sym = document.getElementById('fltSymbol');
+      const q = document.getElementById('fltQuality');
+      const wins = document.getElementById('fltWins');
+      function apply() {
+        if (journalCache) renderJournal(journalCache);
+      }
+      if (src) src.addEventListener('change', function () {
+        journalFilter.source = src.value; apply();
+      });
+      if (sym) sym.addEventListener('change', function () {
+        journalFilter.symbol = sym.value; apply();
+      });
+      if (q) q.addEventListener('change', function () {
+        journalFilter.quality = q.value; apply();
+      });
+      if (wins) wins.addEventListener('click', function () {
+        journalFilter.winsOnly = !journalFilter.winsOnly;
+        wins.dataset.on = journalFilter.winsOnly ? '1' : '0';
+        wins.classList.toggle('active', journalFilter.winsOnly);
+        wins.textContent = journalFilter.winsOnly ? 'فقط بردها ✓' : 'فقط بردها';
+        apply();
+      });
     }
 
     function renderEquity(preset) {
@@ -1778,6 +1973,7 @@
         document.getElementById('systemMode').textContent = data.orders_enabled ? 'معامله واقعی' : 'فقط نمایش';
         document.getElementById('ordersBadge').textContent = data.orders_enabled ? 'سفارش روشن' : 'سفارش خاموش';
         renderScoreBoard(data);
+        renderScoreBreakdown(data.score_breakdown || null);
         if (data.readiness) renderReadiness(data.readiness);
         if (data.paper_journal) renderJournal(data.paper_journal);
         renderNoTrade(data.no_trade || null);
@@ -1852,6 +2048,7 @@
         renderMarkets(btn.getAttribute('data-preset'));
       });
     });
+    wireJournalFilters();
     countdownEndsAt = readStoredCountdown();
     loadLive();
     loadPerformance();

@@ -73,6 +73,7 @@ python make_share_report.py
 
 Paper و دموی زنده به‌طور پیش‌فرض روی preset **`javid`** (قوانین کامل + امتیاز ۲۴تایی + R:R≥۲٫۵) اجرا می‌شوند.  
 `paper_journal.py` ژورنال سیگنال/نتیجه و گیت آمادگی فاز ۲ را می‌سازد — **Train مدل ML نداریم**.  
+هشدار تلگرام اختیاری است: در GitHub Secrets مقدارهای `TELEGRAM_BOT_TOKEN` و `TELEGRAM_CHAT_ID` را بگذار؛ فقط سیگنال تازه با امتیاز ≥۱۹ پیام می‌دهد.  
 `make_share_report.py` فقط `performance.json` را تازه می‌کند و HTML سایت را بازنویسی نمی‌کند.
 
 ### Presetها

@@ -20,6 +20,7 @@ on:
       - "validate.py"
       - "targets.py"
       - "jalali.py"
+      - "notify_telegram.py"
 
 permissions:
   contents: write
@@ -63,6 +64,9 @@ jobs:
           fi
 
       - name: Refresh live snapshot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python update_live_site.py
 
       - name: Rebuild performance + readiness report
@@ -79,7 +83,8 @@ jobs:
             docs/paper_journal.json share/paper_journal.json \
             data/paper_signals.csv data/paper_checks.csv \
             data/paper_outcomes.json data/paper_readiness.json \
-            data/paper_state.json data/paper_state_*.json || true
+            data/paper_state.json data/paper_state_*.json \
+            data/telegram_notified.json || true
           if git diff --staged --quiet; then
             echo "No changes to publish"
             exit 0

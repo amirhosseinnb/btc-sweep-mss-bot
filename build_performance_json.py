@@ -13,6 +13,7 @@ from backtester import Backtester
 from jalali import dual_date
 from live_diagnostics import (
     downsample_equity,
+    jalali_month_calendar,
     market_warning,
     paper_journal_rows,
     paper_journal_summary,
@@ -147,11 +148,12 @@ def build() -> dict:
             "avg_pnl_r": 0.0,
         }
 
-    journal_rows = paper_journal_rows(limit=50)
+    journal_rows = paper_journal_rows(limit=80)
     journal = {
         "summary": paper_journal_summary(journal_rows),
         "rows": journal_rows,
-        "note_fa": "ژورنال Paper؛ seed تاریخی از بک‌فیل جدا برچسب خورده. سفارش واقعی نیست.",
+        "calendar": jalali_month_calendar(journal_rows),
+        "note_fa": "ژورنال Paper؛ آمار live و seed جداست. سفارش واقعی نیست.",
     }
 
     readiness = build_readiness(

@@ -4,9 +4,24 @@
     "n_closed": 12,
     "n_wins": 4,
     "win_rate": 0.3333333333333333,
+    "avg_pnl_r": 0.167996541026044,
     "n_live": 0,
     "n_seed": 12,
-    "avg_pnl_r": 0.167996541026044
+    "live": {
+      "n_rows": 0,
+      "n_closed": 0,
+      "n_wins": 0,
+      "win_rate": 0.0,
+      "avg_pnl_r": 0.0
+    },
+    "seed": {
+      "n_rows": 12,
+      "n_closed": 12,
+      "n_wins": 4,
+      "win_rate": 0.3333333333333333,
+      "avg_pnl_r": 0.167996541026044
+    },
+    "note_fa": "آمار live از مانیتور واقعی جدا از بک‌فیل تاریخی است."
   },
   "rows": [
     {
@@ -25,6 +40,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "19/24:good(htf2|ms2|kz0|crt2|sw1|div1|rc2|dp2|mss2|zo1|lt2|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "برد",
       "exit_reason": "take_profit",
@@ -55,6 +156,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "21/24:good(htf2|ms2|kz0|crt2|sw2|div1|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "برد",
       "exit_reason": "take_profit",
@@ -85,6 +272,92 @@
       "score_quality": "a_plus",
       "score_quality_fa": "عالی A+",
       "score_detail": "22/24:a_plus(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "باخت",
       "exit_reason": "stop_loss",
@@ -115,6 +388,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "20/24:good(htf2|ms2|kz0|crt2|sw1|div2|rc2|dp2|mss2|zo1|lt2|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "باخت",
       "exit_reason": "stop_loss",
@@ -145,6 +504,92 @@
       "score_quality": "a_plus",
       "score_quality_fa": "عالی A+",
       "score_detail": "22/24:a_plus(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "باخت",
       "exit_reason": "stop_loss",
@@ -175,6 +620,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "20/24:good(htf2|ms2|kz0|crt2|sw2|div1|rc2|dp2|mss2|zo2|lt1|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "برد",
       "exit_reason": "take_profit",
@@ -205,6 +736,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "20/24:good(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt1|rr1)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "باخت",
       "exit_reason": "stop_loss",
@@ -235,6 +852,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "21/24:good(htf2|ms2|kz0|crt2|sw2|div1|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "باخت",
       "exit_reason": "stop_loss",
@@ -265,6 +968,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "19/24:good(htf2|ms2|kz0|crt2|sw1|div1|rc2|dp2|mss2|zo1|lt2|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "برد",
       "exit_reason": "take_profit",
@@ -295,6 +1084,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "21/24:good(htf2|ms2|kz0|crt2|sw2|div1|rc2|dp2|mss2|zo2|lt2|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "باخت",
       "exit_reason": "stop_loss",
@@ -325,6 +1200,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "21/24:good(htf2|ms2|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo2|lt1|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "باخت",
       "exit_reason": "stop_loss",
@@ -355,6 +1316,92 @@
       "score_quality": "good",
       "score_quality_fa": "خوب",
       "score_detail": "19/24:good(htf2|ms1|kz0|crt2|sw2|div2|rc2|dp2|mss2|zo1|lt1|rr2)",
+      "score_parts": [
+        {
+          "id": "htf",
+          "label_fa": "جهت HTF",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "ms",
+          "label_fa": "ساختار بازار",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "kz",
+          "label_fa": "Key Zone / PD",
+          "score": 0,
+          "max": 2,
+          "pct": 0.0
+        },
+        {
+          "id": "crt",
+          "label_fa": "CRT Range",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "sw",
+          "label_fa": "Liquidity Sweep",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "div",
+          "label_fa": "Divergence",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "rc",
+          "label_fa": "Reclaim",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "dp",
+          "label_fa": "Displacement",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "mss",
+          "label_fa": "MSS/BOS",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        },
+        {
+          "id": "zo",
+          "label_fa": "FVG / OB",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "lt",
+          "label_fa": "هدف نقدینگی",
+          "score": 1,
+          "max": 2,
+          "pct": 0.5
+        },
+        {
+          "id": "rr",
+          "label_fa": "R:R",
+          "score": 2,
+          "max": 2,
+          "pct": 1.0
+        }
+      ],
       "outcome_status": "closed",
       "result_fa": "باخت",
       "exit_reason": "stop_loss",
@@ -370,5 +1417,258 @@
       "preset": "javid"
     }
   ],
-  "note_fa": "ژورنال Paper؛ seed تاریخی از بک‌فیل جدا برچسب خورده. سفارش واقعی نیست."
+  "calendar": {
+    "jy": 1405,
+    "jm": 9,
+    "title_fa": "آذر 1405",
+    "days_in_month": 30,
+    "days": [
+      {
+        "day": 1,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 2,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 3,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 4,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 5,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 6,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 7,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 8,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 9,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 10,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 11,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 12,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 13,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 14,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 15,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 16,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 17,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 18,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 19,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 20,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 21,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 22,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 23,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 24,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 25,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 26,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 27,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 28,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 29,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      },
+      {
+        "day": 30,
+        "n": 0,
+        "wins": 0,
+        "losses": 0,
+        "open": 0,
+        "signals": []
+      }
+    ],
+    "totals": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0
+    }
+  },
+  "note_fa": "ژورنال Paper؛ آمار live و seed جداست. سفارش واقعی نیست."
 }

@@ -309,6 +309,22 @@ def passes_min_score(
     return breakdown.total >= min_score
 
 
+SCORE_FACTOR_META: tuple[tuple[str, str, str], ...] = (
+    ("htf", "htf", "جهت HTF"),
+    ("ms", "market_structure", "ساختار بازار"),
+    ("kz", "key_zone", "Key Zone / PD"),
+    ("crt", "crt", "CRT Range"),
+    ("sw", "sweep", "Liquidity Sweep"),
+    ("div", "divergence", "Divergence"),
+    ("rc", "reclaim", "Reclaim"),
+    ("dp", "displacement", "Displacement"),
+    ("mss", "mss", "MSS/BOS"),
+    ("zo", "fvg_ob", "FVG / OB"),
+    ("lt", "liquidity_target", "هدف نقدینگی"),
+    ("rr", "risk_reward", "R:R"),
+)
+
+
 def format_score(breakdown: ScoreBreakdown) -> str:
     q = score_quality(breakdown.total).value
     parts = [
@@ -326,6 +342,42 @@ def format_score(breakdown: ScoreBreakdown) -> str:
         f"rr{breakdown.risk_reward}",
     ]
     return f"{breakdown.total}/{MAX_SCORE}:{q}(" + "|".join(parts) + ")"
+
+
+def parse_score_detail(detail: Optional[str]) -> list[dict]:
+    """
+    Parse `19/24:good(htf2|ms2|...)` into UI-ready factor rows.
+    Returns empty list when detail is missing/unparseable.
+    """
+    if not detail or "(" not in detail or ")" not in detail:
+        return []
+    try:
+        inner = detail[detail.index("(") + 1 : detail.rindex(")")]
+    except ValueError:
+        return []
+    raw: dict[str, int] = {}
+    for token in inner.split("|"):
+        token = token.strip()
+        if len(token) < 2:
+            continue
+        key = "".join(ch for ch in token if ch.isalpha())
+        digits = "".join(ch for ch in token if ch.isdigit())
+        if key and digits.isdigit():
+            raw[key] = int(digits)
+
+    rows: list[dict] = []
+    for short, _field, label_fa in SCORE_FACTOR_META:
+        val = int(raw.get(short, 0))
+        rows.append(
+            {
+                "id": short,
+                "label_fa": label_fa,
+                "score": val,
+                "max": 2,
+                "pct": round(val / 2.0, 3),
+            }
+        )
+    return rows
 
 
 def quality_label_fa(quality: ScoreQuality) -> str:

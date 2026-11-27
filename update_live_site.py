@@ -13,7 +13,13 @@ from pathlib import Path
 
 from core_strategy import generate_signals
 from jalali import dual_date
-from live_diagnostics import diagnose_no_trade, paper_journal_rows, paper_journal_summary
+from live_diagnostics import (
+    diagnose_no_trade,
+    jalali_month_calendar,
+    paper_journal_rows,
+    paper_journal_summary,
+)
+from notify_telegram import maybe_notify_paper_signal
 from paper_journal import OUTCOMES_PATH, READINESS_PATH
 from paper_trader import (
     already_logged,
@@ -23,7 +29,7 @@ from paper_trader import (
     signal_to_row,
     strategy_for_preset,
 )
-from scoring import ScoreQuality, quality_label_fa
+from scoring import ScoreQuality, parse_score_detail, quality_label_fa
 
 
 QUALITY_FA = {
@@ -50,6 +56,7 @@ def _signal_public(sig, bar_time: str) -> dict:
         "bar_time_label": when["label"],
         "score": sig.score,
         "score_detail": sig.score_detail,
+        "score_parts": parse_score_detail(sig.score_detail),
         "score_quality": quality,
         "score_quality_fa": QUALITY_FA.get(quality or "", None),
         "tp_reason": sig.tp_reason,
@@ -72,6 +79,7 @@ def build_snapshot(
     active = [s for s in signals if s.index == len(ohlcv) - 1]
 
     signal_payload = None
+    notify_status = None
     if active:
         sig = active[0]
         signal_payload = _signal_public(sig, last_bar_time.isoformat())
@@ -89,6 +97,17 @@ def build_snapshot(
                     mark=mark,
                     preset=preset,
                 ),
+            )
+            notify_status = maybe_notify_paper_signal(
+                symbol=symbol,
+                side=sig.side.value,
+                entry=float(sig.entry),
+                stop_loss=float(sig.stop_loss),
+                take_profit=float(sig.take_profit),
+                score=sig.score,
+                score_quality=sig.score_quality,
+                signal_time=last_bar_time.isoformat(),
+                preset=preset,
             )
 
     recent = [
@@ -111,11 +130,32 @@ def build_snapshot(
     }
 
     no_trade = diagnose_no_trade(ohlcv, cfg)
-    journal_rows = paper_journal_rows(limit=40)
+    journal_rows = paper_journal_rows(limit=80)
     journal = {
         "summary": paper_journal_summary(journal_rows),
         "rows": journal_rows,
+        "calendar": jalali_month_calendar(journal_rows),
     }
+    # Prefer active signal breakdown; else newest recent with parts.
+    score_breakdown = None
+    if signal_payload and signal_payload.get("score_parts"):
+        score_breakdown = {
+            "source": "active",
+            "score": signal_payload.get("score"),
+            "quality": signal_payload.get("score_quality"),
+            "parts": signal_payload.get("score_parts"),
+        }
+    elif recent:
+        for item in recent:
+            if item.get("score_parts"):
+                score_breakdown = {
+                    "source": "recent",
+                    "score": item.get("score"),
+                    "quality": item.get("score_quality"),
+                    "bar_time_label": item.get("bar_time_label"),
+                    "parts": item.get("score_parts"),
+                }
+                break
 
     updated = datetime.now(timezone.utc)
     last_dual = dual_date(last_bar_time, with_time=True)
@@ -152,10 +192,12 @@ def build_snapshot(
         "recent_signals": recent,
         "no_trade": no_trade,
         "score_board": score_board,
+        "score_breakdown": score_breakdown,
         "risk_reward_min": cfg.risk_reward,
         "paper_outcomes": paper_outcomes,
         "paper_journal": journal,
         "readiness": readiness,
+        "telegram_notify": notify_status,
         "note_fa": "اتصال فقط برای خواندن قیمت و سیگنال آزمایشی است؛ سفارش واقعی ارسال نمی‌شود. امتیازها طبق قوانین و منابع (۱۲×۰–۲).",
     }
 
